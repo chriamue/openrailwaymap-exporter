@@ -1,0 +1,18 @@
+[package]
+name = "openrailwaymap-exporter"
+version = "0.1.0"
+edition = "2021"
+description = "OpenRailwayMap Exporter is a Rust project that downloads railway data from the OpenRailwayMap API"
+authors = ["Christian <chriamue@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/chriamue/openrailwaymap-exporter"
+
+[dependencies]
+async-trait = "0.1.68"
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+structopt = "0.3"
+tokio = { version = "1", features = ["full"] }
+url = "2.3.1"
