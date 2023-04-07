@@ -13,6 +13,6 @@ pub use self::edge::create_edges;
 pub use self::edge::Edge;
 pub use self::export::*;
 pub use self::openrailwaymap_api_client::OpenRailwayMapApiClient;
-pub use self::railway_element::RailwayElement;
+pub use self::railway_element::{ElementType, RailwayElement};
 pub use self::railway_model::*;
 pub use self::railway_processing::*;

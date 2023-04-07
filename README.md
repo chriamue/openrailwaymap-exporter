@@ -3,7 +3,7 @@
 [![Github Repo](https://img.shields.io/badge/github-repo-green)](https://github.com/chriamue/openrailwaymap-exporter/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![codecov](https://codecov.io/gh/chriamue/openrailwaymap-exporter/branch/main/graph/badge.svg?token=TFJ8UT9W1J)](https://codecov.io/gh/chriamue/openrailwaymap-exporter)
-[![Doc](https://img.shields.io/badge/Docs-online-green.svg)](https://chriamue.github.io/image-label-tool/openrailwaymap-exporter/)
+[![Doc](https://img.shields.io/badge/Docs-online-green.svg)](https://chriamue.github.io/openrailwaymap-exporter/openrailwaymap-exporter/)
 
 A command-line tool built with Rust that fetches railway data from OpenRailwayMap using the Overpass API and exports it into a custom format.
 
