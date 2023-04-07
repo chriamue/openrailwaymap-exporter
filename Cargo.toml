@@ -10,6 +10,8 @@ repository = "https://github.com/chriamue/openrailwaymap-exporter"
 
 [dependencies]
 async-trait = "0.1.68"
+geoutils = "0.5.1"
+petgraph = "0.6.3"
 reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }

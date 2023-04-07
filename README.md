@@ -23,6 +23,23 @@ For example, to download railway data within a bounding box around Frankfurt, us
 cargo run -- --bbox "49.9,8.4,50.2,8.8"
 ```
 
+or use the following:
+
+```sh
+cargo run -- --bbox "Frankfurt am Main"
+```
+
+To save the graph as graphviz format use:
+
+```sh
+cargo run -- --area "Frankfurt West" -d output.dot
+```
+
+then you can convert the graphviz format into a svg image using the following command:
+
+```sh
+dot -Tsvg output.dot > output.svg
+```
 
 ## Contributing
 
