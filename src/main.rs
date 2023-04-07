@@ -1,6 +1,6 @@
 use openrailwaymap_exporter::{
-    create_edges, BasicOpenRailwayMapApiClient, OpenRailwayMapApiClient, RailwayGraph,
-    export::generate_dot_string,
+    create_edges, generate_dot_string, generate_json_string, BasicOpenRailwayMapApiClient,
+    OpenRailwayMapApiClient, RailwayGraph,
 };
 use std::fs::File;
 use std::io::Write;
@@ -18,8 +18,29 @@ struct Opt {
     #[structopt(long, conflicts_with("bbox"))]
     area: Option<String>,
 
-    #[structopt(long, short = "d", name = "dot_output")]
-    dot_output: Option<String>,
+    #[structopt(
+        long = "dot",
+        short,
+        conflicts_with("json"),
+        help = "Output in Graphviz dot format"
+    )]
+    dot: bool,
+
+    #[structopt(
+        long = "json",
+        short,
+        conflicts_with("dot"),
+        help = "Output raw JSON data"
+    )]
+    json: bool,
+
+    #[structopt(
+        long = "output",
+        short = "o",
+        name = "filename",
+        help = "Output filename"
+    )]
+    output: Option<String>,
 }
 
 #[tokio::main]
@@ -40,14 +61,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Railway Elements: {:?}", edges);
 
-    let graph = RailwayGraph::from_railway_elements(railway_elements);
+    let graph = RailwayGraph::from_railway_elements(&railway_elements);
 
-    println!("Railway Graph: {:?}", graph);
+    println!("Railway Graph: {:?}", &graph);
 
-    if let Some(file_path) = opt.dot_output {
-        let dot_string = generate_dot_string(&graph)?;
-        let mut file = File::create(file_path)?;
-        writeln!(file, "{}", dot_string)?;
+    if let Some(file_path) = opt.output {
+        let mut file = File::create(&file_path)?;
+        if opt.dot {
+            let dot_string = generate_dot_string(&graph)?;
+            writeln!(file, "{}", dot_string)?;
+        } else if opt.json {
+            let json_string = generate_json_string(&railway_elements)?;
+            writeln!(file, "{}", json_string)?;
+        }
     }
 
     Ok(())

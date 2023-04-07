@@ -1,5 +1,5 @@
 use geoutils::Location;
-use petgraph::{Undirected, Graph, stable_graph::NodeIndex};
+use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
 
 use crate::railway_element::RailwayElement;
@@ -13,7 +13,7 @@ pub struct RailwayGraph {
 }
 
 impl RailwayGraph {
-    pub fn from_railway_elements(elements: Vec<RailwayElement>) -> Self {
+    pub fn from_railway_elements(elements: &Vec<RailwayElement>) -> Self {
         let mut graph = Graph::<RailwayNode, RailwayEdge, Undirected>::new_undirected();
         let mut node_indices = HashMap::new();
 
@@ -38,7 +38,8 @@ impl RailwayGraph {
                 if i < nodes_ids.len() - 1 {
                     let next_node_id = nodes_ids[i + 1];
                     let next_coord = &geometry[i + 1];
-                    let distance = calculate_distance(coord.lat, coord.lon, next_coord.lat, next_coord.lon);
+                    let distance =
+                        calculate_distance(coord.lat, coord.lon, next_coord.lat, next_coord.lon);
 
                     let next_node_index = *node_indices.entry(next_node_id).or_insert_with(|| {
                         graph.add_node(RailwayNode {
@@ -62,18 +63,22 @@ impl RailwayGraph {
 
         let connections = find_connected_elements(&elements);
         for (source_id, target_id) in connections {
-            if let (Some(source_index), Some(target_index)) = (node_indices.get(&source_id), node_indices.get(&target_id)) {
+            if let (Some(source_index), Some(target_index)) =
+                (node_indices.get(&source_id), node_indices.get(&target_id))
+            {
                 let source_node = &graph[*source_index];
                 let target_node = &graph[*target_index];
-                let distance = calculate_distance(source_node.lat, source_node.lon, target_node.lat, target_node.lon);
-        
+                let distance = calculate_distance(
+                    source_node.lat,
+                    source_node.lon,
+                    target_node.lat,
+                    target_node.lon,
+                );
+
                 graph.add_edge(
                     *source_index,
                     *target_index,
-                    RailwayEdge {
-                        id: 0,
-                        distance,
-                    },
+                    RailwayEdge { id: 0, distance },
                 );
             } else {
                 // Handle the case where either source_index or target_index is not found in node_indices
