@@ -1,6 +1,6 @@
 mod graph_operations;
 mod railway_edge;
-mod railway_graph;
+pub mod railway_graph;
 mod railway_node;
 
 pub use graph_operations::GraphOperations;
