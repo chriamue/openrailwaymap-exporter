@@ -1,6 +1,6 @@
 use openrailwaymap_exporter::{
-    create_edges, generate_dot_string, generate_json_string, BasicOpenRailwayMapApiClient,
-    OpenRailwayMapApiClient, RailwayGraph,
+    create_edges, generate_dot_string, BasicOpenRailwayMapApiClient, OpenRailwayMapApiClient,
+    RailwayElement, RailwayGraph,
 };
 use std::fs::File;
 use std::io::Write;
@@ -50,20 +50,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let api_client: Box<dyn OpenRailwayMapApiClient> =
         Box::new(BasicOpenRailwayMapApiClient::new());
 
-    let railway_elements = if let Some(area) = &opt.area {
-        api_client.fetch_railway_elements_by_area_name(area).await?
+    let api_json_value = if let Some(area) = &opt.area {
+        api_client.fetch_by_area_name(area).await?
     } else {
         let bbox = opt.bbox.unwrap();
-        api_client.fetch_railway_elements_by_bbox(&bbox).await?
+        api_client.fetch_by_bbox(&bbox).await?
     };
+
+    let railway_elements = RailwayElement::from_json(&api_json_value)?;
 
     let edges = create_edges(&railway_elements);
 
-    println!("Railway Elements: {:?}", edges);
+    println!("Railway Elements: {:?}", edges.len());
 
     let graph = RailwayGraph::from_railway_elements(&railway_elements);
 
-    println!("Railway Graph: {:?}", &graph);
+    println!("Railway Graph: {:?}", &graph.graph.edge_count());
 
     if let Some(file_path) = opt.output {
         let mut file = File::create(&file_path)?;
@@ -71,8 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let dot_string = generate_dot_string(&graph)?;
             writeln!(file, "{}", dot_string)?;
         } else if opt.json {
-            let json_string = generate_json_string(&railway_elements)?;
-            writeln!(file, "{}", json_string)?;
+            writeln!(file, "{}", api_json_value)?;
         }
     }
 

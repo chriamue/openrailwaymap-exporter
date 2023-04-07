@@ -1,17 +1,10 @@
-use std::error::Error;
-
-use crate::railway_element::RailwayElement;
+use anyhow::Result;
 use async_trait::async_trait;
+use serde_json::Value;
 
 #[async_trait]
 pub trait OpenRailwayMapApiClient {
-    async fn connect(&mut self, url: &str) -> Result<(), Box<dyn Error>>;
-    async fn fetch_railway_elements_by_area_name(
-        &self,
-        area_name: &str,
-    ) -> Result<Vec<RailwayElement>, Box<dyn Error>>;
-    async fn fetch_railway_elements_by_bbox(
-        &self,
-        bbox: &str,
-    ) -> Result<Vec<RailwayElement>, Box<dyn Error>>;
+    async fn connect(&mut self, url: &str) -> Result<()>;
+    async fn fetch_by_area_name(&self, area_name: &str) -> Result<Value>;
+    async fn fetch_by_bbox(&self, bbox: &str) -> Result<Value>;
 }

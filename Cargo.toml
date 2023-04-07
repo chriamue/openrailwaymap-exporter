@@ -9,6 +9,7 @@ readme = "README.md"
 repository = "https://github.com/chriamue/openrailwaymap-exporter"
 
 [dependencies]
+anyhow = "1.0"
 async-trait = "0.1.68"
 geoutils = "0.5.1"
 petgraph = "0.6.3"
@@ -16,5 +17,6 @@ reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 structopt = "0.3"
+thiserror = "1.0"
 tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
