@@ -45,7 +45,7 @@ impl OpenRailwayMapApiClient for BasicOpenRailwayMapApiClient {
 
     async fn fetch_by_area_name(&self, area_name: &str) -> Result<Value> {
         let query = format!(
-            r#"[out:json];area[name="{}"]->.searchArea;(way(area.searchArea)["railway"="rail"];way(area.searchArea)["railway"="switch"];);out geom;"#,
+            r#"[out:json];area[name="{}"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];);out geom;"#,
             area_name
         );
 
@@ -55,7 +55,7 @@ impl OpenRailwayMapApiClient for BasicOpenRailwayMapApiClient {
 
     async fn fetch_by_bbox(&self, bbox: &str) -> Result<Value> {
         let query = format!(
-            r#"[out:json];(way({})["railway"="rail"];way({})["railway"="switch"];);out geom;"#,
+            r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];);out geom;"#,
             bbox, bbox
         );
 

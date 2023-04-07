@@ -2,7 +2,8 @@ use geoutils::Location;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
 
-use crate::railway_element::RailwayElement;
+use crate::railway_element::{ElementType, RailwayElement};
+use crate::railway_processing::create_nodes;
 
 use super::{RailwayEdge, RailwayNode};
 
@@ -11,52 +12,46 @@ pub struct RailwayGraph {
     pub graph: Graph<RailwayNode, RailwayEdge, Undirected>,
     node_indices: HashMap<i64, NodeIndex>,
 }
-
 impl RailwayGraph {
     pub fn from_railway_elements(elements: &Vec<RailwayElement>) -> Self {
         let mut graph = Graph::<RailwayNode, RailwayEdge, Undirected>::new_undirected();
         let mut node_indices = HashMap::new();
 
-        let empty_nodes_vec = Vec::new();
-        let empty_geometry_vec = Vec::new();
+        let nodes = create_nodes(elements);
+        for node in nodes {
+            let node_index = graph.add_node(node.clone());
+            node_indices.insert(node.id, node_index);
+        }
 
         for element in elements.iter() {
-            let nodes_ids = element.nodes.as_ref().unwrap_or(&empty_nodes_vec);
-            let geometry = element.geometry.as_ref().unwrap_or(&empty_geometry_vec);
+            if let ElementType::Way = element.element_type {
+                if let Some(nodes_ids) = &element.nodes {
+                    for i in 0..(nodes_ids.len() - 1) {
+                        let node_id = nodes_ids[i];
+                        let next_node_id = nodes_ids[i + 1];
 
-            for (i, &node_id) in nodes_ids.iter().enumerate() {
-                let coord = &geometry[i];
+                        if let (Some(&node_index), Some(&next_node_index)) =
+                            (node_indices.get(&node_id), node_indices.get(&next_node_id))
+                        {
+                            let source_node = &graph[node_index];
+                            let target_node = &graph[next_node_index];
+                            let distance = calculate_distance(
+                                source_node.lat,
+                                source_node.lon,
+                                target_node.lat,
+                                target_node.lon,
+                            );
 
-                let node_index = *node_indices.entry(node_id).or_insert_with(|| {
-                    graph.add_node(RailwayNode {
-                        id: node_id,
-                        lat: coord.lat,
-                        lon: coord.lon,
-                    })
-                });
-
-                if i < nodes_ids.len() - 1 {
-                    let next_node_id = nodes_ids[i + 1];
-                    let next_coord = &geometry[i + 1];
-                    let distance =
-                        calculate_distance(coord.lat, coord.lon, next_coord.lat, next_coord.lon);
-
-                    let next_node_index = *node_indices.entry(next_node_id).or_insert_with(|| {
-                        graph.add_node(RailwayNode {
-                            id: next_node_id,
-                            lat: next_coord.lat,
-                            lon: next_coord.lon,
-                        })
-                    });
-
-                    graph.add_edge(
-                        node_index,
-                        next_node_index,
-                        RailwayEdge {
-                            id: element.id,
-                            distance,
-                        },
-                    );
+                            graph.add_edge(
+                                node_index,
+                                next_node_index,
+                                RailwayEdge {
+                                    id: element.id,
+                                    distance,
+                                },
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -81,8 +76,6 @@ impl RailwayGraph {
                     RailwayEdge { id: 0, distance },
                 );
             } else {
-                // Handle the case where either source_index or target_index is not found in node_indices
-                // You can log a warning, ignore the edge, or handle it in any other way you deem appropriate
                 println!("{} not found", source_id);
             }
         }
