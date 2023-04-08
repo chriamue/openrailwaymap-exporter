@@ -35,7 +35,7 @@ cargo run -- --bbox "49.9,8.4,50.2,8.8"
 or use the following:
 
 ```sh
-cargo run -- --bbox "Frankfurt am Main"
+cargo run -- --area "Frankfurt am Main"
 ```
 
 To save the elements in a json file, use the following:
@@ -44,7 +44,7 @@ To save the elements in a json file, use the following:
 cargo run -- --area "Frankfurt am Main" -j -o output.json
 ```
 
-To save the graph as graphviz format use:
+To save the graph as svg format use:
 
 ```sh
 cargo run -- --area "Frankfurt am Main" -d -o output.dot
@@ -53,7 +53,7 @@ cargo run -- --area "Frankfurt am Main" -d -o output.dot
 then you can convert the graphviz format into a svg image using the following command:
 
 ```sh
-dot -Tsvg output.dot > output.svg
+cargo run -- --area "Frankfurt am Main" --svg -o output.svg
 ```
 
 ### Web App
