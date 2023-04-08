@@ -22,16 +22,16 @@
 <div class="example-wrap"><pre class="language-sh"><code>cargo run -- --bbox &quot;49.9,8.4,50.2,8.8&quot;
 </code></pre></div>
 <p>or use the following:</p>
-<div class="example-wrap"><pre class="language-sh"><code>cargo run -- --bbox &quot;Frankfurt am Main&quot;
+<div class="example-wrap"><pre class="language-sh"><code>cargo run -- --area &quot;Frankfurt am Main&quot;
 </code></pre></div>
 <p>To save the elements in a json file, use the following:</p>
 <div class="example-wrap"><pre class="language-sh"><code>cargo run -- --area &quot;Frankfurt am Main&quot; -j -o output.json
 </code></pre></div>
-<p>To save the graph as graphviz format use:</p>
+<p>To save the graph as svg format use:</p>
 <div class="example-wrap"><pre class="language-sh"><code>cargo run -- --area &quot;Frankfurt am Main&quot; -d -o output.dot
 </code></pre></div>
 <p>then you can convert the graphviz format into a svg image using the following command:</p>
-<div class="example-wrap"><pre class="language-sh"><code>dot -Tsvg output.dot &gt; output.svg
+<div class="example-wrap"><pre class="language-sh"><code>cargo run -- --area &quot;Frankfurt am Main&quot; --svg -o output.svg
 </code></pre></div><h4 id="web-app"><a href="#web-app">Web App</a></h4>
 <ol>
 <li>
