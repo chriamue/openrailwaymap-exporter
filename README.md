@@ -54,6 +54,22 @@ then you can convert the graphviz format into a svg image using the following co
 dot -Tsvg output.dot > output.svg
 ```
 
+### Web App
+
+1. Compile the code to WASM:
+
+    ```sh
+    wasm-pack build --target web
+    ```
+
+2. Run the Web version in your browser
+
+    ```sh
+    python3 -m http.server
+    ```
+
+3. Open your browser on [Localhost](http://localhost:8000)
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.

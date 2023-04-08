@@ -8,16 +8,31 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/chriamue/openrailwaymap-exporter"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1.68"
 geoutils = "0.5.1"
 petgraph = "0.6.3"
-reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 structopt = "0.3"
 svg = "0.13.1"
 thiserror = "1.0"
-tokio = { version = "1", features = ["full"] }
 url = "2.3.1"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+tokio = { version = "1.0", features = ["full"] }
+
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3.59" }
+yew = { version = "0.20.0", features = ["csr"] }
+wasm-bindgen = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+console_error_panic_hook = "0.1"

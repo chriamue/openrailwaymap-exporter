@@ -7,7 +7,8 @@ use serde_json::Value;
 /// `OpenRailwayMapApiClient` is an asynchronous trait that provides a common interface
 /// for fetching OpenRailwayMap data by area name or bounding box.
 ///
-#[async_trait]
+#[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
+#[cfg_attr(not(target_arch = "wasm32"), async_trait)]
 pub trait OpenRailwayMapApiClient {
     /// Connect to the OpenRailwayMap API using the specified URL.
     ///

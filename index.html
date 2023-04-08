@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OpenRailwayMap Exporter</title>
+  </head>
+  <body>
+    <div id="app" />
+    <script type="module">
+      import init, { init_app } from "./pkg/openrailwaymap_exporter.js";
+      var root = document.getElementById("app");
+      init().then(async () => {
+        try {
+          init_app(root);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    </script>
+  </body>
+</html>
