@@ -17,6 +17,7 @@ reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 structopt = "0.3"
+svg = "0.13.1"
 thiserror = "1.0"
 tokio = { version = "1", features = ["full"] }
 url = "2.3.1"

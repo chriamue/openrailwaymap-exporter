@@ -1,4 +1,5 @@
 use geoutils::Location;
+use petgraph::visit::IntoNodeReferences;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
 
@@ -19,6 +20,44 @@ pub struct RailwayGraph {
     node_indices: HashMap<i64, NodeIndex>,
 }
 impl RailwayGraph {
+    /// Calculate the bounding box of the graph.
+    ///
+    /// The bounding box is represented as a tuple containing the minimum and maximum
+    /// latitude and longitude values of the nodes in the graph.
+    ///
+    /// # Returns
+    ///
+    /// A tuple containing two `Coordinate` structs representing the minimum and maximum coordinates
+    /// of the bounding box of the graph.
+    ///
+    pub fn bounding_box(&self) -> (Coordinate, Coordinate) {
+        let mut min_lat = std::f64::MAX;
+        let mut min_lon = std::f64::MAX;
+        let mut max_lat = std::f64::MIN;
+        let mut max_lon = std::f64::MIN;
+
+        for node in self.graph.node_references() {
+            let lat = node.1.lat;
+            let lon = node.1.lon;
+
+            min_lat = min_lat.min(lat);
+            min_lon = min_lon.min(lon);
+            max_lat = max_lat.max(lat);
+            max_lon = max_lon.max(lon);
+        }
+
+        (
+            Coordinate {
+                lat: min_lat,
+                lon: min_lon,
+            },
+            Coordinate {
+                lat: max_lat,
+                lon: max_lon,
+            },
+        )
+    }
+
     /// Create a `RailwayGraph` from a vector of `RailwayElement`s.
     ///
     /// The function processes the input elements to create a graph with nodes and edges.
@@ -209,5 +248,59 @@ mod tests {
 
         let length = calculate_geometry_length(&geometry);
         assert_eq!((length * 100.0).round() / 100.0, 221827.2); // Compare with rounded value
+    }
+
+    #[test]
+    fn test_bounding_box() {
+        let mut tags = HashMap::new();
+        tags.insert("railway".to_string(), "station".to_string());
+
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Node,
+                lat: Some(51.1109),
+                lon: Some(9.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Node,
+                lat: Some(49.1109),
+                lon: Some(7.6821),
+                tags: Some(tags),
+                nodes: None,
+                geometry: None,
+            },
+        ];
+
+        let railway_graph = RailwayGraph::from_railway_elements(&elements);
+        let (min_coord, max_coord) = railway_graph.bounding_box();
+
+        assert_eq!(
+            min_coord,
+            Coordinate {
+                lat: 49.1109,
+                lon: 7.6821
+            }
+        );
+        assert_eq!(
+            max_coord,
+            Coordinate {
+                lat: 51.1109,
+                lon: 9.6821
+            }
+        );
     }
 }

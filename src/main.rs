@@ -1,6 +1,6 @@
 use openrailwaymap_exporter::{
-    generate_dot_string, BasicOpenRailwayMapApiClient, OpenRailwayMapApiClient, RailwayElement,
-    RailwayGraph,
+    generate_dot_string, generate_svg_string, BasicOpenRailwayMapApiClient,
+    OpenRailwayMapApiClient, RailwayElement, RailwayGraph,
 };
 use std::fs::File;
 use std::io::Write;
@@ -21,7 +21,7 @@ struct Opt {
     #[structopt(
         long = "dot",
         short,
-        conflicts_with("json"),
+        conflicts_with("json,svg"),
         help = "Output in Graphviz dot format"
     )]
     dot: bool,
@@ -29,10 +29,13 @@ struct Opt {
     #[structopt(
         long = "json",
         short,
-        conflicts_with("dot"),
+        conflicts_with("dot,svg"),
         help = "Output raw JSON data"
     )]
     json: bool,
+
+    #[structopt(long = "svg", conflicts_with("dot,json"), help = "Output svg image")]
+    svg: bool,
 
     #[structopt(
         long = "output",
@@ -70,6 +73,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             writeln!(file, "{}", dot_string)?;
         } else if opt.json {
             writeln!(file, "{}", api_json_value)?;
+        } else if opt.svg {
+            let svg_string = generate_svg_string(&graph)?;
+            writeln!(file, "{}", svg_string)?;
         }
     }
 
