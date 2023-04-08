@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["calculate_geometry_length","Calculate the total length of a sequence of coordinates by summing the distance between consecutive coordinates."]],"struct":[["RailwayGraph","`RailwayGraph` represents a graph structure for railway networks."]]};
