@@ -64,7 +64,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Railway Graph: {:?}", &graph.graph.edge_count());
 
     if let Some(file_path) = opt.output {
-        let mut file = File::create(&file_path)?;
+        let mut file = File::create(file_path)?;
         if opt.dot {
             let dot_string = generate_dot_string(&graph)?;
             writeln!(file, "{}", dot_string)?;

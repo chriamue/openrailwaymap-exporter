@@ -63,7 +63,7 @@ impl RailwayGraph {
     /// let railway_graph = RailwayGraph::from_railway_elements(&elements);
     /// println!("Created railway graph with {} nodes", railway_graph.graph.node_count());
     /// ```
-    pub fn from_railway_elements(elements: &Vec<RailwayElement>) -> Self {
+    pub fn from_railway_elements(elements: &[RailwayElement]) -> Self {
         let mut graph = Graph::<RailwayNode, RailwayEdge, Undirected>::new_undirected();
         let mut node_indices = HashMap::new();
 
@@ -99,7 +99,7 @@ impl RailwayGraph {
             }
         }
 
-        let connections = find_connected_elements(&elements);
+        let connections = find_connected_elements(elements);
         for (source_id, target_id) in connections {
             if let (Some(source_index), Some(target_index)) =
                 (node_indices.get(&source_id), node_indices.get(&target_id))
@@ -139,8 +139,7 @@ fn find_connected_elements(elements: &[RailwayElement]) -> Vec<(i64, i64)> {
     for i in 0..elements.len() {
         let elem_a = &elements[i];
         if let Some(nodes_a) = &elem_a.nodes {
-            for j in (i + 1)..elements.len() {
-                let elem_b = &elements[j];
+            for elem_b in elements.iter().skip(i + 1) {
                 if let Some(nodes_b) = &elem_b.nodes {
                     let common_nodes: Vec<_> = nodes_a
                         .iter()

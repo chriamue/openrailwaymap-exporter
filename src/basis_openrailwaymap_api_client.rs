@@ -35,6 +35,12 @@ impl BasicOpenRailwayMapApiClient {
     }
 }
 
+impl Default for BasicOpenRailwayMapApiClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 impl OpenRailwayMapApiClient for BasicOpenRailwayMapApiClient {
     async fn connect(&mut self, url: &str) -> Result<()> {
@@ -49,7 +55,7 @@ impl OpenRailwayMapApiClient for BasicOpenRailwayMapApiClient {
             area_name
         );
 
-        let response: Value = self.fetch_by_query(&query).await?.into();
+        let response: Value = self.fetch_by_query(&query).await?;
         Ok(response)
     }
 
@@ -59,7 +65,7 @@ impl OpenRailwayMapApiClient for BasicOpenRailwayMapApiClient {
             bbox, bbox
         );
 
-        let response: Value = self.fetch_by_query(&query).await?.into();
+        let response: Value = self.fetch_by_query(&query).await?;
         Ok(response)
     }
 }
