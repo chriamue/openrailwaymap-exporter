@@ -258,6 +258,16 @@
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashSet;
 
 <span class="kw">use crate</span>::{railway_element::ElementType, RailwayElement, RailwayNode};
@@ -516,6 +526,16 @@
 
         <span class="kw">let </span>railway_nodes = create_nodes(<span class="kw-2">&amp;</span>elements);
         <span class="macro">assert_eq!</span>(railway_nodes.len(), <span class="number">1</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_vilbel_json() {
+        <span class="kw">use </span><span class="kw">crate</span>::tests::test_json_vilbel;
+
+        <span class="kw">let </span>railway_elements = RailwayElement::from_json(<span class="kw-2">&amp;</span>test_json_vilbel()).unwrap();
+
+        <span class="kw">let </span>nodes = create_nodes_from_node_elements(<span class="kw-2">&amp;</span>railway_elements);
+        <span class="macro">assert_eq!</span>(nodes.len(), <span class="number">20</span>);
     }
 }
 </code></pre></div>
