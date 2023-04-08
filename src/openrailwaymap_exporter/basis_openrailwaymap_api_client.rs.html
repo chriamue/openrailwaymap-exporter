@@ -73,13 +73,18 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::openrailwaymap_api_client::OpenRailwayMapApiClient;
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>reqwest::Client;
 <span class="kw">use </span>serde_json::Value;
 
-<span class="kw">pub struct </span>BasicOpenRailwayMapApiClient {
+<span class="doccomment">/// A basic client for the OpenRailwayMap API.
+///
+</span><span class="kw">pub struct </span>BasicOpenRailwayMapApiClient {
     url: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
@@ -87,7 +92,8 @@
 </span><span class="kw">unsafe impl </span>Send <span class="kw">for </span>BasicOpenRailwayMapApiClient {}
 
 <span class="kw">impl </span>BasicOpenRailwayMapApiClient {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a new `BasicOpenRailwayMapApiClient` with no specified API URL.
+    </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         BasicOpenRailwayMapApiClient { url: <span class="prelude-val">None </span>}
     }
 

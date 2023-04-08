@@ -53,6 +53,8 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
 </pre><pre class="rust"><code><span class="doccomment">/// Represents a railway edge with a unique ID and a length.
 ///
 /// # Examples
@@ -68,8 +70,10 @@
 /// ```
 </span><span class="attr">#[derive(Debug, PartialEq)]
 </span><span class="kw">pub struct </span>RailwayEdge {
-    <span class="kw">pub </span>id: i64,
-    <span class="kw">pub </span>length: f64,
+    <span class="doccomment">/// The ID of the edge, typically corresponding to the ID of the underlying `RailwayElement` (e.g., way).
+    </span><span class="kw">pub </span>id: i64,
+    <span class="doccomment">/// The length of the railway segment in meters.
+    </span><span class="kw">pub </span>length: f64,
 }
 
 <span class="attr">#[cfg(test)]

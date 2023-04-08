@@ -34,6 +34,8 @@
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
 </pre><pre class="rust"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="doccomment">/// A `Coordinate` represents a geographic coordinate with latitude and longitude.
@@ -51,8 +53,10 @@
 /// ```
 </span><span class="attr">#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 </span><span class="kw">pub struct </span>Coordinate {
-    <span class="kw">pub </span>lat: f64,
-    <span class="kw">pub </span>lon: f64,
+    <span class="doccomment">/// The latitude coordinate, in decimal degrees.
+    </span><span class="kw">pub </span>lat: f64,
+    <span class="doccomment">/// The longitude coordinate, in decimal degrees.
+    </span><span class="kw">pub </span>lon: f64,
 }
 
 <span class="attr">#[cfg(test)]
