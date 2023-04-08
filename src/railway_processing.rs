@@ -257,4 +257,14 @@ mod tests {
         let railway_nodes = create_nodes(&elements);
         assert_eq!(railway_nodes.len(), 1);
     }
+
+    #[test]
+    fn test_vilbel_json() {
+        use crate::tests::test_json_vilbel;
+
+        let railway_elements = RailwayElement::from_json(&test_json_vilbel()).unwrap();
+
+        let nodes = create_nodes_from_node_elements(&railway_elements);
+        assert_eq!(nodes.len(), 20);
+    }
 }

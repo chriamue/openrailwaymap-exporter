@@ -1,0 +1,4734 @@
+{
+    "elements": [
+        {
+            "id": 31027554,
+            "lat": 50.1946003,
+            "lon": 8.7422897,
+            "tags": {
+                "railway": "switch"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927242,
+            "lat": 50.1943723,
+            "lon": 8.7421893,
+            "tags": {
+                "railway": "switch"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927251,
+            "lat": 50.1932107,
+            "lon": 8.7417268,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "left"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927271,
+            "lat": 50.1917526,
+            "lon": 8.7414493,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927295,
+            "lat": 50.1937575,
+            "lon": 8.7420318,
+            "tags": {
+                "railway": "switch"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927328,
+            "lat": 50.1952167,
+            "lon": 8.7425127,
+            "tags": {
+                "railway": "switch"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927329,
+            "lat": 50.1932781,
+            "lon": 8.7417554,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "right"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927337,
+            "lat": 50.1917188,
+            "lon": 8.7413723,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927351,
+            "lat": 50.1913943,
+            "lon": 8.7414272,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927356,
+            "lat": 50.1921405,
+            "lon": 8.7414841,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927358,
+            "lat": 50.1926936,
+            "lon": 8.7415541,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927371,
+            "lat": 50.1913909,
+            "lon": 8.7413605,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927374,
+            "lat": 50.1919135,
+            "lon": 8.7410941,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "left"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927392,
+            "lat": 50.1938219,
+            "lon": 8.7419972,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "left"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927409,
+            "lat": 50.1923615,
+            "lon": 8.7413372,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "right"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257927414,
+            "lat": 50.1931545,
+            "lon": 8.7415136,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257934102,
+            "lat": 50.1855214,
+            "lon": 8.7379823,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257934111,
+            "lat": 50.185484,
+            "lon": 8.7380553,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "right",
+                "ref": "42"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1257934126,
+            "lat": 50.1863613,
+            "lon": 8.7386126,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default",
+                "railway:turnout_side": "right"
+            },
+            "type": "node"
+        },
+        {
+            "id": 1472253442,
+            "lat": 50.1909929,
+            "lon": 8.7405453,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            },
+            "type": "node"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1909929,
+                "maxlon": 8.7405453,
+                "minlat": 50.185484,
+                "minlon": 8.7380553
+            },
+            "geometry": [
+                {
+                    "lat": 50.185484,
+                    "lon": 8.7380553
+                },
+                {
+                    "lat": 50.1858741,
+                    "lon": 8.738253
+                },
+                {
+                    "lat": 50.1864692,
+                    "lon": 8.73851
+                },
+                {
+                    "lat": 50.1868333,
+                    "lon": 8.7386677
+                },
+                {
+                    "lat": 50.1873961,
+                    "lon": 8.7389112
+                },
+                {
+                    "lat": 50.1886709,
+                    "lon": 8.7394905
+                },
+                {
+                    "lat": 50.189331,
+                    "lon": 8.7397886
+                },
+                {
+                    "lat": 50.1905926,
+                    "lon": 8.7403622
+                },
+                {
+                    "lat": 50.1909929,
+                    "lon": 8.7405453
+                }
+            ],
+            "id": 5132986,
+            "nodes": [
+                1257934111,
+                9897789428,
+                9897789427,
+                31027552,
+                1472253414,
+                60334239,
+                4281849429,
+                1257927354,
+                1472253442
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1848639,
+                "maxlon": 8.7377513,
+                "minlat": 50.1813676,
+                "minlon": 8.736243
+            },
+            "geometry": [
+                {
+                    "lat": 50.1813676,
+                    "lon": 8.736243
+                },
+                {
+                    "lat": 50.1827661,
+                    "lon": 8.7368493
+                },
+                {
+                    "lat": 50.1839039,
+                    "lon": 8.7373386
+                },
+                {
+                    "lat": 50.1848639,
+                    "lon": 8.7377513
+                }
+            ],
+            "id": 8067039,
+            "nodes": [
+                31027550,
+                9897652320,
+                1257934109,
+                31027551
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1852333,
+                "maxlon": 8.7379133,
+                "minlat": 50.1848639,
+                "minlon": 8.7377513
+            },
+            "geometry": [
+                {
+                    "lat": 50.1848639,
+                    "lon": 8.7377513
+                },
+                {
+                    "lat": 50.1852333,
+                    "lon": 8.7379133
+                }
+            ],
+            "id": 8067040,
+            "nodes": [
+                31027551,
+                9897913757
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1983763,
+                "maxlon": 8.7454917,
+                "minlat": 50.1973212,
+                "minlon": 8.7437247
+            },
+            "geometry": [
+                {
+                    "lat": 50.1983763,
+                    "lon": 8.7454917
+                },
+                {
+                    "lat": 50.1982624,
+                    "lon": 8.745166
+                },
+                {
+                    "lat": 50.1981839,
+                    "lon": 8.7449758
+                },
+                {
+                    "lat": 50.1981202,
+                    "lon": 8.7448363
+                },
+                {
+                    "lat": 50.1980486,
+                    "lon": 8.7446929
+                },
+                {
+                    "lat": 50.1979309,
+                    "lon": 8.7444824
+                },
+                {
+                    "lat": 50.1978089,
+                    "lon": 8.7442915
+                },
+                {
+                    "lat": 50.1976732,
+                    "lon": 8.7441055
+                },
+                {
+                    "lat": 50.1975602,
+                    "lon": 8.7439686
+                },
+                {
+                    "lat": 50.1973212,
+                    "lon": 8.7437247
+                }
+            ],
+            "id": 8067047,
+            "nodes": [
+                36311016,
+                1473489190,
+                31403856,
+                1473489182,
+                1473489174,
+                791768915,
+                1473489167,
+                1473489154,
+                36311017,
+                1473489141
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1984767,
+                "maxlon": 8.7458542,
+                "minlat": 50.1983763,
+                "minlon": 8.7454917
+            },
+            "geometry": [
+                {
+                    "lat": 50.1984767,
+                    "lon": 8.7458542
+                },
+                {
+                    "lat": 50.1983763,
+                    "lon": 8.7454917
+                }
+            ],
+            "id": 8067048,
+            "nodes": [
+                60334242,
+                36311016
+            ],
+            "tags": {
+                "bridge": "yes",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1936194,
+                "maxlon": 8.7918258,
+                "minlat": 50.1918421,
+                "minlon": 8.7845646
+            },
+            "geometry": [
+                {
+                    "lat": 50.1936194,
+                    "lon": 8.7918258
+                },
+                {
+                    "lat": 50.1935904,
+                    "lon": 8.7914051
+                },
+                {
+                    "lat": 50.1935345,
+                    "lon": 8.7908973
+                },
+                {
+                    "lat": 50.1934957,
+                    "lon": 8.7906465
+                },
+                {
+                    "lat": 50.1934395,
+                    "lon": 8.7903475
+                },
+                {
+                    "lat": 50.1933522,
+                    "lon": 8.789942
+                },
+                {
+                    "lat": 50.1932129,
+                    "lon": 8.7894018
+                },
+                {
+                    "lat": 50.1930129,
+                    "lon": 8.7886996
+                },
+                {
+                    "lat": 50.1927021,
+                    "lon": 8.7876087
+                },
+                {
+                    "lat": 50.1921943,
+                    "lon": 8.7858235
+                },
+                {
+                    "lat": 50.1919832,
+                    "lon": 8.7850873
+                },
+                {
+                    "lat": 50.1918421,
+                    "lon": 8.7845646
+                }
+            ],
+            "id": 26789885,
+            "nodes": [
+                36803944,
+                304184705,
+                1469670775,
+                36311000,
+                1469670769,
+                790939860,
+                36804915,
+                8279499530,
+                36311001,
+                8279499531,
+                107266064,
+                1469670602
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1936338,
+                "maxlon": 8.7924048,
+                "minlat": 50.1936194,
+                "minlon": 8.7918258
+            },
+            "geometry": [
+                {
+                    "lat": 50.1936338,
+                    "lon": 8.7924048
+                },
+                {
+                    "lat": 50.1936194,
+                    "lon": 8.7918258
+                }
+            ],
+            "id": 26789886,
+            "nodes": [
+                293875293,
+                36803944
+            ],
+            "tags": {
+                "bridge": "yes",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2295994,
+                "maxlon": 8.7549951,
+                "minlat": 50.2213487,
+                "minlon": 8.7538976
+            },
+            "geometry": [
+                {
+                    "lat": 50.2213487,
+                    "lon": 8.7549951
+                },
+                {
+                    "lat": 50.2231345,
+                    "lon": 8.7547334
+                },
+                {
+                    "lat": 50.2246701,
+                    "lon": 8.7545365
+                },
+                {
+                    "lat": 50.2253348,
+                    "lon": 8.7544518
+                },
+                {
+                    "lat": 50.2254944,
+                    "lon": 8.7544354
+                },
+                {
+                    "lat": 50.2295994,
+                    "lon": 8.7538976
+                }
+            ],
+            "id": 26930778,
+            "nodes": [
+                295094605,
+                1507804137,
+                31027568,
+                1507804806,
+                1257927360,
+                4966195126
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2213487,
+                "maxlon": 8.7550061,
+                "minlat": 50.2212487,
+                "minlon": 8.7549951
+            },
+            "geometry": [
+                {
+                    "lat": 50.2212487,
+                    "lon": 8.7550061
+                },
+                {
+                    "lat": 50.2213487,
+                    "lon": 8.7549951
+                }
+            ],
+            "id": 26930781,
+            "nodes": [
+                295094606,
+                295094605
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2103957,
+                "maxlon": 8.753615,
+                "minlat": 50.2102724,
+                "minlon": 8.7535122
+            },
+            "geometry": [
+                {
+                    "lat": 50.2102724,
+                    "lon": 8.7535122
+                },
+                {
+                    "lat": 50.2103957,
+                    "lon": 8.753615
+                }
+            ],
+            "id": 28107770,
+            "nodes": [
+                308751841,
+                31027561
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2212487,
+                "maxlon": 8.7556897,
+                "minlat": 50.2103957,
+                "minlon": 8.753615
+            },
+            "geometry": [
+                {
+                    "lat": 50.2103957,
+                    "lon": 8.753615
+                },
+                {
+                    "lat": 50.2108943,
+                    "lon": 8.7540473
+                },
+                {
+                    "lat": 50.2113865,
+                    "lon": 8.7544242
+                },
+                {
+                    "lat": 50.2119401,
+                    "lon": 8.7547702
+                },
+                {
+                    "lat": 50.2124131,
+                    "lon": 8.7550238
+                },
+                {
+                    "lat": 50.2128479,
+                    "lon": 8.7552115
+                },
+                {
+                    "lat": 50.2132312,
+                    "lon": 8.7553535
+                },
+                {
+                    "lat": 50.2137638,
+                    "lon": 8.7555031
+                },
+                {
+                    "lat": 50.214331,
+                    "lon": 8.755608
+                },
+                {
+                    "lat": 50.2148114,
+                    "lon": 8.755668
+                },
+                {
+                    "lat": 50.2154577,
+                    "lon": 8.7556897
+                },
+                {
+                    "lat": 50.2161034,
+                    "lon": 8.755668
+                },
+                {
+                    "lat": 50.2187652,
+                    "lon": 8.7553423
+                },
+                {
+                    "lat": 50.2212487,
+                    "lon": 8.7550061
+                }
+            ],
+            "id": 28107771,
+            "nodes": [
+                31027561,
+                1257927339,
+                31027562,
+                1257927359,
+                31027563,
+                1257927353,
+                1257927325,
+                31027564,
+                1257927345,
+                31027565,
+                1257927341,
+                31027566,
+                31027567,
+                295094606
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1813676,
+                "maxlon": 8.736243,
+                "minlat": 50.1808965,
+                "minlon": 8.7360297
+            },
+            "geometry": [
+                {
+                    "lat": 50.1808965,
+                    "lon": 8.7360297
+                },
+                {
+                    "lat": 50.1813676,
+                    "lon": 8.736243
+                }
+            ],
+            "id": 30528210,
+            "nodes": [
+                60321571,
+                31027550
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1986509,
+                "maxlon": 8.7672898,
+                "minlat": 50.1929871,
+                "minlon": 8.7458542
+            },
+            "geometry": [
+                {
+                    "lat": 50.1929871,
+                    "lon": 8.7672898
+                },
+                {
+                    "lat": 50.1930832,
+                    "lon": 8.7670069
+                },
+                {
+                    "lat": 50.1931936,
+                    "lon": 8.7667356
+                },
+                {
+                    "lat": 50.1933108,
+                    "lon": 8.7664911
+                },
+                {
+                    "lat": 50.193444,
+                    "lon": 8.7662532
+                },
+                {
+                    "lat": 50.1936079,
+                    "lon": 8.7660008
+                },
+                {
+                    "lat": 50.1937968,
+                    "lon": 8.7657487
+                },
+                {
+                    "lat": 50.1940098,
+                    "lon": 8.765486
+                },
+                {
+                    "lat": 50.1962299,
+                    "lon": 8.7627395
+                },
+                {
+                    "lat": 50.19693,
+                    "lon": 8.7618734
+                },
+                {
+                    "lat": 50.1971523,
+                    "lon": 8.7615917
+                },
+                {
+                    "lat": 50.1973304,
+                    "lon": 8.7613286
+                },
+                {
+                    "lat": 50.197463,
+                    "lon": 8.7610976
+                },
+                {
+                    "lat": 50.1975859,
+                    "lon": 8.7608467
+                },
+                {
+                    "lat": 50.1976705,
+                    "lon": 8.7606474
+                },
+                {
+                    "lat": 50.1977432,
+                    "lon": 8.7604534
+                },
+                {
+                    "lat": 50.1977976,
+                    "lon": 8.76029
+                },
+                {
+                    "lat": 50.1978638,
+                    "lon": 8.7600623
+                },
+                {
+                    "lat": 50.1979265,
+                    "lon": 8.7598044
+                },
+                {
+                    "lat": 50.1979809,
+                    "lon": 8.7595231
+                },
+                {
+                    "lat": 50.1980219,
+                    "lon": 8.7592402
+                },
+                {
+                    "lat": 50.1980489,
+                    "lon": 8.7589683
+                },
+                {
+                    "lat": 50.1980664,
+                    "lon": 8.7586959
+                },
+                {
+                    "lat": 50.1983123,
+                    "lon": 8.7535311
+                },
+                {
+                    "lat": 50.1984516,
+                    "lon": 8.7506265
+                },
+                {
+                    "lat": 50.1984757,
+                    "lon": 8.7502054
+                },
+                {
+                    "lat": 50.1986199,
+                    "lon": 8.7480999
+                },
+                {
+                    "lat": 50.1986415,
+                    "lon": 8.7476015
+                },
+                {
+                    "lat": 50.1986509,
+                    "lon": 8.747271
+                },
+                {
+                    "lat": 50.1986369,
+                    "lon": 8.7469472
+                },
+                {
+                    "lat": 50.1986105,
+                    "lon": 8.7466281
+                },
+                {
+                    "lat": 50.1985787,
+                    "lon": 8.7463797
+                },
+                {
+                    "lat": 50.1985311,
+                    "lon": 8.7461032
+                },
+                {
+                    "lat": 50.1984767,
+                    "lon": 8.7458542
+                }
+            ],
+            "id": 51943705,
+            "nodes": [
+                662529466,
+                4530644099,
+                662529453,
+                4530644100,
+                36311008,
+                4530644101,
+                4530644102,
+                304184707,
+                8279499535,
+                36311010,
+                1474466747,
+                36311011,
+                791768913,
+                1474466753,
+                1474466756,
+                1474466759,
+                36311012,
+                791768925,
+                1474466761,
+                4530644103,
+                791768906,
+                1474466762,
+                36805291,
+                36311018,
+                4530644107,
+                4530644109,
+                4530644108,
+                791768922,
+                4530644104,
+                36311015,
+                1473489196,
+                1473489195,
+                791768859,
+                60334242
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1929871,
+                "maxlon": 8.7674673,
+                "minlat": 50.1929356,
+                "minlon": 8.7672898
+            },
+            "geometry": [
+                {
+                    "lat": 50.1929356,
+                    "lon": 8.7674673
+                },
+                {
+                    "lat": 50.1929871,
+                    "lon": 8.7672898
+                }
+            ],
+            "id": 51943711,
+            "nodes": [
+                662529467,
+                662529466
+            ],
+            "tags": {
+                "bridge": "yes",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1964532,
+                "maxlon": 8.7432705,
+                "minlat": 50.1937575,
+                "minlon": 8.7420318
+            },
+            "geometry": [
+                {
+                    "lat": 50.1964532,
+                    "lon": 8.7432705
+                },
+                {
+                    "lat": 50.1945539,
+                    "lon": 8.7424085
+                },
+                {
+                    "lat": 50.1937575,
+                    "lon": 8.7420318
+                }
+            ],
+            "id": 110017109,
+            "nodes": [
+                1257927298,
+                1257927348,
+                1257927295
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1931545,
+                "maxlon": 8.7415136,
+                "minlat": 50.1855214,
+                "minlon": 8.7379823
+            },
+            "geometry": [
+                {
+                    "lat": 50.1931545,
+                    "lon": 8.7415136
+                },
+                {
+                    "lat": 50.1928095,
+                    "lon": 8.7412942
+                },
+                {
+                    "lat": 50.1925553,
+                    "lon": 8.7411519
+                },
+                {
+                    "lat": 50.1919041,
+                    "lon": 8.7408267
+                },
+                {
+                    "lat": 50.1905789,
+                    "lon": 8.7401604
+                },
+                {
+                    "lat": 50.1898729,
+                    "lon": 8.739817
+                },
+                {
+                    "lat": 50.1886855,
+                    "lon": 8.7392803
+                },
+                {
+                    "lat": 50.1874686,
+                    "lon": 8.7387279
+                },
+                {
+                    "lat": 50.1868733,
+                    "lon": 8.738457
+                },
+                {
+                    "lat": 50.1865751,
+                    "lon": 8.7383337
+                },
+                {
+                    "lat": 50.1863515,
+                    "lon": 8.7382593
+                },
+                {
+                    "lat": 50.1860685,
+                    "lon": 8.7381797
+                },
+                {
+                    "lat": 50.1857172,
+                    "lon": 8.738035
+                },
+                {
+                    "lat": 50.1855214,
+                    "lon": 8.7379823
+                }
+            ],
+            "id": 110017110,
+            "nodes": [
+                1257927414,
+                1472253480,
+                1257927349,
+                1257927283,
+                1257927326,
+                1257934123,
+                1257934086,
+                1257934112,
+                1257934165,
+                1472253409,
+                1257934131,
+                1257934094,
+                1472253322,
+                1257934102
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2212419,
+                "maxlon": 8.7556268,
+                "minlat": 50.210412,
+                "minlon": 8.7535587
+            },
+            "geometry": [
+                {
+                    "lat": 50.2212419,
+                    "lon": 8.7549372
+                },
+                {
+                    "lat": 50.2187652,
+                    "lon": 8.7552841
+                },
+                {
+                    "lat": 50.2160923,
+                    "lon": 8.7556028
+                },
+                {
+                    "lat": 50.2154523,
+                    "lon": 8.7556268
+                },
+                {
+                    "lat": 50.2148091,
+                    "lon": 8.7556076
+                },
+                {
+                    "lat": 50.2143253,
+                    "lon": 8.755562
+                },
+                {
+                    "lat": 50.2137634,
+                    "lon": 8.7554504
+                },
+                {
+                    "lat": 50.2132386,
+                    "lon": 8.7552925
+                },
+                {
+                    "lat": 50.2128492,
+                    "lon": 8.7551423
+                },
+                {
+                    "lat": 50.2124155,
+                    "lon": 8.7549613
+                },
+                {
+                    "lat": 50.2119522,
+                    "lon": 8.754711
+                },
+                {
+                    "lat": 50.2114051,
+                    "lon": 8.7543606
+                },
+                {
+                    "lat": 50.2109023,
+                    "lon": 8.7540024
+                },
+                {
+                    "lat": 50.210412,
+                    "lon": 8.7535587
+                }
+            ],
+            "id": 110017111,
+            "nodes": [
+                1257927250,
+                1257927330,
+                1257927408,
+                1257927273,
+                1257927372,
+                1257927275,
+                1257927378,
+                1257927417,
+                1257927290,
+                1257927396,
+                1257927300,
+                1257927405,
+                1257927267,
+                1257927369
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1917526,
+                "maxlon": 8.7414493,
+                "minlat": 50.1913943,
+                "minlon": 8.7414272
+            },
+            "geometry": [
+                {
+                    "lat": 50.1917526,
+                    "lon": 8.7414493
+                },
+                {
+                    "lat": 50.1913943,
+                    "lon": 8.7414272
+                }
+            ],
+            "id": 110017112,
+            "nodes": [
+                1257927271,
+                1257927351
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1923615,
+                "maxlon": 8.7413372,
+                "minlat": 50.1919135,
+                "minlon": 8.7410941
+            },
+            "geometry": [
+                {
+                    "lat": 50.1923615,
+                    "lon": 8.7413372
+                },
+                {
+                    "lat": 50.1920931,
+                    "lon": 8.7411982
+                },
+                {
+                    "lat": 50.1919135,
+                    "lon": 8.7410941
+                }
+            ],
+            "id": 110017113,
+            "nodes": [
+                1257927409,
+                6204567519,
+                1257927374
+            ],
+            "tags": {
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1917188,
+                "maxlon": 8.7413723,
+                "minlat": 50.1905155,
+                "minlon": 8.7409045
+            },
+            "geometry": [
+                {
+                    "lat": 50.1917188,
+                    "lon": 8.7413723
+                },
+                {
+                    "lat": 50.1913877,
+                    "lon": 8.7412926
+                },
+                {
+                    "lat": 50.1911872,
+                    "lon": 8.7412117
+                },
+                {
+                    "lat": 50.1905155,
+                    "lon": 8.7409045
+                }
+            ],
+            "id": 110017114,
+            "nodes": [
+                1257927337,
+                1257927303,
+                1472253445,
+                1257927406
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1952167,
+                "maxlon": 8.7425127,
+                "minlat": 50.1946003,
+                "minlon": 8.7422897
+            },
+            "geometry": [
+                {
+                    "lat": 50.1946003,
+                    "lon": 8.7422897
+                },
+                {
+                    "lat": 50.1952167,
+                    "lon": 8.7425127
+                }
+            ],
+            "id": 110017115,
+            "nodes": [
+                31027554,
+                1257927328
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "crossover",
+                "source": "Bing;extrapolation",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1921405,
+                "maxlon": 8.7414841,
+                "minlat": 50.1917526,
+                "minlon": 8.7414493
+            },
+            "geometry": [
+                {
+                    "lat": 50.1921405,
+                    "lon": 8.7414841
+                },
+                {
+                    "lat": 50.1917526,
+                    "lon": 8.7414493
+                }
+            ],
+            "id": 110017118,
+            "nodes": [
+                1257927356,
+                1257927271
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2213501,
+                "maxlon": 8.7549372,
+                "minlat": 50.2212419,
+                "minlon": 8.7549217
+            },
+            "geometry": [
+                {
+                    "lat": 50.2213501,
+                    "lon": 8.7549217
+                },
+                {
+                    "lat": 50.2212419,
+                    "lon": 8.7549372
+                }
+            ],
+            "id": 110017121,
+            "nodes": [
+                1257927357,
+                1257927250
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1932107,
+                "maxlon": 8.7417268,
+                "minlat": 50.1923615,
+                "minlon": 8.7413372
+            },
+            "geometry": [
+                {
+                    "lat": 50.1932107,
+                    "lon": 8.7417268
+                },
+                {
+                    "lat": 50.1923615,
+                    "lon": 8.7413372
+                }
+            ],
+            "id": 110017122,
+            "nodes": [
+                1257927251,
+                1257927409
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.210412,
+                "maxlon": 8.7535587,
+                "minlat": 50.2102855,
+                "minlon": 8.7534478
+            },
+            "geometry": [
+                {
+                    "lat": 50.210412,
+                    "lon": 8.7535587
+                },
+                {
+                    "lat": 50.2102855,
+                    "lon": 8.7534478
+                }
+            ],
+            "id": 110017123,
+            "nodes": [
+                1257927369,
+                1257927312
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1913909,
+                "maxlon": 8.7413605,
+                "minlat": 50.1904957,
+                "minlon": 8.7410267
+            },
+            "geometry": [
+                {
+                    "lat": 50.1913909,
+                    "lon": 8.7413605
+                },
+                {
+                    "lat": 50.1910809,
+                    "lon": 8.741282
+                },
+                {
+                    "lat": 50.1904957,
+                    "lon": 8.7410267
+                }
+            ],
+            "id": 110017124,
+            "nodes": [
+                1257927371,
+                1257927287,
+                1257927395
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2071912,
+                "maxlon": 8.7508516,
+                "minlat": 50.1931545,
+                "minlon": 8.7415136
+            },
+            "geometry": [
+                {
+                    "lat": 50.2071912,
+                    "lon": 8.7508516
+                },
+                {
+                    "lat": 50.2064327,
+                    "lon": 8.7502072
+                },
+                {
+                    "lat": 50.2054988,
+                    "lon": 8.7494245
+                },
+                {
+                    "lat": 50.2039992,
+                    "lon": 8.748164
+                },
+                {
+                    "lat": 50.203327,
+                    "lon": 8.747576
+                },
+                {
+                    "lat": 50.2029192,
+                    "lon": 8.7472038
+                },
+                {
+                    "lat": 50.2025233,
+                    "lon": 8.7468253
+                },
+                {
+                    "lat": 50.201772,
+                    "lon": 8.7460943
+                },
+                {
+                    "lat": 50.2013594,
+                    "lon": 8.745719
+                },
+                {
+                    "lat": 50.2010786,
+                    "lon": 8.7454815
+                },
+                {
+                    "lat": 50.2005967,
+                    "lon": 8.745111
+                },
+                {
+                    "lat": 50.2003396,
+                    "lon": 8.7449403
+                },
+                {
+                    "lat": 50.2000552,
+                    "lon": 8.7447639
+                },
+                {
+                    "lat": 50.1995694,
+                    "lon": 8.7444993
+                },
+                {
+                    "lat": 50.199032,
+                    "lon": 8.7442412
+                },
+                {
+                    "lat": 50.198302,
+                    "lon": 8.7439107
+                },
+                {
+                    "lat": 50.196648,
+                    "lon": 8.7431505
+                },
+                {
+                    "lat": 50.1952167,
+                    "lon": 8.7425127
+                },
+                {
+                    "lat": 50.1945998,
+                    "lon": 8.7422225
+                },
+                {
+                    "lat": 50.1940661,
+                    "lon": 8.7419681
+                },
+                {
+                    "lat": 50.1931545,
+                    "lon": 8.7415136
+                }
+            ],
+            "id": 110017125,
+            "nodes": [
+                4977110264,
+                1257927370,
+                1257927313,
+                1257927316,
+                1257927415,
+                1501885567,
+                1257927350,
+                1257927394,
+                1473252134,
+                1257927331,
+                1257927404,
+                1473252125,
+                1257927338,
+                1257927363,
+                1257927311,
+                1473252111,
+                1257927410,
+                1257927328,
+                1257927281,
+                1472253546,
+                1257927414
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1937575,
+                "maxlon": 8.7420318,
+                "minlat": 50.1932781,
+                "minlon": 8.7417554
+            },
+            "geometry": [
+                {
+                    "lat": 50.1937575,
+                    "lon": 8.7420318
+                },
+                {
+                    "lat": 50.1935216,
+                    "lon": 8.7418853
+                },
+                {
+                    "lat": 50.1932781,
+                    "lon": 8.7417554
+                }
+            ],
+            "id": 110017126,
+            "nodes": [
+                1257927295,
+                1472253498,
+                1257927329
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1943723,
+                "maxlon": 8.7421893,
+                "minlat": 50.1938219,
+                "minlon": 8.7419972
+            },
+            "geometry": [
+                {
+                    "lat": 50.1943723,
+                    "lon": 8.7421893
+                },
+                {
+                    "lat": 50.1941053,
+                    "lon": 8.7421085
+                },
+                {
+                    "lat": 50.1938219,
+                    "lon": 8.7419972
+                }
+            ],
+            "id": 110017128,
+            "nodes": [
+                1257927242,
+                6204567517,
+                1257927392
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "crossover",
+                "source": "Bing;extrapolation",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1848757,
+                "maxlon": 8.7376832,
+                "minlat": 50.1836008,
+                "minlon": 8.7371428
+            },
+            "geometry": [
+                {
+                    "lat": 50.1848757,
+                    "lon": 8.7376832
+                },
+                {
+                    "lat": 50.1836008,
+                    "lon": 8.7371428
+                }
+            ],
+            "id": 110018168,
+            "nodes": [
+                1257934088,
+                1257934108
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1813776,
+                "maxlon": 8.736185,
+                "minlat": 50.1809076,
+                "minlon": 8.7359695
+            },
+            "geometry": [
+                {
+                    "lat": 50.1813776,
+                    "lon": 8.736185
+                },
+                {
+                    "lat": 50.1809076,
+                    "lon": 8.7359695
+                }
+            ],
+            "id": 110018172,
+            "nodes": [
+                1257934151,
+                1257934115
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "90",
+                "maxspeed:source": "lf7 [90] am Beginn der Brücke über die Nidda",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1809076,
+                "maxlon": 8.7359695,
+                "minlat": 50.1785792,
+                "minlon": 8.7327346
+            },
+            "geometry": [
+                {
+                    "lat": 50.1809076,
+                    "lon": 8.7359695
+                },
+                {
+                    "lat": 50.1808118,
+                    "lon": 8.7359144
+                },
+                {
+                    "lat": 50.1807317,
+                    "lon": 8.7358641
+                },
+                {
+                    "lat": 50.1805402,
+                    "lon": 8.7357364
+                },
+                {
+                    "lat": 50.1803797,
+                    "lon": 8.7356211
+                },
+                {
+                    "lat": 50.1802218,
+                    "lon": 8.7354693
+                },
+                {
+                    "lat": 50.1800391,
+                    "lon": 8.7352755
+                },
+                {
+                    "lat": 50.1798757,
+                    "lon": 8.7351017
+                },
+                {
+                    "lat": 50.1797371,
+                    "lon": 8.7349073
+                },
+                {
+                    "lat": 50.1795831,
+                    "lon": 8.7346872
+                },
+                {
+                    "lat": 50.1794164,
+                    "lon": 8.73444
+                },
+                {
+                    "lat": 50.1792189,
+                    "lon": 8.7341194
+                },
+                {
+                    "lat": 50.1790484,
+                    "lon": 8.7337682
+                },
+                {
+                    "lat": 50.1789091,
+                    "lon": 8.7334724
+                },
+                {
+                    "lat": 50.1787136,
+                    "lon": 8.7330476
+                },
+                {
+                    "lat": 50.1785792,
+                    "lon": 8.7327346
+                }
+            ],
+            "id": 110018173,
+            "nodes": [
+                1257934115,
+                2820236175,
+                1257934168,
+                1257934134,
+                1477184986,
+                1257934133,
+                1257934097,
+                1477184746,
+                1257934081,
+                1477184472,
+                1477184328,
+                1257934140,
+                1257934110,
+                3880734085,
+                4155284920,
+                1257934125
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "90",
+                "maxspeed:source": "lf7 [90] am Beginn der Brücke über die Nidda",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1857652,
+                "maxlon": 8.7382521,
+                "minlat": 50.185484,
+                "minlon": 8.7380553
+            },
+            "geometry": [
+                {
+                    "lat": 50.1857652,
+                    "lon": 8.7382521
+                },
+                {
+                    "lat": 50.1856087,
+                    "lon": 8.7381412
+                },
+                {
+                    "lat": 50.185484,
+                    "lon": 8.7380553
+                }
+            ],
+            "id": 110018174,
+            "nodes": [
+                1257934147,
+                9897913758,
+                1257934111
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1852439,
+                "maxlon": 8.7378452,
+                "minlat": 50.1848757,
+                "minlon": 8.7376832
+            },
+            "geometry": [
+                {
+                    "lat": 50.1852439,
+                    "lon": 8.7378452
+                },
+                {
+                    "lat": 50.1848757,
+                    "lon": 8.7376832
+                }
+            ],
+            "id": 110018175,
+            "nodes": [
+                1257934158,
+                1257934088
+            ],
+            "tags": {
+                "bridge": "yes",
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "layer": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1905155,
+                "maxlon": 8.7409045,
+                "minlat": 50.1890666,
+                "minlon": 8.7402492
+            },
+            "geometry": [
+                {
+                    "lat": 50.1905155,
+                    "lon": 8.7409045
+                },
+                {
+                    "lat": 50.1895662,
+                    "lon": 8.7404737
+                },
+                {
+                    "lat": 50.1890666,
+                    "lon": 8.7402492
+                }
+            ],
+            "id": 133674455,
+            "nodes": [
+                1257927406,
+                1471311745,
+                2076903434
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1904957,
+                "maxlon": 8.7410267,
+                "minlat": 50.1890457,
+                "minlon": 8.7403754
+            },
+            "geometry": [
+                {
+                    "lat": 50.1904957,
+                    "lon": 8.7410267
+                },
+                {
+                    "lat": 50.1895649,
+                    "lon": 8.7406071
+                },
+                {
+                    "lat": 50.1890457,
+                    "lon": 8.7403754
+                }
+            ],
+            "id": 133674456,
+            "nodes": [
+                1257927395,
+                1471311744,
+                2076903440
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1919135,
+                "maxlon": 8.7410941,
+                "minlat": 50.1909929,
+                "minlon": 8.7405453
+            },
+            "geometry": [
+                {
+                    "lat": 50.1909929,
+                    "lon": 8.7405453
+                },
+                {
+                    "lat": 50.1919135,
+                    "lon": 8.7410941
+                }
+            ],
+            "id": 133764367,
+            "nodes": [
+                1472253442,
+                1257927374
+            ],
+            "tags": {
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1926936,
+                "maxlon": 8.7415541,
+                "minlat": 50.1892835,
+                "minlon": 8.7400819
+            },
+            "geometry": [
+                {
+                    "lat": 50.1926936,
+                    "lon": 8.7415541
+                },
+                {
+                    "lat": 50.1924208,
+                    "lon": 8.7414893
+                },
+                {
+                    "lat": 50.1923674,
+                    "lon": 8.7414698
+                },
+                {
+                    "lat": 50.1922867,
+                    "lon": 8.7414403
+                },
+                {
+                    "lat": 50.192143,
+                    "lon": 8.7413762
+                },
+                {
+                    "lat": 50.191199,
+                    "lon": 8.7409445
+                },
+                {
+                    "lat": 50.1905549,
+                    "lon": 8.7406578
+                },
+                {
+                    "lat": 50.1892835,
+                    "lon": 8.7400819
+                }
+            ],
+            "id": 185940298,
+            "nodes": [
+                1257927358,
+                1257927335,
+                8279499536,
+                1472253462,
+                1472253455,
+                1472253448,
+                1257927259,
+                1257934082
+            ],
+            "tags": {
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding",
+                "source": "landsat"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1923518,
+                "maxlon": 8.7415416,
+                "minlat": 50.1921405,
+                "minlon": 8.7414841
+            },
+            "geometry": [
+                {
+                    "lat": 50.1923518,
+                    "lon": 8.7415416
+                },
+                {
+                    "lat": 50.1921405,
+                    "lon": 8.7414841
+                }
+            ],
+            "id": 185940299,
+            "nodes": [
+                1257927240,
+                1257927356
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1863613,
+                "maxlon": 8.7386126,
+                "minlat": 50.1859349,
+                "minlon": 8.7383562
+            },
+            "geometry": [
+                {
+                    "lat": 50.1863613,
+                    "lon": 8.7386126
+                },
+                {
+                    "lat": 50.1860714,
+                    "lon": 8.7384367
+                },
+                {
+                    "lat": 50.1859349,
+                    "lon": 8.7383562
+                }
+            ],
+            "id": 185940300,
+            "nodes": [
+                1257934126,
+                1257934095,
+                1257934090
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1932107,
+                "maxlon": 8.7417268,
+                "minlat": 50.1863613,
+                "minlon": 8.7386126
+            },
+            "geometry": [
+                {
+                    "lat": 50.1932107,
+                    "lon": 8.7417268
+                },
+                {
+                    "lat": 50.1929735,
+                    "lon": 8.7416366
+                },
+                {
+                    "lat": 50.1926936,
+                    "lon": 8.7415541
+                },
+                {
+                    "lat": 50.1923736,
+                    "lon": 8.7414088
+                },
+                {
+                    "lat": 50.19161,
+                    "lon": 8.741062
+                },
+                {
+                    "lat": 50.190563,
+                    "lon": 8.7405879
+                },
+                {
+                    "lat": 50.1885137,
+                    "lon": 8.7396583
+                },
+                {
+                    "lat": 50.186912,
+                    "lon": 8.738932
+                },
+                {
+                    "lat": 50.1867692,
+                    "lon": 8.7388568
+                },
+                {
+                    "lat": 50.1865657,
+                    "lon": 8.7387238
+                },
+                {
+                    "lat": 50.1863613,
+                    "lon": 8.7386126
+                }
+            ],
+            "id": 185940301,
+            "nodes": [
+                1257927251,
+                6204567518,
+                1257927358,
+                8279499537,
+                1472253452,
+                1257927362,
+                1257934104,
+                6204567520,
+                1257934148,
+                6204567521,
+                1257934126
+            ],
+            "tags": {
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding",
+                "source": "Bing;extrapolation;landsat"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1855214,
+                "maxlon": 8.7379823,
+                "minlat": 50.1852439,
+                "minlon": 8.7378452
+            },
+            "geometry": [
+                {
+                    "lat": 50.1855214,
+                    "lon": 8.7379823
+                },
+                {
+                    "lat": 50.1852439,
+                    "lon": 8.7378452
+                }
+            ],
+            "id": 185940302,
+            "nodes": [
+                1257934102,
+                1257934158
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1897999,
+                "maxlon": 8.7401088,
+                "minlat": 50.1894779,
+                "minlon": 8.7399603
+            },
+            "geometry": [
+                {
+                    "lat": 50.1897999,
+                    "lon": 8.7401088
+                },
+                {
+                    "lat": 50.1894779,
+                    "lon": 8.7399603
+                }
+            ],
+            "id": 185940305,
+            "nodes": [
+                1257934163,
+                1257934107
+            ],
+            "tags": {
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1917526,
+                "maxlon": 8.7414493,
+                "minlat": 50.1913909,
+                "minlon": 8.7413605
+            },
+            "geometry": [
+                {
+                    "lat": 50.1917526,
+                    "lon": 8.7414493
+                },
+                {
+                    "lat": 50.1913909,
+                    "lon": 8.7413605
+                }
+            ],
+            "id": 185940307,
+            "nodes": [
+                1257927271,
+                1257927371
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1913909,
+                "maxlon": 8.7413605,
+                "minlat": 50.1905066,
+                "minlon": 8.7409691
+            },
+            "geometry": [
+                {
+                    "lat": 50.1913909,
+                    "lon": 8.7413605
+                },
+                {
+                    "lat": 50.1905066,
+                    "lon": 8.7409691
+                }
+            ],
+            "id": 185940308,
+            "nodes": [
+                1257927371,
+                1257927314
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1938219,
+                "maxlon": 8.7419972,
+                "minlat": 50.1932781,
+                "minlon": 8.7417554
+            },
+            "geometry": [
+                {
+                    "lat": 50.1938219,
+                    "lon": 8.7419972
+                },
+                {
+                    "lat": 50.1932781,
+                    "lon": 8.7417554
+                }
+            ],
+            "id": 185940309,
+            "nodes": [
+                1257927392,
+                1257927329
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1917188,
+                "maxlon": 8.7413723,
+                "minlat": 50.1905251,
+                "minlon": 8.7408487
+            },
+            "geometry": [
+                {
+                    "lat": 50.1917188,
+                    "lon": 8.7413723
+                },
+                {
+                    "lat": 50.1905251,
+                    "lon": 8.7408487
+                }
+            ],
+            "id": 185940310,
+            "nodes": [
+                1257927337,
+                1257927397
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1932781,
+                "maxlon": 8.7417554,
+                "minlat": 50.1932107,
+                "minlon": 8.7417268
+            },
+            "geometry": [
+                {
+                    "lat": 50.1932781,
+                    "lon": 8.7417554
+                },
+                {
+                    "lat": 50.1932107,
+                    "lon": 8.7417268
+                }
+            ],
+            "id": 185940313,
+            "nodes": [
+                1257927329,
+                1257927251
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1859349,
+                "maxlon": 8.7383562,
+                "minlat": 50.1857652,
+                "minlon": 8.7382521
+            },
+            "geometry": [
+                {
+                    "lat": 50.1859349,
+                    "lon": 8.7383562
+                },
+                {
+                    "lat": 50.1857652,
+                    "lon": 8.7382521
+                }
+            ],
+            "id": 185940314,
+            "nodes": [
+                1257934090,
+                1257934147
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "railway": "rail",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1892405,
+                "maxlon": 8.7399219,
+                "minlat": 50.1863613,
+                "minlon": 8.7386126
+            },
+            "geometry": [
+                {
+                    "lat": 50.1892405,
+                    "lon": 8.7399219
+                },
+                {
+                    "lat": 50.1885247,
+                    "lon": 8.7395967
+                },
+                {
+                    "lat": 50.1863613,
+                    "lon": 8.7386126
+                }
+            ],
+            "id": 185940315,
+            "nodes": [
+                1257934129,
+                1257934142,
+                1257934126
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1923615,
+                "maxlon": 8.7413372,
+                "minlat": 50.1892405,
+                "minlon": 8.7399219
+            },
+            "geometry": [
+                {
+                    "lat": 50.1923615,
+                    "lon": 8.7413372
+                },
+                {
+                    "lat": 50.1892405,
+                    "lon": 8.7399219
+                }
+            ],
+            "id": 185940318,
+            "nodes": [
+                1257927409,
+                1257934129
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1921405,
+                "maxlon": 8.7414841,
+                "minlat": 50.1917188,
+                "minlon": 8.7413723
+            },
+            "geometry": [
+                {
+                    "lat": 50.1921405,
+                    "lon": 8.7414841
+                },
+                {
+                    "lat": 50.1919715,
+                    "lon": 8.741436
+                },
+                {
+                    "lat": 50.1917188,
+                    "lon": 8.7413723
+                }
+            ],
+            "id": 185940319,
+            "nodes": [
+                1257927356,
+                1257927297,
+                1257927337
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1919135,
+                "maxlon": 8.7410941,
+                "minlat": 50.1897999,
+                "minlon": 8.7401088
+            },
+            "geometry": [
+                {
+                    "lat": 50.1919135,
+                    "lon": 8.7410941
+                },
+                {
+                    "lat": 50.1915703,
+                    "lon": 8.7409095
+                },
+                {
+                    "lat": 50.1905798,
+                    "lon": 8.7404576
+                },
+                {
+                    "lat": 50.1897999,
+                    "lon": 8.7401088
+                }
+            ],
+            "id": 185940320,
+            "nodes": [
+                1257927374,
+                1257927346,
+                1257927276,
+                1257934163
+            ],
+            "tags": {
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "service": "siding",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1913943,
+                "maxlon": 8.7414272,
+                "minlat": 50.1904848,
+                "minlon": 8.7410915
+            },
+            "geometry": [
+                {
+                    "lat": 50.1913943,
+                    "lon": 8.7414272
+                },
+                {
+                    "lat": 50.1911933,
+                    "lon": 8.7413789
+                },
+                {
+                    "lat": 50.1909604,
+                    "lon": 8.7413071
+                },
+                {
+                    "lat": 50.1904848,
+                    "lon": 8.7410915
+                }
+            ],
+            "id": 185940321,
+            "nodes": [
+                1257927351,
+                1472253446,
+                1257927347,
+                1257927318
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1937575,
+                "maxlon": 8.7420318,
+                "minlat": 50.1923518,
+                "minlon": 8.7415416
+            },
+            "geometry": [
+                {
+                    "lat": 50.1937575,
+                    "lon": 8.7420318
+                },
+                {
+                    "lat": 50.1933372,
+                    "lon": 8.7418473
+                },
+                {
+                    "lat": 50.1932342,
+                    "lon": 8.7418013
+                },
+                {
+                    "lat": 50.1930184,
+                    "lon": 8.7417278
+                },
+                {
+                    "lat": 50.1926798,
+                    "lon": 8.7416293
+                },
+                {
+                    "lat": 50.1923518,
+                    "lon": 8.7415416
+                }
+            ],
+            "id": 185940324,
+            "nodes": [
+                1257927295,
+                1257927278,
+                1472253492,
+                1257927389,
+                1257927327,
+                1257927240
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard",
+                "source": "Bing;extrapolation"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1931545,
+                "maxlon": 8.7415136,
+                "minlat": 50.1855214,
+                "minlon": 8.7379823
+            },
+            "geometry": [
+                {
+                    "lat": 50.1931545,
+                    "lon": 8.7415136
+                },
+                {
+                    "lat": 50.1921255,
+                    "lon": 8.7410069
+                },
+                {
+                    "lat": 50.1917417,
+                    "lon": 8.7408224
+                },
+                {
+                    "lat": 50.1913415,
+                    "lon": 8.7406324
+                },
+                {
+                    "lat": 50.1906062,
+                    "lon": 8.7403033
+                },
+                {
+                    "lat": 50.1886775,
+                    "lon": 8.7394283
+                },
+                {
+                    "lat": 50.188244,
+                    "lon": 8.7392294
+                },
+                {
+                    "lat": 50.1874356,
+                    "lon": 8.7388631
+                },
+                {
+                    "lat": 50.1868448,
+                    "lon": 8.7386058
+                },
+                {
+                    "lat": 50.1857071,
+                    "lon": 8.738097
+                },
+                {
+                    "lat": 50.1855214,
+                    "lon": 8.7379823
+                }
+            ],
+            "id": 185940325,
+            "nodes": [
+                1257927414,
+                1257927315,
+                1472253453,
+                1472253449,
+                1257927237,
+                1257934144,
+                4281849418,
+                1472253415,
+                1257934138,
+                9897789426,
+                1257934102
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.207176,
+                "maxlon": 8.7509014,
+                "minlat": 50.1943723,
+                "minlon": 8.7421893
+            },
+            "geometry": [
+                {
+                    "lat": 50.1943723,
+                    "lon": 8.7421893
+                },
+                {
+                    "lat": 50.1946003,
+                    "lon": 8.7422897
+                },
+                {
+                    "lat": 50.1951127,
+                    "lon": 8.7425259
+                },
+                {
+                    "lat": 50.1966049,
+                    "lon": 8.7432013
+                },
+                {
+                    "lat": 50.1973207,
+                    "lon": 8.743527
+                },
+                {
+                    "lat": 50.1982914,
+                    "lon": 8.7439686
+                },
+                {
+                    "lat": 50.199028,
+                    "lon": 8.7443018
+                },
+                {
+                    "lat": 50.1995681,
+                    "lon": 8.744558
+                },
+                {
+                    "lat": 50.200052,
+                    "lon": 8.7448213
+                },
+                {
+                    "lat": 50.2003262,
+                    "lon": 8.7449912
+                },
+                {
+                    "lat": 50.200584,
+                    "lon": 8.745167
+                },
+                {
+                    "lat": 50.2010727,
+                    "lon": 8.7455353
+                },
+                {
+                    "lat": 50.201349,
+                    "lon": 8.7457738
+                },
+                {
+                    "lat": 50.2017528,
+                    "lon": 8.7461475
+                },
+                {
+                    "lat": 50.2025072,
+                    "lon": 8.7468775
+                },
+                {
+                    "lat": 50.2029036,
+                    "lon": 8.7472579
+                },
+                {
+                    "lat": 50.2033075,
+                    "lon": 8.7476241
+                },
+                {
+                    "lat": 50.2039865,
+                    "lon": 8.7482134
+                },
+                {
+                    "lat": 50.2054857,
+                    "lon": 8.749476
+                },
+                {
+                    "lat": 50.2064175,
+                    "lon": 8.750266
+                },
+                {
+                    "lat": 50.207176,
+                    "lon": 8.7509014
+                }
+            ],
+            "id": 185940327,
+            "nodes": [
+                1257927242,
+                31027554,
+                1472413439,
+                1257927343,
+                3131693294,
+                1473252109,
+                791768880,
+                1257927261,
+                31027556,
+                1473252124,
+                1257927253,
+                31027557,
+                1473252133,
+                1257927285,
+                31027558,
+                1501885565,
+                1257927412,
+                1257927376,
+                31027559,
+                1257927269,
+                4977110265
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1943723,
+                "maxlon": 8.7421893,
+                "minlat": 50.1909929,
+                "minlon": 8.7405453
+            },
+            "geometry": [
+                {
+                    "lat": 50.1909929,
+                    "lon": 8.7405453
+                },
+                {
+                    "lat": 50.1915346,
+                    "lon": 8.7407878
+                },
+                {
+                    "lat": 50.1921171,
+                    "lon": 8.7410661
+                },
+                {
+                    "lat": 50.1925396,
+                    "lon": 8.7412794
+                },
+                {
+                    "lat": 50.1940613,
+                    "lon": 8.7420328
+                },
+                {
+                    "lat": 50.1943723,
+                    "lon": 8.7421893
+                }
+            ],
+            "id": 185940328,
+            "nodes": [
+                1472253442,
+                31027553,
+                1257927344,
+                1472253471,
+                1472253545,
+                1257927242
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1973212,
+                "maxlon": 8.7437247,
+                "minlat": 50.1964587,
+                "minlon": 8.743198
+            },
+            "geometry": [
+                {
+                    "lat": 50.1973212,
+                    "lon": 8.7437247
+                },
+                {
+                    "lat": 50.1972428,
+                    "lon": 8.7436565
+                },
+                {
+                    "lat": 50.1971449,
+                    "lon": 8.7435787
+                },
+                {
+                    "lat": 50.1969861,
+                    "lon": 8.7434687
+                },
+                {
+                    "lat": 50.196841,
+                    "lon": 8.7433845
+                },
+                {
+                    "lat": 50.1966182,
+                    "lon": 8.7432676
+                },
+                {
+                    "lat": 50.1964587,
+                    "lon": 8.743198
+                }
+            ],
+            "id": 186229662,
+            "nodes": [
+                1473489141,
+                791768877,
+                1473489137,
+                1257927413,
+                1473489109,
+                31027555,
+                6204567489
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "maxspeed:source": "Geschwindigkeitssignal (lf7 \"8\") im Nordkopf des Bahnhofs Bad Vilbel",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1904848,
+                "maxlon": 8.7410915,
+                "minlat": 50.1892342,
+                "minlon": 8.7405221
+            },
+            "geometry": [
+                {
+                    "lat": 50.1892342,
+                    "lon": 8.7405221
+                },
+                {
+                    "lat": 50.1895635,
+                    "lon": 8.74067
+                },
+                {
+                    "lat": 50.1904848,
+                    "lon": 8.7410915
+                }
+            ],
+            "id": 197448636,
+            "nodes": [
+                1471311728,
+                1471311743,
+                1257927318
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1905251,
+                "maxlon": 8.7408487,
+                "minlat": 50.1892477,
+                "minlon": 8.7402712
+            },
+            "geometry": [
+                {
+                    "lat": 50.1892477,
+                    "lon": 8.7402712
+                },
+                {
+                    "lat": 50.1895669,
+                    "lon": 8.740412
+                },
+                {
+                    "lat": 50.1905251,
+                    "lon": 8.7408487
+                }
+            ],
+            "id": 197448637,
+            "nodes": [
+                2076903435,
+                1471311746,
+                1257927397
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1905066,
+                "maxlon": 8.7409691,
+                "minlat": 50.1890569,
+                "minlon": 8.7403143
+            },
+            "geometry": [
+                {
+                    "lat": 50.1890569,
+                    "lon": 8.7403143
+                },
+                {
+                    "lat": 50.1895671,
+                    "lon": 8.7405416
+                },
+                {
+                    "lat": 50.1905066,
+                    "lon": 8.7409691
+                }
+            ],
+            "id": 197448638,
+            "nodes": [
+                2076903441,
+                1471311748,
+                1257927314
+            ],
+            "tags": {
+                "gauge": "1435",
+                "railway": "rail",
+                "service": "yard"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1785792,
+                "maxlon": 8.7327346,
+                "minlat": 50.1775224,
+                "minlon": 8.7273933
+            },
+            "geometry": [
+                {
+                    "lat": 50.1785792,
+                    "lon": 8.7327346
+                },
+                {
+                    "lat": 50.1784339,
+                    "lon": 8.7323948
+                },
+                {
+                    "lat": 50.1782892,
+                    "lon": 8.7320635
+                },
+                {
+                    "lat": 50.178211,
+                    "lon": 8.7318518
+                },
+                {
+                    "lat": 50.1781127,
+                    "lon": 8.7315839
+                },
+                {
+                    "lat": 50.1780002,
+                    "lon": 8.7312395
+                },
+                {
+                    "lat": 50.1779,
+                    "lon": 8.7309143
+                },
+                {
+                    "lat": 50.1778141,
+                    "lon": 8.7306005
+                },
+                {
+                    "lat": 50.1777272,
+                    "lon": 8.7302368
+                },
+                {
+                    "lat": 50.1776584,
+                    "lon": 8.7298813
+                },
+                {
+                    "lat": 50.177598,
+                    "lon": 8.7295063
+                },
+                {
+                    "lat": 50.1775629,
+                    "lon": 8.7291868
+                },
+                {
+                    "lat": 50.1775391,
+                    "lon": 8.7288898
+                },
+                {
+                    "lat": 50.1775224,
+                    "lon": 8.7284348
+                },
+                {
+                    "lat": 50.1775269,
+                    "lon": 8.7279373
+                },
+                {
+                    "lat": 50.1775496,
+                    "lon": 8.7273933
+                }
+            ],
+            "id": 277519178,
+            "nodes": [
+                1257934125,
+                1257934164,
+                1257934130,
+                4155284915,
+                1257934092,
+                1489164325,
+                1489164298,
+                1257934152,
+                1489164261,
+                1257934117,
+                1489164242,
+                1489164237,
+                1257934169,
+                1489164228,
+                1257934099,
+                1257934101
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "90",
+                "name": "Main-Weser-Bahn",
+                "note": "gesamte Strecke Frankfurt West–Bad Vilbel vmax 90 mit Lf 7 wegen Bauarbeiten",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1789181,
+                "maxlon": 8.7273933,
+                "minlat": 50.1775496,
+                "minlon": 8.7078623
+            },
+            "geometry": [
+                {
+                    "lat": 50.1775496,
+                    "lon": 8.7273933
+                },
+                {
+                    "lat": 50.1776,
+                    "lon": 8.7266064
+                },
+                {
+                    "lat": 50.1777767,
+                    "lon": 8.7239899
+                },
+                {
+                    "lat": 50.1780006,
+                    "lon": 8.7207796
+                },
+                {
+                    "lat": 50.1783932,
+                    "lon": 8.7153293
+                },
+                {
+                    "lat": 50.178611,
+                    "lon": 8.7123147
+                },
+                {
+                    "lat": 50.1787317,
+                    "lon": 8.7104355
+                },
+                {
+                    "lat": 50.1788532,
+                    "lon": 8.7087273
+                },
+                {
+                    "lat": 50.1789181,
+                    "lon": 8.7078623
+                }
+            ],
+            "id": 277519182,
+            "nodes": [
+                1257934101,
+                1257934157,
+                9885434950,
+                9885434947,
+                1257934122,
+                9885434938,
+                9885434932,
+                1257934085,
+                1257934143
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "90",
+                "name": "Main-Weser-Bahn",
+                "note": "gesamte Strecke Frankfurt West–Bad Vilbel vmax 90 mit Lf 7 wegen Bauarbeiten",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1929356,
+                "maxlon": 8.7782208,
+                "minlat": 50.1912479,
+                "minlon": 8.7674673
+            },
+            "geometry": [
+                {
+                    "lat": 50.1912479,
+                    "lon": 8.7782208
+                },
+                {
+                    "lat": 50.1912755,
+                    "lon": 8.7778113
+                },
+                {
+                    "lat": 50.1913073,
+                    "lon": 8.7774098
+                },
+                {
+                    "lat": 50.1913517,
+                    "lon": 8.7769629
+                },
+                {
+                    "lat": 50.1914088,
+                    "lon": 8.7765233
+                },
+                {
+                    "lat": 50.1914821,
+                    "lon": 8.7760592
+                },
+                {
+                    "lat": 50.1915553,
+                    "lon": 8.775598
+                },
+                {
+                    "lat": 50.1917537,
+                    "lon": 8.7744037
+                },
+                {
+                    "lat": 50.1926661,
+                    "lon": 8.7689125
+                },
+                {
+                    "lat": 50.1928049,
+                    "lon": 8.7680772
+                },
+                {
+                    "lat": 50.1928764,
+                    "lon": 8.7677055
+                },
+                {
+                    "lat": 50.1929356,
+                    "lon": 8.7674673
+                }
+            ],
+            "id": 285539758,
+            "nodes": [
+                36311004,
+                1469670564,
+                1469670568,
+                791768905,
+                1469670577,
+                791768927,
+                36311005,
+                8279499533,
+                8279499534,
+                36311007,
+                36805290,
+                662529467
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1789192,
+                "maxlon": 8.7273859,
+                "minlat": 50.1765595,
+                "minlon": 8.6976954
+            },
+            "geometry": [
+                {
+                    "lat": 50.1765595,
+                    "lon": 8.6976954
+                },
+                {
+                    "lat": 50.1768363,
+                    "lon": 8.6981381
+                },
+                {
+                    "lat": 50.1770245,
+                    "lon": 8.6984848
+                },
+                {
+                    "lat": 50.1771975,
+                    "lon": 8.6988344
+                },
+                {
+                    "lat": 50.1774041,
+                    "lon": 8.6992619
+                },
+                {
+                    "lat": 50.1776051,
+                    "lon": 8.6996941
+                },
+                {
+                    "lat": 50.1779391,
+                    "lon": 8.7005277
+                },
+                {
+                    "lat": 50.1781382,
+                    "lon": 8.7011195
+                },
+                {
+                    "lat": 50.1783477,
+                    "lon": 8.7018348
+                },
+                {
+                    "lat": 50.1785523,
+                    "lon": 8.7027076
+                },
+                {
+                    "lat": 50.1787315,
+                    "lon": 8.7037949
+                },
+                {
+                    "lat": 50.1788249,
+                    "lon": 8.7045252
+                },
+                {
+                    "lat": 50.1788897,
+                    "lon": 8.7053551
+                },
+                {
+                    "lat": 50.1789192,
+                    "lon": 8.7061765
+                },
+                {
+                    "lat": 50.1789183,
+                    "lon": 8.7070236
+                },
+                {
+                    "lat": 50.1788726,
+                    "lon": 8.7078518
+                },
+                {
+                    "lat": 50.1788176,
+                    "lon": 8.7086363
+                },
+                {
+                    "lat": 50.1786899,
+                    "lon": 8.7103785
+                },
+                {
+                    "lat": 50.1785602,
+                    "lon": 8.7123094
+                },
+                {
+                    "lat": 50.1783468,
+                    "lon": 8.7153365
+                },
+                {
+                    "lat": 50.1779518,
+                    "lon": 8.7207747
+                },
+                {
+                    "lat": 50.1777272,
+                    "lon": 8.7239774
+                },
+                {
+                    "lat": 50.1775496,
+                    "lon": 8.7265981
+                },
+                {
+                    "lat": 50.1774991,
+                    "lon": 8.7273859
+                }
+            ],
+            "id": 289656553,
+            "nodes": [
+                30083874,
+                1129676167,
+                30083876,
+                1129676303,
+                1129676493,
+                30083878,
+                1257934156,
+                31027535,
+                1257934154,
+                31027536,
+                1257934132,
+                31027537,
+                1257934091,
+                31027538,
+                1257934128,
+                31027539,
+                31027540,
+                9885434933,
+                2380565455,
+                31027541,
+                3130993012,
+                9885434951,
+                31027542,
+                1257934135
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "90",
+                "name": "Main-Weser-Bahn",
+                "note": "gesamte Strecke Frankfurt West–Bad Vilbel vmax 90 mit Lf 7 wegen Bauarbeiten",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1808965,
+                "maxlon": 8.7360297,
+                "minlat": 50.1774746,
+                "minlon": 8.7273859
+            },
+            "geometry": [
+                {
+                    "lat": 50.1774991,
+                    "lon": 8.7273859
+                },
+                {
+                    "lat": 50.1774773,
+                    "lon": 8.7279423
+                },
+                {
+                    "lat": 50.1774746,
+                    "lon": 8.7282873
+                },
+                {
+                    "lat": 50.1774853,
+                    "lon": 8.7287595
+                },
+                {
+                    "lat": 50.177512,
+                    "lon": 8.7291931
+                },
+                {
+                    "lat": 50.1775545,
+                    "lon": 8.7295773
+                },
+                {
+                    "lat": 50.1776117,
+                    "lon": 8.7299189
+                },
+                {
+                    "lat": 50.1776954,
+                    "lon": 8.7303366
+                },
+                {
+                    "lat": 50.1777745,
+                    "lon": 8.7306647
+                },
+                {
+                    "lat": 50.1778577,
+                    "lon": 8.7309681
+                },
+                {
+                    "lat": 50.1779586,
+                    "lon": 8.7313047
+                },
+                {
+                    "lat": 50.1780859,
+                    "lon": 8.7316836
+                },
+                {
+                    "lat": 50.1781852,
+                    "lon": 8.731955
+                },
+                {
+                    "lat": 50.1783026,
+                    "lon": 8.7322462
+                },
+                {
+                    "lat": 50.1784417,
+                    "lon": 8.7325837
+                },
+                {
+                    "lat": 50.1785497,
+                    "lon": 8.7328433
+                },
+                {
+                    "lat": 50.1786992,
+                    "lon": 8.733157
+                },
+                {
+                    "lat": 50.1788589,
+                    "lon": 8.7334923
+                },
+                {
+                    "lat": 50.179041,
+                    "lon": 8.7338853
+                },
+                {
+                    "lat": 50.1791744,
+                    "lon": 8.734144
+                },
+                {
+                    "lat": 50.1794061,
+                    "lon": 8.7345241
+                },
+                {
+                    "lat": 50.1795832,
+                    "lon": 8.7347712
+                },
+                {
+                    "lat": 50.1797735,
+                    "lon": 8.735023
+                },
+                {
+                    "lat": 50.1799572,
+                    "lon": 8.7352481
+                },
+                {
+                    "lat": 50.1802122,
+                    "lon": 8.7355553
+                },
+                {
+                    "lat": 50.1803571,
+                    "lon": 8.7356922
+                },
+                {
+                    "lat": 50.1805763,
+                    "lon": 8.735854
+                },
+                {
+                    "lat": 50.1807434,
+                    "lon": 8.7359512
+                },
+                {
+                    "lat": 50.1808965,
+                    "lon": 8.7360297
+                }
+            ],
+            "id": 289656554,
+            "nodes": [
+                1257934135,
+                31027543,
+                1489164222,
+                335944638,
+                1489164225,
+                1489164230,
+                31027544,
+                1489164246,
+                335944639,
+                1489164281,
+                1489164305,
+                31027545,
+                4155284914,
+                1257934146,
+                1257934089,
+                4155284919,
+                31027546,
+                4155284921,
+                34958077,
+                31027547,
+                1477184260,
+                1477184420,
+                1257934155,
+                31027548,
+                1257934167,
+                1257934114,
+                1477185062,
+                3130993014,
+                60321571
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "90",
+                "maxspeed:source": "Geschwindigkeitssignal (lf7 \"9\") am südwestlichen Bogenanfang",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1912352,
+                "maxlon": 8.7804689,
+                "minlat": 50.1912164,
+                "minlon": 8.7796689
+            },
+            "geometry": [
+                {
+                    "lat": 50.1912352,
+                    "lon": 8.7804689
+                },
+                {
+                    "lat": 50.1912285,
+                    "lon": 8.7801959
+                },
+                {
+                    "lat": 50.1912164,
+                    "lon": 8.7796689
+                }
+            ],
+            "id": 290245711,
+            "nodes": [
+                1469670557,
+                64760440,
+                1469670553
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "30",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1913902,
+                "maxlon": 8.782313,
+                "minlat": 50.1912352,
+                "minlon": 8.7804689
+            },
+            "geometry": [
+                {
+                    "lat": 50.1913902,
+                    "lon": 8.782313
+                },
+                {
+                    "lat": 50.1913494,
+                    "lon": 8.7819291
+                },
+                {
+                    "lat": 50.1913076,
+                    "lon": 8.7814981
+                },
+                {
+                    "lat": 50.1912654,
+                    "lon": 8.7810115
+                },
+                {
+                    "lat": 50.1912352,
+                    "lon": 8.7804689
+                }
+            ],
+            "id": 290245712,
+            "nodes": [
+                791768889,
+                1469670573,
+                1469670566,
+                36311003,
+                1469670557
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.194301,
+                "maxlon": 8.7422202,
+                "minlat": 50.1938219,
+                "minlon": 8.7419972
+            },
+            "geometry": [
+                {
+                    "lat": 50.194301,
+                    "lon": 8.7422202
+                },
+                {
+                    "lat": 50.1938219,
+                    "lon": 8.7419972
+                }
+            ],
+            "id": 307867219,
+            "nodes": [
+                3130993015,
+                1257927392
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "operator": "DB Netz AG",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1836008,
+                "maxlon": 8.7371428,
+                "minlat": 50.1813776,
+                "minlon": 8.736185
+            },
+            "geometry": [
+                {
+                    "lat": 50.1836008,
+                    "lon": 8.7371428
+                },
+                {
+                    "lat": 50.1827612,
+                    "lon": 8.7367802
+                },
+                {
+                    "lat": 50.1813776,
+                    "lon": 8.736185
+                }
+            ],
+            "id": 316685381,
+            "nodes": [
+                1257934108,
+                1257934145,
+                1257934151
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2295556,
+                "maxlon": 8.7549217,
+                "minlat": 50.2213501,
+                "minlon": 8.7537239
+            },
+            "geometry": [
+                {
+                    "lat": 50.2295556,
+                    "lon": 8.7537239
+                },
+                {
+                    "lat": 50.2282095,
+                    "lon": 8.7539026
+                },
+                {
+                    "lat": 50.2275986,
+                    "lon": 8.7539888
+                },
+                {
+                    "lat": 50.2269304,
+                    "lon": 8.7541028
+                },
+                {
+                    "lat": 50.2262091,
+                    "lon": 8.7542322
+                },
+                {
+                    "lat": 50.2254529,
+                    "lon": 8.7543499
+                },
+                {
+                    "lat": 50.2253318,
+                    "lon": 8.7543661
+                },
+                {
+                    "lat": 50.2246598,
+                    "lon": 8.754473
+                },
+                {
+                    "lat": 50.2213501,
+                    "lon": 8.7549217
+                }
+            ],
+            "id": 507025941,
+            "nodes": [
+                1257927243,
+                1257927258,
+                1257927361,
+                1257927305,
+                1257927407,
+                1257927282,
+                1507804805,
+                1257927393,
+                1257927357
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "maxspeed:source": "lf7 [140] nach dem Bahnhof Nieder-Wöllstadt",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2102855,
+                "maxlon": 8.7534478,
+                "minlat": 50.2089439,
+                "minlon": 8.7523402
+            },
+            "geometry": [
+                {
+                    "lat": 50.2102855,
+                    "lon": 8.7534478
+                },
+                {
+                    "lat": 50.2096838,
+                    "lon": 8.7529666
+                },
+                {
+                    "lat": 50.2089439,
+                    "lon": 8.7523402
+                }
+            ],
+            "id": 508402218,
+            "nodes": [
+                1257927312,
+                1257927411,
+                4977110263
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2102724,
+                "maxlon": 8.7535122,
+                "minlat": 50.2089246,
+                "minlon": 8.7523881
+            },
+            "geometry": [
+                {
+                    "lat": 50.2089246,
+                    "lon": 8.7523881
+                },
+                {
+                    "lat": 50.2096626,
+                    "lon": 8.7530219
+                },
+                {
+                    "lat": 50.2101531,
+                    "lon": 8.7534163
+                },
+                {
+                    "lat": 50.2102724,
+                    "lon": 8.7535122
+                }
+            ],
+            "id": 508402220,
+            "nodes": [
+                4977110262,
+                31027560,
+                3131693295,
+                308751841
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2089439,
+                "maxlon": 8.7523402,
+                "minlat": 50.2071912,
+                "minlon": 8.7508516
+            },
+            "geometry": [
+                {
+                    "lat": 50.2089439,
+                    "lon": 8.7523402
+                },
+                {
+                    "lat": 50.2081744,
+                    "lon": 8.7516888
+                },
+                {
+                    "lat": 50.2075308,
+                    "lon": 8.7511401
+                },
+                {
+                    "lat": 50.2071912,
+                    "lon": 8.7508516
+                }
+            ],
+            "id": 508402221,
+            "nodes": [
+                4977110263,
+                1507712440,
+                1257927340,
+                4977110264
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "level": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.2089246,
+                "maxlon": 8.7523881,
+                "minlat": 50.207176,
+                "minlon": 8.7509014
+            },
+            "geometry": [
+                {
+                    "lat": 50.207176,
+                    "lon": 8.7509014
+                },
+                {
+                    "lat": 50.2075261,
+                    "lon": 8.7511947
+                },
+                {
+                    "lat": 50.2081618,
+                    "lon": 8.751733
+                },
+                {
+                    "lat": 50.2089246,
+                    "lon": 8.7523881
+                }
+            ],
+            "id": 508402222,
+            "nodes": [
+                4977110265,
+                31466906,
+                1507712439,
+                4977110262
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "level": "1",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1915597,
+                "maxlon": 8.7833324,
+                "minlat": 50.1913902,
+                "minlon": 8.782313
+            },
+            "geometry": [
+                {
+                    "lat": 50.1915597,
+                    "lon": 8.7833324
+                },
+                {
+                    "lat": 50.1914985,
+                    "lon": 8.7830181
+                },
+                {
+                    "lat": 50.1914282,
+                    "lon": 8.782585
+                },
+                {
+                    "lat": 50.1913902,
+                    "lon": 8.782313
+                }
+            ],
+            "id": 528460944,
+            "nodes": [
+                6204567501,
+                1469670590,
+                1469670581,
+                791768889
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1918421,
+                "maxlon": 8.7845646,
+                "minlat": 50.1915597,
+                "minlon": 8.7833324
+            },
+            "geometry": [
+                {
+                    "lat": 50.1918421,
+                    "lon": 8.7845646
+                },
+                {
+                    "lat": 50.1917182,
+                    "lon": 8.7841075
+                },
+                {
+                    "lat": 50.1916166,
+                    "lon": 8.7836248
+                },
+                {
+                    "lat": 50.1915597,
+                    "lon": 8.7833324
+                }
+            ],
+            "id": 528460948,
+            "nodes": [
+                1469670602,
+                304184706,
+                1469670593,
+                6204567501
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1964587,
+                "maxlon": 8.743198,
+                "minlat": 50.194301,
+                "minlon": 8.7422202
+            },
+            "geometry": [
+                {
+                    "lat": 50.1964587,
+                    "lon": 8.743198
+                },
+                {
+                    "lat": 50.1964122,
+                    "lon": 8.7431777
+                },
+                {
+                    "lat": 50.1955156,
+                    "lon": 8.7427863
+                },
+                {
+                    "lat": 50.1951242,
+                    "lon": 8.7426066
+                },
+                {
+                    "lat": 50.194301,
+                    "lon": 8.7422202
+                }
+            ],
+            "id": 662771495,
+            "nodes": [
+                6204567489,
+                6204567488,
+                4530644105,
+                4530644106,
+                3130993015
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "maxspeed:source": "Geschwindigkeitssignal (lf7 \"8\") im Nordkopf des Bahnhofs Bad Vilbel",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "usage": "branch",
+                "voltage": "15000"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.1912479,
+                "maxlon": 8.7796689,
+                "minlat": 50.1912098,
+                "minlon": 8.7782208
+            },
+            "geometry": [
+                {
+                    "lat": 50.1912164,
+                    "lon": 8.7796689
+                },
+                {
+                    "lat": 50.1912098,
+                    "lon": 8.7792817
+                },
+                {
+                    "lat": 50.1912172,
+                    "lon": 8.7789226
+                },
+                {
+                    "lat": 50.1912327,
+                    "lon": 8.7785396
+                },
+                {
+                    "lat": 50.1912346,
+                    "lon": 8.7784844
+                },
+                {
+                    "lat": 50.1912406,
+                    "lon": 8.7783646
+                },
+                {
+                    "lat": 50.1912479,
+                    "lon": 8.7782208
+                }
+            ],
+            "id": 890832819,
+            "nodes": [
+                1469670553,
+                36804996,
+                1469670555,
+                64760460,
+                3647599727,
+                8279499532,
+                36311004
+            ],
+            "tags": {
+                "electrified": "no",
+                "gauge": "1435",
+                "maxspeed": "80",
+                "operator": "DB Netz AG",
+                "passenger_lines": "1",
+                "proposed:electrified": "contact_line",
+                "proposed:frequency": "16.7",
+                "proposed:voltage": "15000",
+                "railway": "rail",
+                "railway:preferred_direction": "both",
+                "railway:pzb": "yes",
+                "ref": "3745",
+                "source": "landsat",
+                "usage": "branch"
+            },
+            "type": "way"
+        },
+        {
+            "bounds": {
+                "maxlat": 50.185484,
+                "maxlon": 8.7380553,
+                "minlat": 50.1852333,
+                "minlon": 8.7379133
+            },
+            "geometry": [
+                {
+                    "lat": 50.1852333,
+                    "lon": 8.7379133
+                },
+                {
+                    "lat": 50.185386,
+                    "lon": 8.7379926
+                },
+                {
+                    "lat": 50.185484,
+                    "lon": 8.7380553
+                }
+            ],
+            "id": 1079816837,
+            "nodes": [
+                9897913757,
+                9897913760,
+                1257934111
+            ],
+            "tags": {
+                "electrified": "contact_line",
+                "frequency": "16.7",
+                "gauge": "1435",
+                "maxspeed": "140",
+                "name": "Main-Weser-Bahn",
+                "operator": "DB Netz AG",
+                "passenger_lines": "2",
+                "railway": "rail",
+                "railway:pzb": "yes",
+                "ref": "3900",
+                "usage": "main",
+                "voltage": "15000",
+                "workrules": "DE:EBO"
+            },
+            "type": "way"
+        }
+    ],
+    "generator": "Overpass API 0.7.59.5 b201bb38",
+    "osm3s": {
+        "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+        "timestamp_areas_base": "2023-04-08T13:19:08Z",
+        "timestamp_osm_base": "2023-04-08T14:51:24Z"
+    },
+    "version": 0.6
+}

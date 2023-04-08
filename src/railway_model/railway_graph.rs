@@ -115,69 +115,96 @@ impl RailwayGraph {
         let mut node_indices = HashMap::new();
 
         let nodes = create_nodes(elements);
-        for node in nodes {
+        for node in &nodes {
             let node_index = graph.add_node(node.clone());
             node_indices.insert(node.id, node_index);
         }
+
+        assert_eq!(nodes.len(), node_indices.len());
 
         for element in elements.iter() {
             if let ElementType::Way = element.element_type {
                 if let (Some(nodes_ids), Some(geometry)) = (&element.nodes, &element.geometry) {
                     let length = calculate_geometry_length(geometry);
 
-                    for i in 0..(nodes_ids.len() - 1) {
-                        let node_id = nodes_ids[i];
-                        let next_node_id = nodes_ids[i + 1];
+                    let (node_id, node_index) =
+                        find_next_existing_node(None, nodes_ids, &node_indices);
+                    let (next_node_id, next_node_index) =
+                        find_next_existing_node(node_id, nodes_ids, &node_indices);
 
-                        if let (Some(&node_index), Some(&next_node_index)) =
-                            (node_indices.get(&node_id), node_indices.get(&next_node_id))
-                        {
-                            graph.add_edge(
-                                node_index,
-                                next_node_index,
-                                RailwayEdge {
-                                    id: element.id,
-                                    length,
-                                },
-                            );
-                        }
+                    println!("{:?}, {:?}, {:?}", &node_id, next_node_id, nodes_ids);
+
+                    if let (Some(node_index), Some(next_node_index)) = (node_index, next_node_index)
+                    {
+                        assert_ne!(node_index, next_node_index);
+                        graph.add_edge(
+                            node_index,
+                            next_node_index,
+                            RailwayEdge {
+                                id: element.id,
+                                length,
+                            },
+                        );
                     }
                 }
             }
         }
-
-        let connections = find_connected_elements(elements);
-        for (source_id, target_id) in connections {
-            if let (Some(source_index), Some(target_index)) =
-                (node_indices.get(&source_id), node_indices.get(&target_id))
-            {
-                let source_node = &graph[*source_index];
-                let target_node = &graph[*target_index];
-                let distance = calculate_distance(
-                    source_node.lat,
-                    source_node.lon,
-                    target_node.lat,
-                    target_node.lon,
-                );
-
-                graph.add_edge(
-                    *source_index,
-                    *target_index,
-                    RailwayEdge {
-                        id: 0,
-                        length: distance,
-                    },
-                );
-            } else {
-                println!("{} not found", source_id);
-            }
-        }
-
         RailwayGraph {
             graph,
             node_indices,
         }
     }
+}
+
+/// Find the next existing node ID and its index in the `node_indices` HashMap after the given `start` ID.
+///
+/// This function searches the `node_ids` slice for the next existing node ID after the specified `start` ID.
+/// If the next existing node ID is found, it returns a tuple `(Some(id), Some(index))`, where `id` is the found
+/// node ID, and `index` is its index in the `node_indices` HashMap. If no existing node ID is found,
+/// it returns `(None, None)`.
+///
+/// # Arguments
+///
+/// * `start` - An optional starting node ID to search from.
+/// * `node_ids` - A reference to the slice containing the node IDs.
+/// * `node_indices` - A reference to the HashMap containing the node indices.
+///
+/// # Returns
+///
+/// A tuple `(Option<i64>, Option<i64>)` containing the next existing node ID and its index if found, or `(None, None)` otherwise.
+///
+/// # Example
+///
+/// ```
+/// use std::collections::HashMap;
+/// use petgraph::stable_graph::NodeIndex;
+/// use openrailwaymap_exporter::railway_graph::find_next_existing_node;
+///
+/// let node_ids = vec![1, 3, 5];
+/// let mut node_indices = HashMap::new();
+/// node_indices.insert(1, NodeIndex::new(0));
+/// node_indices.insert(3, NodeIndex::new(1));
+/// node_indices.insert(5, NodeIndex::new(2));
+///
+/// assert_eq!(find_next_existing_node(Some(1), &node_ids, &node_indices), (Some(3), Some(NodeIndex::new(1))));
+/// assert_eq!(find_next_existing_node(Some(3), &node_ids, &node_indices), (Some(5), Some(NodeIndex::new(2))));
+/// assert_eq!(find_next_existing_node(Some(5), &node_ids, &node_indices), (None, None));
+/// assert_eq!(find_next_existing_node(None, &node_ids, &node_indices), (Some(1), Some(NodeIndex::new(0))));
+/// ```
+pub fn find_next_existing_node(
+    start: Option<i64>,
+    node_ids: &[i64],
+    node_indices: &HashMap<i64, NodeIndex>,
+) -> (Option<i64>, Option<NodeIndex>) {
+    let start_id = start.unwrap_or(i64::MIN);
+    for &id in node_ids.iter() {
+        if id > start_id {
+            if let Some(index) = node_indices.get(&id) {
+                return (Some(id), Some(*index));
+            }
+        }
+    }
+    (None, None)
 }
 
 fn find_connected_elements(elements: &[RailwayElement]) -> Vec<(i64, i64)> {
@@ -371,5 +398,31 @@ mod tests {
         let node_3 = &railway_graph.graph[*node_index_3];
         assert_eq!(node_3.lat, 0.0);
         assert_eq!(node_3.lon, 3.0);
+    }
+
+    #[test]
+    fn test_find_next_existing_node() {
+        let node_ids = vec![1, 3, 5];
+        let mut node_indices = HashMap::new();
+        node_indices.insert(1, NodeIndex::new(0));
+        node_indices.insert(3, NodeIndex::new(1));
+        node_indices.insert(5, NodeIndex::new(2));
+
+        assert_eq!(
+            find_next_existing_node(Some(1), &node_ids, &node_indices),
+            (Some(3), Some(NodeIndex::new(1)))
+        );
+        assert_eq!(
+            find_next_existing_node(Some(3), &node_ids, &node_indices),
+            (Some(5), Some(NodeIndex::new(2)))
+        );
+        assert_eq!(
+            find_next_existing_node(Some(5), &node_ids, &node_indices),
+            (None, None)
+        );
+        assert_eq!(
+            find_next_existing_node(None, &node_ids, &node_indices),
+            (Some(1), Some(NodeIndex::new(0)))
+        );
     }
 }
