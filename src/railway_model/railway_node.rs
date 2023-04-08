@@ -14,8 +14,11 @@
 /// ```
 #[derive(Debug, Clone, PartialEq)]
 pub struct RailwayNode {
+    /// The unique identifier of the railway node.
     pub id: i64,
+    /// The latitude coordinate of the railway node.
     pub lat: f64,
+    /// The longitude coordinate of the railway node.
     pub lon: f64,
 }
 

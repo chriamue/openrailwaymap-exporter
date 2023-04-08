@@ -10,7 +10,16 @@ use std::collections::HashMap;
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum ElementType {
+    /// Represents a `Way` element in the railway network.
+    ///
+    /// A `Way` element is a linear feature, such as a railway track or a route.
+    /// It consists of an ordered list of nodes that define the geometry of the way.
     Way,
+
+    /// Represents a `Node` element in the railway network.
+    ///
+    /// A `Node` element is a point feature, such as a railway station or a junction.
+    /// It is defined by its latitude and longitude coordinates.
     Node,
 }
 
@@ -30,13 +39,20 @@ pub enum ElementType {
 /// ```
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct RailwayElement {
+    /// The unique identifier of the railway element.
     pub id: i64,
+    /// Optional key-value pairs associated with the railway element.
     pub tags: Option<HashMap<String, String>>,
+    /// The type of the railway element, either `Way` or `Node`.
     #[serde(rename = "type")]
     pub element_type: ElementType,
+    /// An optional ordered list of node IDs that define the geometry of a `Way` element.
     pub nodes: Option<Vec<i64>>,
+    /// An optional list of coordinates that represent the geometry of a `Way` element.
     pub geometry: Option<Vec<Coordinate>>,
+    /// The latitude coordinate of a `Node` element.
     pub lat: Option<f64>,
+    /// The longitude coordinate of a `Node` element.
     pub lon: Option<f64>,
 }
 
@@ -91,6 +107,52 @@ impl RailwayElement {
             ..Default::default()
         }
     }
+}
+
+/// Counts the number of `Way` elements in a vector of `RailwayElement`s.
+///
+/// This function takes a slice of `RailwayElement`s as input and returns the count of `Way` elements as a `usize`.
+///
+/// # Arguments
+///
+/// * `elements` - A slice of `RailwayElement`s to count the `Way` elements in.
+///
+/// # Example
+///
+/// ```
+/// use openrailwaymap_exporter::{ElementType, RailwayElement};
+/// use openrailwaymap_exporter::count_way_elements;
+/// use std::collections::HashMap;
+///
+/// let elements = vec![
+///     RailwayElement {
+///         id: 1,
+///         element_type: ElementType::Node,
+///         lat: Some(50.1109),
+///         lon: Some(8.6821),
+///         tags: Some(HashMap::new()),
+///         nodes: None,
+///         geometry: None,
+///     },
+///     RailwayElement {
+///         id: 2,
+///         element_type: ElementType::Way,
+///         lat: None,
+///         lon: None,
+///         tags: Some(HashMap::new()),
+///         nodes: Some(vec![1, 3]),
+///         geometry: None,
+///     },
+/// ];
+///
+/// let way_count = count_way_elements(&elements);
+/// assert_eq!(way_count, 1);
+/// ```
+pub fn count_way_elements(elements: &[RailwayElement]) -> usize {
+    elements
+        .iter()
+        .filter(|element| element.element_type == ElementType::Way)
+        .count()
 }
 
 #[cfg(test)]
@@ -165,5 +227,41 @@ mod tests {
         assert_eq!(way_element.id, 2);
         assert_eq!(way_element.element_type, ElementType::Way);
         assert_eq!(way_element.nodes, Some(vec![1, 2, 3]));
+    }
+
+    #[test]
+    fn test_count_way_elements() {
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![1, 3]),
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![3, 5]),
+                geometry: None,
+            },
+        ];
+
+        let way_count = count_way_elements(&elements);
+        assert_eq!(way_count, 2);
     }
 }

@@ -13,7 +13,9 @@
 /// ```
 #[derive(Debug, PartialEq)]
 pub struct RailwayEdge {
+    /// The ID of the edge, typically corresponding to the ID of the underlying `RailwayElement` (e.g., way).
     pub id: i64,
+    /// The length of the railway segment in meters.
     pub length: f64,
 }
 

@@ -15,7 +15,9 @@ use serde::{Deserialize, Serialize};
 /// ```
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
 pub struct Coordinate {
+    /// The latitude coordinate, in decimal degrees.
     pub lat: f64,
+    /// The longitude coordinate, in decimal degrees.
     pub lon: f64,
 }
 

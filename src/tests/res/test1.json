@@ -1,0 +1,116 @@
+{
+    "elements": [
+        {
+            "id": 1,
+            "type": "node",
+            "lat": 50.1109,
+            "lon": 8.6821,
+            "tags": {}
+        },
+        {
+            "id": 2,
+            "type": "node",
+            "lat": 50.1073,
+            "lon": 8.6637,
+            "tags": {
+                "railway": "switch",
+                "railway:switch": "default"
+            }
+        },
+        {
+            "id": 3,
+            "type": "way",
+            "nodes": [
+                1,
+                2
+            ],
+            "geometry": [
+                {
+                    "lat": 50.1109,
+                    "lon": 8.6821
+                },
+                {
+                    "lat": 50.1073,
+                    "lon": 8.6637
+                }
+            ],
+            "tags": {}
+        },
+        {
+            "id": 4,
+            "type": "way",
+            "nodes": [
+                2,
+                8
+            ],
+            "geometry": [
+                {
+                    "lat": 50.1095,
+                    "lon": 8.6789
+                },
+                {
+                    "lat": 50.1067,
+                    "lon": 8.6605
+                }
+            ],
+            "tags": {}
+        },
+        {
+            "id": 5,
+            "type": "way",
+            "nodes": [
+                2,
+                9
+            ],
+            "geometry": [
+                {
+                    "lat": 50.1114,
+                    "lon": 8.6798
+                },
+                {
+                    "lat": 50.1078,
+                    "lon": 8.6612
+                }
+            ],
+            "tags": {}
+        },
+        {
+            "id": 6,
+            "type": "way",
+            "nodes": [
+                9,
+                10
+            ],
+            "geometry": [
+                {
+                    "lat": 50.1121,
+                    "lon": 8.6765
+                },
+                {
+                    "lat": 50.1083,
+                    "lon": 8.6587
+                }
+            ],
+            "tags": {}
+        },
+        {
+            "id": 7,
+            "type": "way",
+            "nodes": [
+                10,
+                11
+            ],
+            "geometry": [
+                {
+                    "lat": 50.1089,
+                    "lon": 8.6801
+                },
+                {
+                    "lat": 50.1042,
+                    "lon": 8.6665
+                }
+            ],
+            "tags": {}
+        }
+    ]
+}

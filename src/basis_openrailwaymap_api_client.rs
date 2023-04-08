@@ -4,6 +4,8 @@ use async_trait::async_trait;
 use reqwest::Client;
 use serde_json::Value;
 
+/// A basic client for the OpenRailwayMap API.
+///
 pub struct BasicOpenRailwayMapApiClient {
     url: Option<String>,
 }
@@ -12,6 +14,7 @@ pub struct BasicOpenRailwayMapApiClient {
 unsafe impl Send for BasicOpenRailwayMapApiClient {}
 
 impl BasicOpenRailwayMapApiClient {
+    /// Creates a new `BasicOpenRailwayMapApiClient` with no specified API URL.
     pub fn new() -> Self {
         BasicOpenRailwayMapApiClient { url: None }
     }

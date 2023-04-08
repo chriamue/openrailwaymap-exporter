@@ -16,8 +16,16 @@ use super::{RailwayEdge, RailwayNode};
 /// retrieval.
 #[derive(Debug)]
 pub struct RailwayGraph {
+    /// The internal graph used to represent the railway network.
+    ///
+    /// The graph consists of `RailwayNode` instances as nodes and `RailwayEdge` instances as edges.
+    /// It is an undirected graph.
     pub graph: Graph<RailwayNode, RailwayEdge, Undirected>,
-    node_indices: HashMap<i64, NodeIndex>,
+
+    /// A HashMap that maps node IDs to their corresponding indices in the graph.
+    ///
+    /// This HashMap allows for quick and easy retrieval of node indices based on their IDs.
+    pub node_indices: HashMap<i64, NodeIndex>,
 }
 impl RailwayGraph {
     /// Calculate the bounding box of the graph.
@@ -302,5 +310,66 @@ mod tests {
                 lon: 9.6821
             }
         );
+    }
+
+    #[test]
+    fn test_from_railway_elements() {
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(0.0),
+                lon: Some(1.0),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![1, 7, 3, 8]),
+                geometry: Some(vec![
+                    Coordinate { lat: 0.0, lon: 0.0 },
+                    Coordinate { lat: 0.0, lon: 3.0 },
+                ]),
+            },
+            RailwayElement {
+                id: 5,
+                element_type: ElementType::Node,
+                lat: Some(0.0),
+                lon: Some(5.0),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 4,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![9, 3, 10, 5]),
+                geometry: Some(vec![
+                    Coordinate { lat: 0.0, lon: 3.0 },
+                    Coordinate { lat: 0.0, lon: 5.0 },
+                ]),
+            },
+        ];
+
+        let railway_graph = RailwayGraph::from_railway_elements(&elements);
+        assert_eq!(railway_graph.graph.node_count(), 3);
+
+        let node_index_1 = railway_graph.node_indices.get(&1).unwrap();
+        let node_1 = &railway_graph.graph[*node_index_1];
+        assert_eq!(node_1.lat, 0.0);
+        assert_eq!(node_1.lon, 1.0);
+
+        let node_index_3 = railway_graph.node_indices.get(&3).unwrap();
+        let node_3 = &railway_graph.graph[*node_index_3];
+        assert_eq!(node_3.lat, 0.0);
+        assert_eq!(node_3.lon, 3.0);
     }
 }
