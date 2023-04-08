@@ -404,31 +404,6 @@
 <a href="#404" id="404">404</a>
 <a href="#405" id="405">405</a>
 <a href="#406" id="406">406</a>
-<a href="#407" id="407">407</a>
-<a href="#408" id="408">408</a>
-<a href="#409" id="409">409</a>
-<a href="#410" id="410">410</a>
-<a href="#411" id="411">411</a>
-<a href="#412" id="412">412</a>
-<a href="#413" id="413">413</a>
-<a href="#414" id="414">414</a>
-<a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
-<a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
 </pre><pre class="rust"><code><span class="kw">use </span>geoutils::Location;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::{stable_graph::NodeIndex, Graph, Undirected};
@@ -627,9 +602,7 @@
     node_ids: <span class="kw-2">&amp;</span>[i64],
     node_indices: <span class="kw-2">&amp;</span>HashMap&lt;i64, NodeIndex&gt;,
 ) -&gt; (<span class="prelude-ty">Option</span>&lt;i64&gt;, <span class="prelude-ty">Option</span>&lt;NodeIndex&gt;) {
-    <span class="kw">let </span>start_pos = start
-        .map(|start_id| node_ids.iter().position(|<span class="kw-2">&amp;</span>id| id == start_id))
-        .flatten();
+    <span class="kw">let </span>start_pos = start.and_then(|start_id| node_ids.iter().position(|<span class="kw-2">&amp;</span>id| id == start_id));
 
     <span class="kw">for </span>(pos, <span class="kw-2">&amp;</span>id) <span class="kw">in </span>node_ids.iter().enumerate() {
         <span class="kw">if </span>start_pos.map_or(<span class="bool-val">true</span>, |start_pos| pos &gt; start_pos) {
@@ -639,29 +612,6 @@
         }
     }
     (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
-}
-
-<span class="kw">fn </span>find_connected_elements(elements: <span class="kw-2">&amp;</span>[RailwayElement]) -&gt; Vec&lt;(i64, i64)&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>connections: Vec&lt;(i64, i64)&gt; = Vec::new();
-
-    <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..elements.len() {
-        <span class="kw">let </span>elem_a = <span class="kw-2">&amp;</span>elements[i];
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(nodes_a) = <span class="kw-2">&amp;</span>elem_a.nodes {
-            <span class="kw">for </span>elem_b <span class="kw">in </span>elements.iter().skip(i + <span class="number">1</span>) {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(nodes_b) = <span class="kw-2">&amp;</span>elem_b.nodes {
-                    <span class="kw">let </span>common_nodes: Vec&lt;<span class="kw">_</span>&gt; = nodes_a
-                        .iter()
-                        .filter(|node_a| nodes_b.contains(node_a))
-                        .collect();
-                    <span class="kw">if </span>!common_nodes.is_empty() {
-                        connections.push((elem_a.id, elem_b.id));
-                    }
-                }
-            }
-        }
-    }
-
-    connections
 }
 
 <span class="kw">fn </span>calculate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -&gt; f64 {
