@@ -1,6 +1,6 @@
 use openrailwaymap_exporter::{
-    create_edges, generate_dot_string, BasicOpenRailwayMapApiClient, OpenRailwayMapApiClient,
-    RailwayElement, RailwayGraph,
+    generate_dot_string, BasicOpenRailwayMapApiClient, OpenRailwayMapApiClient, RailwayElement,
+    RailwayGraph,
 };
 use std::fs::File;
 use std::io::Write;
@@ -58,10 +58,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let railway_elements = RailwayElement::from_json(&api_json_value)?;
-
-    let edges = create_edges(&railway_elements);
-
-    println!("Railway Elements: {:?}", edges.len());
 
     let graph = RailwayGraph::from_railway_elements(&railway_elements);
 

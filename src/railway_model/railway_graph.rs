@@ -8,12 +8,61 @@ use crate::Coordinate;
 
 use super::{RailwayEdge, RailwayNode};
 
+/// `RailwayGraph` represents a graph structure for railway networks.
+///
+/// The graph consists of nodes representing railway stations and junctions, and edges representing
+/// the railway segments between the nodes. It also stores the node indices as a HashMap for easy
+/// retrieval.
 #[derive(Debug)]
 pub struct RailwayGraph {
     pub graph: Graph<RailwayNode, RailwayEdge, Undirected>,
     node_indices: HashMap<i64, NodeIndex>,
 }
 impl RailwayGraph {
+    /// Create a `RailwayGraph` from a vector of `RailwayElement`s.
+    ///
+    /// The function processes the input elements to create a graph with nodes and edges.
+    ///
+    /// # Arguments
+    ///
+    /// * `elements` - A vector of `RailwayElement`s from which the graph will be created.
+    ///
+    /// # Returns
+    ///
+    /// A `RailwayGraph` created from the input `RailwayElement`s.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use openrailwaymap_exporter::{ElementType, RailwayElement};
+    /// use openrailwaymap_exporter::Coordinate;
+    /// use openrailwaymap_exporter::RailwayGraph;
+    /// use std::collections::HashMap;
+    ///
+    /// let elements = vec![
+    ///     RailwayElement {
+    ///         id: 1,
+    ///         element_type: ElementType::Node,
+    ///         lat: Some(50.1109),
+    ///         lon: Some(8.6821),
+    ///         tags: Some(HashMap::new()),
+    ///         nodes: None,
+    ///         geometry: None,
+    ///     },
+    ///     RailwayElement {
+    ///         id: 2,
+    ///         element_type: ElementType::Way,
+    ///         lat: None,
+    ///         lon: None,
+    ///         tags: Some(HashMap::new()),
+    ///         nodes: Some(vec![1, 3]),
+    ///         geometry: None,
+    ///     },
+    /// ];
+    ///
+    /// let railway_graph = RailwayGraph::from_railway_elements(&elements);
+    /// println!("Created railway graph with {} nodes", railway_graph.graph.node_count());
+    /// ```
     pub fn from_railway_elements(elements: &Vec<RailwayElement>) -> Self {
         let mut graph = Graph::<RailwayNode, RailwayEdge, Undirected>::new_undirected();
         let mut node_indices = HashMap::new();

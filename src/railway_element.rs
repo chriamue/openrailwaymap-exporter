@@ -3,6 +3,10 @@ use serde::{ser::Error, Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 
+/// Represents the type of a `RailwayElement`.
+///
+/// `ElementType` is an enumeration with two possible values: `Way` and `Node`.
+/// It is used to represent the type of an element in a railway network.
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 #[serde(rename_all = "lowercase")]
 pub enum ElementType {
@@ -10,6 +14,20 @@ pub enum ElementType {
     Node,
 }
 
+/// Represents an element of a railway network.
+///
+/// A `RailwayElement` struct contains information about a railway element, such as its ID, type, tags, nodes,
+/// geometry, latitude, and longitude. It can be used to store and manipulate railway data.
+///
+/// # Example
+///
+/// ```
+/// use openrailwaymap_exporter::{RailwayElement, ElementType};
+///
+/// let element = RailwayElement::new_with_id(1);
+/// assert_eq!(element.id, 1);
+/// assert_eq!(element.element_type, ElementType::Node);
+/// ```
 #[derive(Deserialize, Serialize, Debug, PartialEq)]
 pub struct RailwayElement {
     pub id: i64,
@@ -23,6 +41,15 @@ pub struct RailwayElement {
 }
 
 impl RailwayElement {
+    /// Deserialize a JSON value into a vector of `RailwayElement` instances.
+    ///
+    /// # Arguments
+    ///
+    /// * `json_value` - A reference to a JSON value containing railway elements data.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a vector of `RailwayElement` instances on success, or a `serde_json::Error` on failure.
     pub fn from_json(json_value: &Value) -> Result<Vec<RailwayElement>, serde_json::Error> {
         let railway_elements = json_value["elements"]
             .as_array()
@@ -49,6 +76,15 @@ impl Default for RailwayElement {
 }
 
 impl RailwayElement {
+    /// Create a new `RailwayElement` instance with the specified ID.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The ID of the new `RailwayElement` instance.
+    ///
+    /// # Returns
+    ///
+    /// A new `RailwayElement` instance with the specified ID.
     pub fn new_with_id(id: i64) -> Self {
         Self {
             id,
