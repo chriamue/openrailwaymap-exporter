@@ -196,9 +196,12 @@ pub fn find_next_existing_node(
     node_ids: &[i64],
     node_indices: &HashMap<i64, NodeIndex>,
 ) -> (Option<i64>, Option<NodeIndex>) {
-    let start_id = start.unwrap_or(i64::MIN);
-    for &id in node_ids.iter() {
-        if id > start_id {
+    let start_pos = start
+        .map(|start_id| node_ids.iter().position(|&id| id == start_id))
+        .flatten();
+
+    for (pos, &id) in node_ids.iter().enumerate() {
+        if start_pos.map_or(true, |start_pos| pos > start_pos) {
             if let Some(index) = node_indices.get(&id) {
                 return (Some(id), Some(*index));
             }
