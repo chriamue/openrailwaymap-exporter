@@ -196,9 +196,7 @@ pub fn find_next_existing_node(
     node_ids: &[i64],
     node_indices: &HashMap<i64, NodeIndex>,
 ) -> (Option<i64>, Option<NodeIndex>) {
-    let start_pos = start
-        .map(|start_id| node_ids.iter().position(|&id| id == start_id))
-        .flatten();
+    let start_pos = start.and_then(|start_id| node_ids.iter().position(|&id| id == start_id));
 
     for (pos, &id) in node_ids.iter().enumerate() {
         if start_pos.map_or(true, |start_pos| pos > start_pos) {
@@ -208,29 +206,6 @@ pub fn find_next_existing_node(
         }
     }
     (None, None)
-}
-
-fn find_connected_elements(elements: &[RailwayElement]) -> Vec<(i64, i64)> {
-    let mut connections: Vec<(i64, i64)> = Vec::new();
-
-    for i in 0..elements.len() {
-        let elem_a = &elements[i];
-        if let Some(nodes_a) = &elem_a.nodes {
-            for elem_b in elements.iter().skip(i + 1) {
-                if let Some(nodes_b) = &elem_b.nodes {
-                    let common_nodes: Vec<_> = nodes_a
-                        .iter()
-                        .filter(|node_a| nodes_b.contains(node_a))
-                        .collect();
-                    if !common_nodes.is_empty() {
-                        connections.push((elem_a.id, elem_b.id));
-                    }
-                }
-            }
-        }
-    }
-
-    connections
 }
 
 fn calculate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {

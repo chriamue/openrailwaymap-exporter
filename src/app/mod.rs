@@ -1,3 +1,5 @@
+use crate::count_node_elements;
+use crate::count_way_elements;
 use crate::generate_svg_string;
 use crate::BasicOpenRailwayMapApiClient;
 use crate::OpenRailwayMapApiClient;
@@ -9,17 +11,27 @@ use web_sys::HtmlInputElement;
 use yew::html::Scope;
 use yew::prelude::*;
 
+mod statistics;
+use statistics::Statistics;
+
+/// Represents the main application component.
 pub struct App {
     link: Scope<Self>,
     input_area: String,
     graph_svg: String,
     loading: bool,
+    switch_count: u32,
+    track_count: u32,
 }
 
+/// Represents the messages that can be sent to the `App` component.
 pub enum Msg {
+    /// Input changed.
     InputChanged(String),
+    /// Button clicked.
     GetGraph,
-    GraphLoaded(String),
+    /// Update Graph with loaded data.
+    GraphLoaded((Vec<RailwayElement>, String)),
 }
 
 impl Component for App {
@@ -32,6 +44,8 @@ impl Component for App {
             input_area: String::new(),
             graph_svg: String::new(),
             loading: false,
+            switch_count: 0,
+            track_count: 0,
         }
     }
 
@@ -50,10 +64,12 @@ impl Component for App {
                     let railway_elements = RailwayElement::from_json(&api_json_value).unwrap();
                     let graph = RailwayGraph::from_railway_elements(&railway_elements);
                     let svg_string = generate_svg_string(&graph).unwrap();
-                    callback.emit(svg_string.to_string());
+                    callback.emit((railway_elements, svg_string.to_string()));
                 });
             }
-            Msg::GraphLoaded(svg_string) => {
+            Msg::GraphLoaded((railway_elements, svg_string)) => {
+                self.switch_count = count_node_elements(&railway_elements) as u32;
+                self.track_count = count_way_elements(&railway_elements) as u32;
                 self.loading = false;
                 self.graph_svg = svg_string;
             }
@@ -79,12 +95,15 @@ impl Component for App {
 
         html! {
             <>
-                <input
-                    value={self.input_area.clone()}
-                    onchange={on_change}
-                    placeholder="Enter area name"
-                />
-                <button onclick={self.link.callback(|_| Msg::GetGraph)}>{ "Get Graph" }</button>
+                <div class="controls">
+                    <input
+                        value={self.input_area.clone()}
+                        onchange={on_change}
+                        placeholder="Enter area name"
+                    />
+                    <button onclick={self.link.callback(|_| Msg::GetGraph)}>{ "Get Graph" }</button>
+                </div>
+                <Statistics switches={self.switch_count} tracks={self.track_count} />
                 {loading_message}
                 <div>{svg}</div>
             </>
@@ -92,6 +111,36 @@ impl Component for App {
     }
 }
 
+/// Initializes the main application component and renders it in the given root element.
+///
+/// This function is meant to be called from JavaScript via WebAssembly to initialize and render
+/// the main `App` component inside the specified root element. It sets up the panic hook for
+/// better error messages and uses Yew's renderer to attach the `App` component to the DOM.
+///
+/// # Arguments
+///
+/// * `root` - A `web_sys::Element` representing the root element where the `App` component will be rendered.
+///
+/// # Example
+///
+/// In an HTML file:
+///
+/// ```html
+/// <body>
+///     <div id="app" />
+///     <script type="module">
+///       import init, { init_app } from "./pkg/openrailwaymap_exporter.js";
+///       var root = document.getElementById("app");
+///       init().then(async () => {
+///         try {
+///           init_app(root);
+///         } catch (e) {
+///           console.error(e);
+///         }
+///       });
+///     </script>
+///   </body>
+/// ```
 #[wasm_bindgen]
 pub fn init_app(root: web_sys::Element) {
     console_error_panic_hook::set_once();

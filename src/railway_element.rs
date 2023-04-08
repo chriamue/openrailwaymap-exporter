@@ -155,6 +155,25 @@ pub fn count_way_elements(elements: &[RailwayElement]) -> usize {
         .count()
 }
 
+/// Counts the number of `Node` elements in a given vector of `RailwayElement`s.
+///
+/// This function iterates over the input `RailwayElement`s and filters the elements
+/// with the type `ElementType::Node`. It returns the count of such elements.
+///
+/// # Arguments
+///
+/// * `elements` - A vector of `RailwayElement`s to count the node elements in.
+///
+/// # Returns
+///
+/// An `usize` representing the count of node elements found in the input vector.
+pub fn count_node_elements(elements: &[RailwayElement]) -> usize {
+    elements
+        .iter()
+        .filter(|element| element.element_type == ElementType::Node)
+        .count()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

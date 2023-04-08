@@ -21,6 +21,8 @@ pub use self::basis_openrailwaymap_api_client::BasicOpenRailwayMapApiClient;
 pub use self::coordinate::Coordinate;
 pub use self::export::*;
 pub use self::openrailwaymap_api_client::OpenRailwayMapApiClient;
-pub use self::railway_element::{count_way_elements, ElementType, RailwayElement};
+pub use self::railway_element::{
+    count_node_elements, count_way_elements, ElementType, RailwayElement,
+};
 pub use self::railway_model::*;
 pub use self::railway_processing::*;
