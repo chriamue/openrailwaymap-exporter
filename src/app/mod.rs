@@ -60,7 +60,18 @@ impl Component for App {
                 let callback = self.link.callback(Msg::GraphLoaded);
                 wasm_bindgen_futures::spawn_local(async move {
                     let client = BasicOpenRailwayMapApiClient::new();
-                    let api_json_value = client.fetch_by_area_name(&area_name).await.unwrap();
+
+                    let api_json_value = {
+                        if area_name.contains(",") {
+                            client
+                                .fetch_by_bbox(&area_name)
+                                .await
+                                .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
+                        } else {
+                            client.fetch_by_area_name(&area_name).await.unwrap()
+                        }
+                    };
+
                     let railway_elements = RailwayElement::from_json(&api_json_value).unwrap();
                     let graph = RailwayGraph::from_railway_elements(&railway_elements);
                     let svg_string = generate_svg_string(&graph).unwrap();
