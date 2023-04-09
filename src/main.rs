@@ -1,6 +1,6 @@
 use openrailwaymap_exporter::{
-    generate_dot_string, generate_svg_string, BasicOpenRailwayMapApiClient,
-    OpenRailwayMapApiClient, RailwayElement, RailwayGraph,
+    from_railway_elements, generate_dot_string, generate_svg_string, BasicOpenRailwayMapApiClient,
+    OpenRailwayMapApiClient, RailwayElement,
 };
 use std::fs::File;
 use std::io::Write;
@@ -62,7 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let railway_elements = RailwayElement::from_json(&api_json_value)?;
 
-    let graph = RailwayGraph::from_railway_elements(&railway_elements);
+    let graph = from_railway_elements(&railway_elements);
 
     println!("Railway Graph: {:?}", &graph.graph.edge_count());
 

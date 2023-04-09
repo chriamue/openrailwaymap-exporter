@@ -4,8 +4,8 @@ use petgraph::{Graph, Undirected};
 use serde_json::Value;
 
 use crate::{
-    count_way_elements, create_nodes, railway_graph::find_next_existing_node, RailwayEdge,
-    RailwayElement, RailwayGraph, RailwayNode,
+    count_way_elements, create_nodes, find_next_existing_node, from_railway_elements, RailwayEdge,
+    RailwayElement, RailwayNode,
 };
 
 pub fn test_json_1() -> Value {
@@ -22,7 +22,7 @@ pub fn test_json_vilbel() -> Value {
 fn test_load_railway_graph_from_test1() {
     let railway_elements = RailwayElement::from_json(&test_json_1()).unwrap();
     let expected_edges_count = count_way_elements(&railway_elements);
-    let railway_graph = RailwayGraph::from_railway_elements(&railway_elements);
+    let railway_graph = from_railway_elements(&railway_elements);
 
     println!("{:?}", railway_graph.graph);
     assert_eq!(railway_graph.graph.node_count(), 4);
@@ -67,7 +67,7 @@ fn test_vilbel_json() {
         (None, None)
     );
 
-    let railway_graph = RailwayGraph::from_railway_elements(&railway_elements);
+    let railway_graph = from_railway_elements(&railway_elements);
     assert_eq!(railway_graph.graph.node_count(), 68);
     assert_eq!(railway_graph.graph.edge_count(), 68);
 }

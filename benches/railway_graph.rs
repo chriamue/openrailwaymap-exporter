@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use openrailwaymap_exporter::find_next_existing_node;
-use openrailwaymap_exporter::{RailwayElement, RailwayGraph};
+use openrailwaymap_exporter::RailwayElement;
+use openrailwaymap_exporter::{find_next_existing_node, from_railway_elements};
 use petgraph::stable_graph::NodeIndex;
 use std::collections::HashMap;
 
@@ -13,7 +13,7 @@ fn railway_elements() -> Vec<RailwayElement> {
 fn benchmark_from_railway_elements(c: &mut Criterion) {
     let elements = railway_elements();
     c.bench_function("from_railway_elements", |b| {
-        b.iter(|| RailwayGraph::from_railway_elements(black_box(&elements)))
+        b.iter(|| from_railway_elements(black_box(&elements)))
     });
 }
 

@@ -1,10 +1,10 @@
 use crate::count_node_elements;
 use crate::count_way_elements;
+use crate::from_railway_elements;
 use crate::generate_svg_string;
 use crate::BasicOpenRailwayMapApiClient;
 use crate::OpenRailwayMapApiClient;
 use crate::RailwayElement;
-use crate::RailwayGraph;
 use wasm_bindgen::prelude::*;
 use web_sys::EventTarget;
 use web_sys::HtmlInputElement;
@@ -73,7 +73,7 @@ impl Component for App {
                     };
 
                     let railway_elements = RailwayElement::from_json(&api_json_value).unwrap();
-                    let graph = RailwayGraph::from_railway_elements(&railway_elements);
+                    let graph = from_railway_elements(&railway_elements);
                     let svg_string = generate_svg_string(&graph).unwrap();
                     callback.emit((railway_elements, svg_string.to_string()));
                 });

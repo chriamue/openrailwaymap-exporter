@@ -1,4 +1,4 @@
-use openrailwaymap_exporter::{RailwayElement, RailwayGraph};
+use openrailwaymap_exporter::{from_railway_elements, RailwayElement};
 
 fn railway_elements() -> Vec<RailwayElement> {
     let test_data = serde_json::from_slice(include_bytes!("../src/tests/res/vilbel.json"))
@@ -8,6 +8,6 @@ fn railway_elements() -> Vec<RailwayElement> {
 
 fn main() {
     let railway_elements = railway_elements();
-    let graph = RailwayGraph::from_railway_elements(&railway_elements);
+    let graph = from_railway_elements(&railway_elements);
     println!("{:?}", graph.graph);
 }

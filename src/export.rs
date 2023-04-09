@@ -20,6 +20,7 @@ use std::error::Error;
 /// ```
 /// use openrailwaymap_exporter::RailwayGraph;
 /// use openrailwaymap_exporter::generate_dot_string;
+/// use openrailwaymap_exporter::from_railway_elements;
 /// use openrailwaymap_exporter::{RailwayElement, ElementType};
 ///
 /// let elements = vec![
@@ -27,7 +28,7 @@ use std::error::Error;
 ///     RailwayElement::new_with_id(2),
 /// ];
 ///
-/// let railway_graph = RailwayGraph::from_railway_elements(&elements);
+/// let railway_graph = from_railway_elements(&elements);
 /// let dot_string = generate_dot_string(&railway_graph).unwrap();
 ///
 /// println!("{}", dot_string);
@@ -101,8 +102,7 @@ mod tests {
 
     use super::*;
     use crate::railway_element::{ElementType, RailwayElement};
-    use crate::railway_graph::RailwayGraph;
-    use crate::Coordinate;
+    use crate::{from_railway_elements, Coordinate};
 
     #[test]
     fn test_generate_dot_string() {
@@ -145,7 +145,7 @@ mod tests {
             },
         ];
 
-        let railway_graph = RailwayGraph::from_railway_elements(&elements);
+        let railway_graph = from_railway_elements(&elements);
         let dot_string = generate_dot_string(&railway_graph).unwrap();
         println!("{}", &dot_string);
 
@@ -197,7 +197,7 @@ mod tests {
             },
         ];
 
-        let railway_graph = RailwayGraph::from_railway_elements(&elements);
+        let railway_graph = from_railway_elements(&elements);
         let svg_string = generate_svg_string(&railway_graph).unwrap();
 
         assert!(svg_string.contains("<svg"));
