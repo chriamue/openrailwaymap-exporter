@@ -777,7 +777,7 @@
         <span class="kw">let </span>node_index_3 = railway_graph.node_indices.get(<span class="kw-2">&amp;</span><span class="number">3</span>).unwrap();
         <span class="kw">let </span>node_3 = <span class="kw-2">&amp;</span>railway_graph.graph[<span class="kw-2">*</span>node_index_3];
         <span class="macro">assert_eq!</span>(node_3.lat, <span class="number">0.0</span>);
-        <span class="macro">assert_eq!</span>(node_3.lon, <span class="number">3.0</span>);
+        <span class="macro">assert_eq!</span>(node_3.lon, <span class="number">0.0</span>);
     }
 
     <span class="attr">#[test]

@@ -268,7 +268,24 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashSet;
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::collections::{HashMap, HashSet};
 
 <span class="kw">use crate</span>::{railway_element::ElementType, RailwayElement, RailwayNode};
 
@@ -347,46 +364,63 @@
     nodes.iter().map(|node| node.id).collect()
 }
 
-<span class="kw">fn </span>has_node_with_id(element: <span class="kw-2">&amp;</span>RailwayElement, node_id: i64) -&gt; bool {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(element_nodes) = <span class="kw-2">&amp;</span>element.nodes {
-        <span class="kw">return </span>element_nodes.contains(<span class="kw-2">&amp;</span>node_id);
+<span class="kw">fn </span>create_node_id_to_element_ids_map(elements: <span class="kw-2">&amp;</span>[RailwayElement]) -&gt; HashMap&lt;i64, Vec&lt;i64&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>node_id_to_element_ids: HashMap&lt;i64, Vec&lt;i64&gt;&gt; = HashMap::new();
+
+    <span class="kw">for </span>element <span class="kw">in </span>elements {
+        <span class="kw">if let </span>ElementType::Way = element.element_type {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(element_nodes) = <span class="kw-2">&amp;</span>element.nodes {
+                <span class="kw">for </span>node_id <span class="kw">in </span>element_nodes {
+                    node_id_to_element_ids
+                        .entry(<span class="kw-2">*</span>node_id)
+                        .or_insert_with(Vec::new)
+                        .push(element.id);
+                }
+            }
+        }
     }
-    <span class="bool-val">false
-</span>}
+
+    node_id_to_element_ids
+}
+
+<span class="kw">fn </span>create_id_to_element_map&lt;<span class="lifetime">&#39;a</span>&gt;(
+    elements: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[RailwayElement],
+) -&gt; HashMap&lt;i64, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>RailwayElement&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>id_to_element_map: HashMap&lt;i64, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>RailwayElement&gt; = HashMap::new();
+
+    <span class="kw">for </span>element <span class="kw">in </span>elements {
+        id_to_element_map.insert(element.id, element);
+    }
+
+    id_to_element_map
+}
 
 <span class="kw">fn </span>create_nodes_from_way_elements_without_existing(
     elements: <span class="kw-2">&amp;</span>[RailwayElement],
     node_ids: <span class="kw-2">&amp;mut </span>HashSet&lt;i64&gt;,
 ) -&gt; Vec&lt;RailwayNode&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>nodes: Vec&lt;RailwayNode&gt; = Vec::new();
+    <span class="kw">let </span>node_id_to_element_ids = create_node_id_to_element_ids_map(elements);
+    <span class="kw">let </span>id_to_element_map = create_id_to_element_map(elements);
 
-    <span class="kw">for </span>element <span class="kw">in </span>elements {
-        <span class="kw">if let </span>ElementType::Way = element.element_type {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(element_nodes) = <span class="kw-2">&amp;</span>element.nodes {
-                <span class="kw">for </span>node_id <span class="kw">in </span>element_nodes {
-                    <span class="kw">if </span>!node_ids.contains(node_id) {
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(node_element) = elements.iter().find(|e| {
-                            e.id != element.id
-                                &amp;&amp; e.element_type == ElementType::Way
-                                &amp;&amp; has_node_with_id(e, <span class="kw-2">*</span>node_id)
-                        }) {
-                            <span class="kw">if let </span><span class="prelude-val">Some</span>(geometry) = <span class="kw-2">&amp;</span>node_element.geometry {
-                                <span class="kw">if let </span><span class="prelude-val">Some</span>(first_coordinate) = geometry.first() {
-                                    <span class="kw">let </span>node = RailwayNode {
-                                        id: <span class="kw-2">*</span>node_id,
-                                        lat: first_coordinate.lat,
-                                        lon: first_coordinate.lon,
-                                    };
-                                    nodes.push(node);
-                                    node_ids.insert(<span class="kw-2">*</span>node_id);
-                                }
-                            }
-                        }
+    <span class="kw">for </span>(node_id, element_ids) <span class="kw">in </span>node_id_to_element_ids {
+        <span class="kw">if </span>!node_ids.contains(<span class="kw-2">&amp;</span>node_id) &amp;&amp; element_ids.len() &gt;= <span class="number">2 </span>{
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(element) = id_to_element_map.get(<span class="kw-2">&amp;</span>element_ids[<span class="number">0</span>]) {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(geometry) = <span class="kw-2">&amp;</span>element.geometry {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(first_coordinate) = geometry.first() {
+                        <span class="kw">let </span>node = RailwayNode {
+                            id: node_id,
+                            lat: first_coordinate.lat,
+                            lon: first_coordinate.lon,
+                        };
+                        nodes.push(node);
+                        node_ids.insert(node_id);
                     }
                 }
             }
         }
     }
+
     nodes
 }
 
