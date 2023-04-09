@@ -10,7 +10,7 @@ mod export;
 mod openrailwaymap_api_client;
 mod railway_element;
 mod railway_model;
-mod railway_processing;
+//mod railway_processing;
 
 #[cfg(test)]
 pub mod tests;
@@ -25,4 +25,4 @@ pub use self::railway_element::{
     count_node_elements, count_way_elements, ElementType, RailwayElement,
 };
 pub use self::railway_model::*;
-pub use self::railway_processing::*;
+//pub use self::railway_processing::*;
