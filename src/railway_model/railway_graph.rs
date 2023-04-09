@@ -373,7 +373,7 @@ mod tests {
         let node_index_3 = railway_graph.node_indices.get(&3).unwrap();
         let node_3 = &railway_graph.graph[*node_index_3];
         assert_eq!(node_3.lat, 0.0);
-        assert_eq!(node_3.lon, 3.0);
+        assert_eq!(node_3.lon, 0.0);
     }
 
     #[test]

@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use crate::{railway_element::ElementType, RailwayElement, RailwayNode};
 
@@ -77,11 +77,35 @@ fn node_ids_from_nodes(nodes: &[RailwayNode]) -> HashSet<i64> {
     nodes.iter().map(|node| node.id).collect()
 }
 
-fn has_node_with_id(element: &RailwayElement, node_id: i64) -> bool {
-    if let Some(element_nodes) = &element.nodes {
-        return element_nodes.contains(&node_id);
+fn create_node_id_to_element_ids_map(elements: &[RailwayElement]) -> HashMap<i64, Vec<i64>> {
+    let mut node_id_to_element_ids: HashMap<i64, Vec<i64>> = HashMap::new();
+
+    for element in elements {
+        if let ElementType::Way = element.element_type {
+            if let Some(element_nodes) = &element.nodes {
+                for node_id in element_nodes {
+                    node_id_to_element_ids
+                        .entry(*node_id)
+                        .or_insert_with(Vec::new)
+                        .push(element.id);
+                }
+            }
+        }
     }
-    false
+
+    node_id_to_element_ids
+}
+
+fn create_id_to_element_map<'a>(
+    elements: &'a [RailwayElement],
+) -> HashMap<i64, &'a RailwayElement> {
+    let mut id_to_element_map: HashMap<i64, &'a RailwayElement> = HashMap::new();
+
+    for element in elements {
+        id_to_element_map.insert(element.id, element);
+    }
+
+    id_to_element_map
 }
 
 fn create_nodes_from_way_elements_without_existing(
@@ -89,34 +113,27 @@ fn create_nodes_from_way_elements_without_existing(
     node_ids: &mut HashSet<i64>,
 ) -> Vec<RailwayNode> {
     let mut nodes: Vec<RailwayNode> = Vec::new();
+    let node_id_to_element_ids = create_node_id_to_element_ids_map(elements);
+    let id_to_element_map = create_id_to_element_map(elements);
 
-    for element in elements {
-        if let ElementType::Way = element.element_type {
-            if let Some(element_nodes) = &element.nodes {
-                for node_id in element_nodes {
-                    if !node_ids.contains(node_id) {
-                        if let Some(node_element) = elements.iter().find(|e| {
-                            e.id != element.id
-                                && e.element_type == ElementType::Way
-                                && has_node_with_id(e, *node_id)
-                        }) {
-                            if let Some(geometry) = &node_element.geometry {
-                                if let Some(first_coordinate) = geometry.first() {
-                                    let node = RailwayNode {
-                                        id: *node_id,
-                                        lat: first_coordinate.lat,
-                                        lon: first_coordinate.lon,
-                                    };
-                                    nodes.push(node);
-                                    node_ids.insert(*node_id);
-                                }
-                            }
-                        }
+    for (node_id, element_ids) in node_id_to_element_ids {
+        if !node_ids.contains(&node_id) && element_ids.len() >= 2 {
+            if let Some(element) = id_to_element_map.get(&element_ids[0]) {
+                if let Some(geometry) = &element.geometry {
+                    if let Some(first_coordinate) = geometry.first() {
+                        let node = RailwayNode {
+                            id: node_id,
+                            lat: first_coordinate.lat,
+                            lon: first_coordinate.lon,
+                        };
+                        nodes.push(node);
+                        node_ids.insert(node_id);
                     }
                 }
             }
         }
     }
+
     nodes
 }
 
