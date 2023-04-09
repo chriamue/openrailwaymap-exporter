@@ -566,9 +566,16 @@
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
 <a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
 <span class="kw">use </span><span class="kw">crate</span>::RailwayElement;
 <span class="kw">use crate</span>::{Coordinate, ElementType};
+<span class="kw">use </span>geo_types::{coord, LineString};
 <span class="kw">use </span>geoutils::Location;
 <span class="kw">use </span>petgraph::graph::Graph;
 <span class="kw">use </span>petgraph::stable_graph::NodeIndex;
@@ -648,7 +655,12 @@
                         RailwayEdge {
                             id: element.id,
                             length,
-                            path: geometry.clone(),
+                            path: LineString::from(
+                                geometry
+                                    .iter()
+                                    .map(|coord| <span class="macro">coord! </span>{ x: coord.lon, y: coord.lat })
+                                    .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
+                            ),
                         },
                     );
                 }

@@ -276,9 +276,9 @@
         <span class="kw">let </span>edge_data = edge.weight();
 
         <span class="kw">let </span><span class="kw-2">mut </span>path_data = String::new();
-        <span class="kw">for </span>(i, coord) <span class="kw">in </span>edge_data.path.iter().enumerate() {
-            <span class="kw">let </span>x = (coord.lon - min_coord.lon) * x_scale;
-            <span class="kw">let </span>y = height - (coord.lat - min_coord.lat) * y_scale;
+        <span class="kw">for </span>(i, coord) <span class="kw">in </span>edge_data.path.<span class="number">0</span>.iter().enumerate() {
+            <span class="kw">let </span>x = (coord.x - min_coord.lon) * x_scale;
+            <span class="kw">let </span>y = height - (coord.y - min_coord.lat) * y_scale;
 
             <span class="kw">if </span>i == <span class="number">0 </span>{
                 path_data.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;M {} {}&quot;</span>, x, y));
