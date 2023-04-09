@@ -565,6 +565,7 @@
 <a href="#565" id="565">565</a>
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
 <span class="kw">use </span><span class="kw">crate</span>::RailwayElement;
 <span class="kw">use crate</span>::{Coordinate, ElementType};
@@ -647,6 +648,7 @@
                         RailwayEdge {
                             id: element.id,
                             length,
+                            path: geometry.clone(),
                         },
                     );
                 }

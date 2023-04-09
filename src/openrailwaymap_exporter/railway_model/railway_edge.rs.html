@@ -55,16 +55,70 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
-</pre><pre class="rust"><code><span class="doccomment">/// Represents a railway edge with a unique ID and a length.
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::Coordinate;
+
+<span class="doccomment">/// Represents a railway edge with a unique ID, a length, and a path.
 ///
 /// # Examples
 ///
 /// ```
-/// use openrailwaymap_exporter::RailwayEdge;
+/// use openrailwaymap_exporter::{Coordinate, RailwayEdge};
 ///
 /// let edge = RailwayEdge {
 ///     id: 1,
 ///     length: 1500.0,
+///     path: vec![
+///         Coordinate { lat: 50.1109, lon: 8.6821 },
+///         Coordinate { lat: 50.1209, lon: 8.6921 },
+///     ],
 /// };
 /// assert_eq!(edge.id, 1);
 /// ```
@@ -74,17 +128,29 @@
     </span><span class="kw">pub </span>id: i64,
     <span class="doccomment">/// The length of the railway segment in meters.
     </span><span class="kw">pub </span>length: f64,
+    <span class="doccomment">/// The path of the edge, stored as a vector of `Coordinate` structs.
+    </span><span class="kw">pub </span>path: Vec&lt;Coordinate&gt;,
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span><span class="kw">super</span>::RailwayEdge;
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_railway_edge_creation() {
         <span class="kw">let </span>edge = RailwayEdge {
             id: <span class="number">1</span>,
             length: <span class="number">1500.0</span>,
+            path: <span class="macro">vec!</span>[
+                Coordinate {
+                    lat: <span class="number">50.1109</span>,
+                    lon: <span class="number">8.6821</span>,
+                },
+                Coordinate {
+                    lat: <span class="number">50.1209</span>,
+                    lon: <span class="number">8.6921</span>,
+                },
+            ],
         };
 
         <span class="macro">assert_eq!</span>(edge.id, <span class="number">1</span>);
@@ -96,16 +162,46 @@
         <span class="kw">let </span>edge1 = RailwayEdge {
             id: <span class="number">1</span>,
             length: <span class="number">1500.0</span>,
+            path: <span class="macro">vec!</span>[
+                Coordinate {
+                    lat: <span class="number">50.1109</span>,
+                    lon: <span class="number">8.6821</span>,
+                },
+                Coordinate {
+                    lat: <span class="number">50.1209</span>,
+                    lon: <span class="number">8.6921</span>,
+                },
+            ],
         };
 
         <span class="kw">let </span>edge2 = RailwayEdge {
             id: <span class="number">1</span>,
             length: <span class="number">1500.0</span>,
+            path: <span class="macro">vec!</span>[
+                Coordinate {
+                    lat: <span class="number">50.1109</span>,
+                    lon: <span class="number">8.6821</span>,
+                },
+                Coordinate {
+                    lat: <span class="number">50.1209</span>,
+                    lon: <span class="number">8.6921</span>,
+                },
+            ],
         };
 
         <span class="kw">let </span>edge3 = RailwayEdge {
             id: <span class="number">2</span>,
             length: <span class="number">2500.0</span>,
+            path: <span class="macro">vec!</span>[
+                Coordinate {
+                    lat: <span class="number">50.1209</span>,
+                    lon: <span class="number">8.6921</span>,
+                },
+                Coordinate {
+                    lat: <span class="number">50.1309</span>,
+                    lon: <span class="number">8.7021</span>,
+                },
+            ],
         };
 
         <span class="macro">assert_eq!</span>(edge1, edge2);

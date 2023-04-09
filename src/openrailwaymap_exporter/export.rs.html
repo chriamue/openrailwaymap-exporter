@@ -206,9 +206,13 @@
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::RailwayGraph;
 <span class="kw">use </span>petgraph::dot::{Config, Dot};
-<span class="kw">use </span>petgraph::visit::{EdgeRef, IntoNodeReferences, NodeRef};
+<span class="kw">use </span>petgraph::visit::{IntoNodeReferences, NodeRef};
 <span class="kw">use </span>std::error::Error;
 
 <span class="doccomment">/// Generates a DOT string representation of a given RailwayGraph.
@@ -269,19 +273,23 @@
     <span class="kw">let </span><span class="kw-2">mut </span>svg_nodes = String::new();
 
     <span class="kw">for </span>edge <span class="kw">in </span>graph.graph.edge_references() {
-        <span class="kw">let </span>source = edge.source();
-        <span class="kw">let </span>target = edge.target();
-        <span class="kw">let </span>source_node = <span class="kw-2">&amp;</span>graph.graph[source];
-        <span class="kw">let </span>target_node = <span class="kw-2">&amp;</span>graph.graph[target];
+        <span class="kw">let </span>edge_data = edge.weight();
 
-        <span class="kw">let </span>x1 = (source_node.lon - min_coord.lon) * x_scale;
-        <span class="kw">let </span>y1 = height - (source_node.lat - min_coord.lat) * y_scale;
-        <span class="kw">let </span>x2 = (target_node.lon - min_coord.lon) * x_scale;
-        <span class="kw">let </span>y2 = height - (target_node.lat - min_coord.lat) * y_scale;
+        <span class="kw">let </span><span class="kw-2">mut </span>path_data = String::new();
+        <span class="kw">for </span>(i, coord) <span class="kw">in </span>edge_data.path.iter().enumerate() {
+            <span class="kw">let </span>x = (coord.lon - min_coord.lon) * x_scale;
+            <span class="kw">let </span>y = height - (coord.lat - min_coord.lat) * y_scale;
+
+            <span class="kw">if </span>i == <span class="number">0 </span>{
+                path_data.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;M {} {}&quot;</span>, x, y));
+            } <span class="kw">else </span>{
+                path_data.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot; L {} {}&quot;</span>, x, y));
+            }
+        }
 
         svg_edges.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-            <span class="string">r#&quot;&lt;line x1=&quot;{}&quot; y1=&quot;{}&quot; x2=&quot;{}&quot; y2=&quot;{}&quot; stroke=&quot;black&quot; stroke-width=&quot;2&quot; /&gt;&quot;#</span>,
-            x1, y1, x2, y2
+            <span class="string">r#&quot;&lt;path d=&quot;{}&quot; stroke=&quot;black&quot; stroke-width=&quot;2&quot; fill=&quot;none&quot; /&gt;&quot;#</span>,
+            path_data
         ));
     }
 
@@ -411,7 +419,7 @@
         <span class="macro">assert!</span>(svg_string.contains(<span class="string">&quot;&lt;svg&quot;</span>));
         <span class="macro">assert!</span>(svg_string.contains(<span class="string">&quot;&lt;/svg&gt;&quot;</span>));
         <span class="macro">assert!</span>(svg_string.contains(<span class="string">&quot;&lt;circle&quot;</span>));
-        <span class="macro">assert!</span>(svg_string.contains(<span class="string">&quot;&lt;line&quot;</span>));
+        <span class="macro">assert!</span>(svg_string.contains(<span class="string">&quot;&lt;path&quot;</span>));
     }
 }
 </code></pre></div>
