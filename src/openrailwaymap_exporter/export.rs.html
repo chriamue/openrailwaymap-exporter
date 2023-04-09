@@ -228,6 +228,7 @@
 /// ```
 /// use openrailwaymap_exporter::RailwayGraph;
 /// use openrailwaymap_exporter::generate_dot_string;
+/// use openrailwaymap_exporter::from_railway_elements;
 /// use openrailwaymap_exporter::{RailwayElement, ElementType};
 ///
 /// let elements = vec![
@@ -235,7 +236,7 @@
 ///     RailwayElement::new_with_id(2),
 /// ];
 ///
-/// let railway_graph = RailwayGraph::from_railway_elements(&amp;elements);
+/// let railway_graph = from_railway_elements(&amp;elements);
 /// let dot_string = generate_dot_string(&amp;railway_graph).unwrap();
 ///
 /// println!(&quot;{}&quot;, dot_string);
@@ -309,8 +310,7 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::railway_element::{ElementType, RailwayElement};
-    <span class="kw">use </span><span class="kw">crate</span>::railway_graph::RailwayGraph;
-    <span class="kw">use </span><span class="kw">crate</span>::Coordinate;
+    <span class="kw">use crate</span>::{from_railway_elements, Coordinate};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_generate_dot_string() {
@@ -353,7 +353,7 @@
             },
         ];
 
-        <span class="kw">let </span>railway_graph = RailwayGraph::from_railway_elements(<span class="kw-2">&amp;</span>elements);
+        <span class="kw">let </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>elements);
         <span class="kw">let </span>dot_string = generate_dot_string(<span class="kw-2">&amp;</span>railway_graph).unwrap();
         <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>dot_string);
 
@@ -405,7 +405,7 @@
             },
         ];
 
-        <span class="kw">let </span>railway_graph = RailwayGraph::from_railway_elements(<span class="kw-2">&amp;</span>elements);
+        <span class="kw">let </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>elements);
         <span class="kw">let </span>svg_string = generate_svg_string(<span class="kw-2">&amp;</span>railway_graph).unwrap();
 
         <span class="macro">assert!</span>(svg_string.contains(<span class="string">&quot;&lt;svg&quot;</span>));
