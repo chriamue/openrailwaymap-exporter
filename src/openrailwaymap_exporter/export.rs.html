@@ -210,10 +210,14 @@
 <a href="#210" id="210">210</a>
 <a href="#211" id="211">211</a>
 <a href="#212" id="212">212</a>
-</pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::RailwayGraph;
-<span class="kw">use </span>petgraph::dot::{Config, Dot};
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+</pre><pre class="rust"><code><span class="kw">use </span>petgraph::dot::{Config, Dot};
 <span class="kw">use </span>petgraph::visit::{IntoNodeReferences, NodeRef};
 <span class="kw">use </span>std::error::Error;
+
+<span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
 
 <span class="doccomment">/// Generates a DOT string representation of a given RailwayGraph.
 ///
@@ -230,10 +234,9 @@
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::RailwayGraph;
-/// use openrailwaymap_exporter::generate_dot_string;
-/// use openrailwaymap_exporter::from_railway_elements;
-/// use openrailwaymap_exporter::{RailwayElement, ElementType};
+/// use openrailwaymap_exporter::prelude::overpass_api_client::RailwayElement;
+/// use openrailwaymap_exporter::prelude::generate_dot_string;
+/// use openrailwaymap_exporter::prelude::from_railway_elements;
 ///
 /// let elements = vec![
 ///     RailwayElement::new_with_id(1),
@@ -316,9 +319,12 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::collections::HashMap;
 
+    <span class="kw">use </span><span class="kw">crate</span>::prelude::{
+        from_railway_elements,
+        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    };
+
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::railway_element::{ElementType, RailwayElement};
-    <span class="kw">use crate</span>::{from_railway_elements, Coordinate};
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_generate_dot_string() {
