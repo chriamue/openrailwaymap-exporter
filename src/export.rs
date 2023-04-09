@@ -64,9 +64,9 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
         let edge_data = edge.weight();
 
         let mut path_data = String::new();
-        for (i, coord) in edge_data.path.iter().enumerate() {
-            let x = (coord.lon - min_coord.lon) * x_scale;
-            let y = height - (coord.lat - min_coord.lat) * y_scale;
+        for (i, coord) in edge_data.path.0.iter().enumerate() {
+            let x = (coord.x - min_coord.lon) * x_scale;
+            let y = height - (coord.y - min_coord.lat) * y_scale;
 
             if i == 0 {
                 path_data.push_str(&format!("M {} {}", x, y));

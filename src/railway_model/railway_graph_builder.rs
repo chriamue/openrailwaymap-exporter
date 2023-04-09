@@ -1,6 +1,7 @@
 use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
 use crate::RailwayElement;
 use crate::{Coordinate, ElementType};
+use geo_types::{coord, LineString};
 use geoutils::Location;
 use petgraph::graph::Graph;
 use petgraph::stable_graph::NodeIndex;
@@ -80,7 +81,12 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                         RailwayEdge {
                             id: element.id,
                             length,
-                            path: geometry.clone(),
+                            path: LineString::from(
+                                geometry
+                                    .iter()
+                                    .map(|coord| coord! { x: coord.lon, y: coord.lat })
+                                    .collect::<Vec<_>>(),
+                            ),
                         },
                     );
                 }
