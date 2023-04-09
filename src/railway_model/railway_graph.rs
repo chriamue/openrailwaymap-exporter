@@ -129,10 +129,8 @@ impl RailwayGraph {
 
                     let (node_id, node_index) =
                         find_next_existing_node(None, nodes_ids, &node_indices);
-                    let (next_node_id, next_node_index) =
+                    let (_next_node_id, next_node_index) =
                         find_next_existing_node(node_id, nodes_ids, &node_indices);
-
-                    println!("{:?}, {:?}, {:?}", &node_id, next_node_id, nodes_ids);
 
                     if let (Some(node_index), Some(next_node_index)) = (node_index, next_node_index)
                     {

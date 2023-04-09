@@ -72,6 +72,38 @@ cargo run -- --area "Frankfurt am Main" --svg -o output.svg
 
 3. Open your browser on [Localhost](http://localhost:8000)
 
+## Running Tests
+
+To run tests, use the following command:
+
+```sh
+cargo test
+```
+
+## Running Benchmarks
+
+To run benchmarks, use the following command:
+
+```sh
+cargo bench
+```
+
+## Profiling with Flamegraph
+
+To create a flamegraph for a specific example, first, make sure you have `cargo-flamegraph` installed:
+
+```sh
+cargo install flamegraph
+```
+
+Then, run the following command:
+
+```sh
+cargo flamegraph --dev --example vilbel
+```
+
+This will generate a flamegraph.svg for the vilbel example.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.

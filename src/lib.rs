@@ -13,7 +13,7 @@ mod railway_model;
 mod railway_processing;
 
 #[cfg(test)]
-mod tests;
+pub mod tests;
 
 #[cfg(target_arch = "wasm32")]
 pub use self::app::*;
