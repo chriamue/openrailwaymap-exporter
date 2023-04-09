@@ -1,3 +1,8 @@
+//! Export module for the OpenRailwayMap Exporter.
+//!
+//! This module provides functions to generate a DOT or SVG string representation of a RailwayGraph.
+//! The generated strings can be used to visualize the railway infrastructure data.
+
 use petgraph::dot::{Config, Dot};
 use petgraph::visit::{IntoNodeReferences, NodeRef};
 use std::error::Error;

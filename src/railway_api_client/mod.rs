@@ -1,3 +1,9 @@
+//! Railway API Client module for the OpenRailwayMap Exporter.
+//!
+//! This module provides a trait and an implementation for fetching railway infrastructure data
+//! from an API. The `RailwayApiClient` trait provides a common asynchronous interface for
+//! fetching data by area name or bounding box.
+//!
 use anyhow::Result;
 use async_trait::async_trait;
 use serde_json::Value;

@@ -1,12 +1,26 @@
+//! # OpenRailwayMap Exporter
+//!
+//! A library to fetch railway infrastructure data from an API, process it, and export the results.
+//!
+//! The `openrailwaymap_exporter` crate is designed to help you work with railway infrastructure data.
+//! It provides an API client for fetching data, a railway model for representing and processing the
+//! data, and an export module for generating various output formats.
+//!
+//! The primary modules included in the crate are:
+//! - `railway_api_client`: Contains the API client to fetch railway infrastructure data.
+//! - `railway_model`: Contains data structures and functions to work with the railway infrastructure data.
+//! - `export`: Provides functionality to export the railway data in different formats.
+//! - `app`: Provides a web application for displaying and interacting with the data (only available when targeting WebAssembly).
+
 #![warn(missing_docs)]
 #![doc = include_str!("../README.md")]
 
 #[cfg(target_arch = "wasm32")]
-mod app;
+pub mod app;
 
-mod export;
-mod railway_api_client;
-mod railway_model;
+pub mod export;
+pub mod railway_api_client;
+pub mod railway_model;
 
 #[cfg(test)]
 pub mod tests;
