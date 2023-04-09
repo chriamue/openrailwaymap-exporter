@@ -3,7 +3,7 @@
 /// # Examples
 ///
 /// ```
-/// use openrailwaymap_exporter::RailwayNode;
+/// use openrailwaymap_exporter::prelude::RailwayNode;
 ///
 /// let node = RailwayNode {
 ///     id: 1,

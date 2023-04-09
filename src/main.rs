@@ -1,6 +1,7 @@
-use openrailwaymap_exporter::{
-    from_railway_elements, generate_dot_string, generate_svg_string, BasicOpenRailwayMapApiClient,
-    OpenRailwayMapApiClient, RailwayElement,
+use openrailwaymap_exporter::prelude::overpass_api_client::RailwayElement;
+use openrailwaymap_exporter::prelude::{
+    from_railway_elements, generate_dot_string, generate_svg_string, OverpassApiClient,
+    RailwayApiClient,
 };
 use std::fs::File;
 use std::io::Write;
@@ -50,8 +51,7 @@ struct Opt {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Opt::from_args();
 
-    let api_client: Box<dyn OpenRailwayMapApiClient> =
-        Box::new(BasicOpenRailwayMapApiClient::new());
+    let api_client: Box<dyn RailwayApiClient> = Box::new(OverpassApiClient::new());
 
     let api_json_value = if let Some(area) = &opt.area {
         api_client.fetch_by_area_name(area).await?

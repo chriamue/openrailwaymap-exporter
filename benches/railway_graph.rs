@@ -1,6 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use openrailwaymap_exporter::RailwayElement;
-use openrailwaymap_exporter::{find_next_existing_node, from_railway_elements};
+
+use openrailwaymap_exporter::prelude::{
+    find_next_existing_node, from_railway_elements, overpass_api_client::RailwayElement,
+};
 use petgraph::stable_graph::NodeIndex;
 use std::collections::HashMap;
 

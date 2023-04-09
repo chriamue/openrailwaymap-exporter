@@ -3,9 +3,10 @@ use std::collections::HashMap;
 use petgraph::{Graph, Undirected};
 use serde_json::Value;
 
-use crate::{
-    count_way_elements, create_nodes, find_next_existing_node, from_railway_elements, RailwayEdge,
-    RailwayElement, RailwayNode,
+use crate::prelude::{
+    create_nodes, find_next_existing_node, from_railway_elements,
+    overpass_api_client::{count_way_elements, RailwayElement},
+    RailwayEdge, RailwayNode,
 };
 
 pub fn test_json_1() -> Value {

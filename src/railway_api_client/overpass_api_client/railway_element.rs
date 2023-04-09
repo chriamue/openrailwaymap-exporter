@@ -1,7 +1,8 @@
-use crate::Coordinate;
 use serde::{ser::Error, Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
+
+use super::Coordinate;
 
 /// Represents the type of a `RailwayElement`.
 ///
@@ -31,8 +32,7 @@ pub enum ElementType {
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::{RailwayElement, ElementType};
-///
+/// use openrailwaymap_exporter::prelude::overpass_api_client::{ElementType, RailwayElement};
 /// let element = RailwayElement::new_with_id(1);
 /// assert_eq!(element.id, 1);
 /// assert_eq!(element.element_type, ElementType::Node);
@@ -120,8 +120,8 @@ impl RailwayElement {
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::{ElementType, RailwayElement};
-/// use openrailwaymap_exporter::count_way_elements;
+/// use openrailwaymap_exporter::prelude::overpass_api_client::count_way_elements;
+/// use openrailwaymap_exporter::prelude::overpass_api_client::{ElementType, RailwayElement};
 /// use std::collections::HashMap;
 ///
 /// let elements = vec![

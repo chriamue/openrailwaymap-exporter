@@ -2,14 +2,18 @@ use anyhow::Result;
 use async_trait::async_trait;
 use serde_json::Value;
 
-/// A trait for implementing an OpenRailwayMap API client.
+/// overpass api client
+pub mod overpass_api_client;
+pub use overpass_api_client::OverpassApiClient;
+
+/// A trait for implementing an Railway API client.
 ///
-/// `OpenRailwayMapApiClient` is an asynchronous trait that provides a common interface
-/// for fetching OpenRailwayMap data by area name or bounding box.
+/// `RailwayApiClient` is an asynchronous trait that provides a common interface
+/// for fetching data by area name or bounding box.
 ///
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
-pub trait OpenRailwayMapApiClient {
+pub trait RailwayApiClient {
     /// Connect to the OpenRailwayMap API using the specified URL.
     ///
     /// # Arguments

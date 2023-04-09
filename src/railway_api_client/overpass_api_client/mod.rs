@@ -1,22 +1,30 @@
-use crate::openrailwaymap_api_client::OpenRailwayMapApiClient;
+use super::RailwayApiClient;
 use anyhow::Result;
 use async_trait::async_trait;
 use reqwest::Client;
 use serde_json::Value;
 
+mod coordinate;
+mod railway_element;
+
+pub use self::railway_element::{
+    count_node_elements, count_way_elements, ElementType, RailwayElement,
+};
+pub use coordinate::Coordinate;
+
 /// A basic client for the OpenRailwayMap API.
 ///
-pub struct BasicOpenRailwayMapApiClient {
+pub struct OverpassApiClient {
     url: Option<String>,
 }
 
 #[cfg(target_arch = "wasm32")]
-unsafe impl Send for BasicOpenRailwayMapApiClient {}
+unsafe impl Send for OverpassApiClient {}
 
-impl BasicOpenRailwayMapApiClient {
-    /// Creates a new `BasicOpenRailwayMapApiClient` with no specified API URL.
+impl OverpassApiClient {
+    /// Creates a new `OverpassApiClient` with no specified API URL.
     pub fn new() -> Self {
-        BasicOpenRailwayMapApiClient { url: None }
+        OverpassApiClient { url: None }
     }
 
     async fn fetch_by_query(&self, query: &str) -> Result<Value> {
@@ -39,7 +47,7 @@ impl BasicOpenRailwayMapApiClient {
     }
 }
 
-impl Default for BasicOpenRailwayMapApiClient {
+impl Default for OverpassApiClient {
     fn default() -> Self {
         Self::new()
     }
@@ -47,7 +55,7 @@ impl Default for BasicOpenRailwayMapApiClient {
 
 #[cfg_attr(target_arch = "wasm32", async_trait(?Send))]
 #[cfg_attr(not(target_arch = "wasm32"), async_trait)]
-impl OpenRailwayMapApiClient for BasicOpenRailwayMapApiClient {
+impl RailwayApiClient for OverpassApiClient {
     async fn connect(&mut self, url: &str) -> Result<()> {
         self.url = Some(url.to_string());
 

@@ -1,4 +1,6 @@
-use openrailwaymap_exporter::{from_railway_elements, RailwayElement};
+use openrailwaymap_exporter::prelude::{
+    from_railway_elements, overpass_api_client::RailwayElement,
+};
 
 fn railway_elements() -> Vec<RailwayElement> {
     let test_data = serde_json::from_slice(include_bytes!("../src/tests/res/vilbel.json"))

@@ -1,7 +1,8 @@
-use crate::Coordinate;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
+
+use crate::prelude::overpass_api_client::Coordinate;
 
 use super::{RailwayEdge, RailwayNode};
 
@@ -80,8 +81,10 @@ impl RailwayGraph {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{from_railway_elements, ElementType, RailwayElement};
+    use crate::prelude::{
+        from_railway_elements,
+        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    };
     use std::collections::HashMap;
 
     #[test]

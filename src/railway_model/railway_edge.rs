@@ -5,7 +5,7 @@ use geo_types::LineString;
 /// # Examples
 ///
 /// ```
-/// use openrailwaymap_exporter::RailwayEdge;
+/// use openrailwaymap_exporter::prelude::RailwayEdge;
 /// use geo_types::{coord, LineString};
 ///
 /// let edge = RailwayEdge {

@@ -4,25 +4,19 @@
 #[cfg(target_arch = "wasm32")]
 mod app;
 
-mod basis_openrailwaymap_api_client;
-mod coordinate;
 mod export;
-mod openrailwaymap_api_client;
-mod railway_element;
+mod railway_api_client;
 mod railway_model;
-//mod railway_processing;
 
 #[cfg(test)]
 pub mod tests;
 
-#[cfg(target_arch = "wasm32")]
-pub use self::app::*;
-pub use self::basis_openrailwaymap_api_client::BasicOpenRailwayMapApiClient;
-pub use self::coordinate::Coordinate;
-pub use self::export::*;
-pub use self::openrailwaymap_api_client::OpenRailwayMapApiClient;
-pub use self::railway_element::{
-    count_node_elements, count_way_elements, ElementType, RailwayElement,
-};
-pub use self::railway_model::*;
-//pub use self::railway_processing::*;
+/// This prelude re-exports the most commonly used items from the library.
+pub mod prelude {
+    #[cfg(target_arch = "wasm32")]
+    pub use super::app::*;
+    pub use super::export::*;
+    pub use super::railway_api_client::overpass_api_client;
+    pub use super::railway_api_client::{OverpassApiClient, RailwayApiClient};
+    pub use super::railway_model::*;
+}

@@ -1,6 +1,7 @@
-use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
-use crate::RailwayElement;
-use crate::{Coordinate, ElementType};
+use crate::{
+    prelude::overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    railway_model::{RailwayEdge, RailwayGraph, RailwayNode},
+};
 use geo_types::{coord, LineString};
 use geoutils::Location;
 use petgraph::graph::Graph;
@@ -23,9 +24,8 @@ use std::collections::{HashMap, HashSet};
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::{ElementType, RailwayElement};
-/// use openrailwaymap_exporter::Coordinate;
-/// use openrailwaymap_exporter::from_railway_elements;
+/// use openrailwaymap_exporter::prelude::overpass_api_client::{ElementType, RailwayElement, Coordinate};
+/// use openrailwaymap_exporter::prelude::from_railway_elements;
 /// use std::collections::HashMap;
 ///
 /// let elements = vec![
@@ -121,7 +121,7 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
 /// ```
 /// use std::collections::HashMap;
 /// use petgraph::stable_graph::NodeIndex;
-/// use openrailwaymap_exporter::find_next_existing_node;
+/// use openrailwaymap_exporter::prelude::find_next_existing_node;
 ///
 /// let node_ids = vec![1, 3, 5];
 /// let mut node_indices = HashMap::new();
@@ -168,8 +168,8 @@ fn calculate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// use openrailwaymap_exporter::Coordinate;
-/// use openrailwaymap_exporter::calculate_geometry_length;
+/// use openrailwaymap_exporter::prelude::overpass_api_client::Coordinate;
+/// use openrailwaymap_exporter::prelude::calculate_geometry_length;
 ///
 /// let geometry = vec![
 ///     Coordinate { lat: 1.0, lon: 1.0 },
@@ -207,8 +207,8 @@ pub fn calculate_geometry_length(geometry: &[Coordinate]) -> f64 {
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::{RailwayElement, ElementType};
-/// use openrailwaymap_exporter::create_nodes;
+/// use openrailwaymap_exporter::prelude::create_nodes;
+/// use openrailwaymap_exporter::prelude::overpass_api_client::{ElementType, RailwayElement};
 /// use std::collections::HashMap;
 ///
 /// let elements = vec![
@@ -327,7 +327,6 @@ fn create_nodes_from_way_elements_without_existing(
 
 #[cfg(test)]
 mod tests {
-    use crate::ElementType;
 
     use super::*;
 

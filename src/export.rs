@@ -1,7 +1,8 @@
-use crate::RailwayGraph;
 use petgraph::dot::{Config, Dot};
 use petgraph::visit::{IntoNodeReferences, NodeRef};
 use std::error::Error;
+
+use crate::prelude::RailwayGraph;
 
 /// Generates a DOT string representation of a given RailwayGraph.
 ///
@@ -18,10 +19,9 @@ use std::error::Error;
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::RailwayGraph;
-/// use openrailwaymap_exporter::generate_dot_string;
-/// use openrailwaymap_exporter::from_railway_elements;
-/// use openrailwaymap_exporter::{RailwayElement, ElementType};
+/// use openrailwaymap_exporter::prelude::overpass_api_client::RailwayElement;
+/// use openrailwaymap_exporter::prelude::generate_dot_string;
+/// use openrailwaymap_exporter::prelude::from_railway_elements;
 ///
 /// let elements = vec![
 ///     RailwayElement::new_with_id(1),
@@ -104,9 +104,12 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
 mod tests {
     use std::collections::HashMap;
 
+    use crate::prelude::{
+        from_railway_elements,
+        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    };
+
     use super::*;
-    use crate::railway_element::{ElementType, RailwayElement};
-    use crate::{from_railway_elements, Coordinate};
 
     #[test]
     fn test_generate_dot_string() {

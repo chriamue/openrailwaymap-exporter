@@ -1,11 +1,8 @@
-use crate::count_node_elements;
-use crate::count_way_elements;
-use crate::from_railway_elements;
-use crate::generate_svg_string;
-use crate::BasicOpenRailwayMapApiClient;
-use crate::OpenRailwayMapApiClient;
-use crate::RailwayElement;
-use crate::RailwayGraph;
+use crate::prelude::overpass_api_client::{
+    count_node_elements, count_way_elements, RailwayElement,
+};
+use crate::prelude::{from_railway_elements, generate_svg_string};
+use crate::prelude::{OverpassApiClient, RailwayApiClient, RailwayGraph};
 use wasm_bindgen::prelude::*;
 use web_sys::EventTarget;
 use web_sys::HtmlInputElement;
@@ -62,7 +59,7 @@ impl Component for App {
                 let area_name = self.input_area.clone();
                 let callback = self.link.callback(Msg::GraphLoaded);
                 wasm_bindgen_futures::spawn_local(async move {
-                    let client = BasicOpenRailwayMapApiClient::new();
+                    let client = OverpassApiClient::new();
 
                     let api_json_value = {
                         if area_name.contains(",") {
