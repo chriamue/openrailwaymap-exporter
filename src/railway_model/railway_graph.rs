@@ -61,4 +61,126 @@ impl RailwayGraph {
             },
         )
     }
+
+    /// Calculate the total length of the railway network.
+    ///
+    /// The total length is the sum of the lengths of all edges in the graph.
+    ///
+    /// # Returns
+    ///
+    /// A `f64` value representing the total length of the railway network in meters.
+    ///
+    pub fn total_length(&self) -> f64 {
+        self.graph
+            .edge_references()
+            .map(|edge| edge.weight().length)
+            .sum()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{from_railway_elements, ElementType, RailwayElement};
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_bounding_box() {
+        let mut tags = HashMap::new();
+        tags.insert("railway".to_string(), "station".to_string());
+
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Node,
+                lat: Some(51.1109),
+                lon: Some(9.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Node,
+                lat: Some(49.1109),
+                lon: Some(7.6821),
+                tags: Some(tags),
+                nodes: None,
+                geometry: None,
+            },
+        ];
+
+        let railway_graph = from_railway_elements(&elements);
+        let (min_coord, max_coord) = railway_graph.bounding_box();
+
+        assert_eq!(
+            min_coord,
+            Coordinate {
+                lat: 49.1109,
+                lon: 7.6821
+            }
+        );
+        assert_eq!(
+            max_coord,
+            Coordinate {
+                lat: 51.1109,
+                lon: 9.6821
+            }
+        );
+    }
+
+    #[test]
+    fn test_total_length() {
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Node,
+                lat: Some(50.1119),
+                lon: Some(8.6831),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![1, 2]),
+                geometry: Some(vec![
+                    Coordinate {
+                        lat: 50.1109,
+                        lon: 8.6821,
+                    },
+                    Coordinate {
+                        lat: 50.1119,
+                        lon: 8.6831,
+                    },
+                ]),
+            },
+        ];
+
+        let railway_graph = from_railway_elements(&elements);
+        let total_length = railway_graph.total_length();
+        assert_eq!(total_length, 132.246);
+    }
 }

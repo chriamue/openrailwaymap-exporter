@@ -337,60 +337,6 @@ mod tests {
     }
 
     #[test]
-    fn test_bounding_box() {
-        let mut tags = HashMap::new();
-        tags.insert("railway".to_string(), "station".to_string());
-
-        let elements = vec![
-            RailwayElement {
-                id: 1,
-                element_type: ElementType::Node,
-                lat: Some(50.1109),
-                lon: Some(8.6821),
-                tags: Some(tags.clone()),
-                nodes: None,
-                geometry: None,
-            },
-            RailwayElement {
-                id: 2,
-                element_type: ElementType::Node,
-                lat: Some(51.1109),
-                lon: Some(9.6821),
-                tags: Some(tags.clone()),
-                nodes: None,
-                geometry: None,
-            },
-            RailwayElement {
-                id: 3,
-                element_type: ElementType::Node,
-                lat: Some(49.1109),
-                lon: Some(7.6821),
-                tags: Some(tags),
-                nodes: None,
-                geometry: None,
-            },
-        ];
-
-        let railway_graph = from_railway_elements(&elements);
-        let (min_coord, max_coord) = railway_graph.bounding_box();
-
-        assert_eq!(
-            min_coord,
-            Coordinate {
-                lat: 49.1109,
-                lon: 7.6821
-            }
-        );
-        assert_eq!(
-            max_coord,
-            Coordinate {
-                lat: 51.1109,
-                lon: 9.6821
-            }
-        );
-    }
-
-    #[test]
     fn test_from_railway_elements() {
         let elements = vec![
             RailwayElement {

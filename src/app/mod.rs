@@ -5,6 +5,7 @@ use crate::generate_svg_string;
 use crate::BasicOpenRailwayMapApiClient;
 use crate::OpenRailwayMapApiClient;
 use crate::RailwayElement;
+use crate::RailwayGraph;
 use wasm_bindgen::prelude::*;
 use web_sys::EventTarget;
 use web_sys::HtmlInputElement;
@@ -22,6 +23,7 @@ pub struct App {
     loading: bool,
     switch_count: u32,
     track_count: u32,
+    total_length: f64,
 }
 
 /// Represents the messages that can be sent to the `App` component.
@@ -31,7 +33,7 @@ pub enum Msg {
     /// Button clicked.
     GetGraph,
     /// Update Graph with loaded data.
-    GraphLoaded((Vec<RailwayElement>, String)),
+    GraphLoaded((Vec<RailwayElement>, RailwayGraph, String)),
 }
 
 impl Component for App {
@@ -46,6 +48,7 @@ impl Component for App {
             loading: false,
             switch_count: 0,
             track_count: 0,
+            total_length: 0.0,
         }
     }
 
@@ -75,12 +78,13 @@ impl Component for App {
                     let railway_elements = RailwayElement::from_json(&api_json_value).unwrap();
                     let graph = from_railway_elements(&railway_elements);
                     let svg_string = generate_svg_string(&graph).unwrap();
-                    callback.emit((railway_elements, svg_string.to_string()));
+                    callback.emit((railway_elements, graph, svg_string.to_string()));
                 });
             }
-            Msg::GraphLoaded((railway_elements, svg_string)) => {
+            Msg::GraphLoaded((railway_elements, graph, svg_string)) => {
                 self.switch_count = count_node_elements(&railway_elements) as u32;
                 self.track_count = count_way_elements(&railway_elements) as u32;
+                self.total_length = graph.total_length();
                 self.loading = false;
                 self.graph_svg = svg_string;
             }
@@ -114,7 +118,7 @@ impl Component for App {
                     />
                     <button onclick={self.link.callback(|_| Msg::GetGraph)}>{ "Get Graph" }</button>
                 </div>
-                <Statistics switches={self.switch_count} tracks={self.track_count} />
+                <Statistics switches={self.switch_count} tracks={self.track_count} total_length={self.total_length} />
                 {loading_message}
                 <div>{svg}</div>
             </>

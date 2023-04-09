@@ -6,6 +6,7 @@ pub struct Statistics {}
 pub struct Props {
     pub switches: u32,
     pub tracks: u32,
+    pub total_length: f64,
 }
 
 impl Component for Statistics {
@@ -26,6 +27,7 @@ impl Component for Statistics {
                 <h2>{ "Statistics" }</h2>
                 <p>{ format!("Switches: {}", ctx.props().switches) }</p>
                 <p>{ format!("Tracks: {}", ctx.props().tracks) }</p>
+                <p>{ format!("Total Length: {:.0} m", ctx.props().total_length) }</p>
             </div>
         }
     }
