@@ -1,0 +1,27 @@
+@startuml overview
+
+package "app" {
+    class "Statistics" as Statistics
+}
+
+package "railway_api_client" {
+    interface "RailwayApiClient" as RailwayApiClient
+    class "OverpassApiClient" as OverpassApiClient
+}
+
+package "railway_model" {
+    class "RailwayEdge" as RailwayEdge
+    class "RailwayGraphBuilder" as RailwayGraphBuilder
+    class "RailwayGraph" as RailwayGraph
+    class "RailwayNode" as RailwayNode
+}
+
+Statistics -down-> RailwayGraph : displays statistics
+RailwayApiClient <|.. OverpassApiClient : implements
+RailwayGraphBuilder -down-> RailwayEdge : builds
+RailwayGraphBuilder -down-> RailwayNode : builds
+RailwayGraphBuilder --> RailwayApiClient : retrieves data
+RailwayGraph -down-> RailwayEdge : contains
+RailwayGraph -down-> RailwayNode : contains
+
+@enduml

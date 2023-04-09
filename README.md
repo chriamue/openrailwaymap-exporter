@@ -9,6 +9,8 @@
 
 A command-line tool built with Rust that fetches railway data from OpenRailwayMap using the Overpass API and exports it into a custom format.
 
+![Overview](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/chriamue/openrailwaymap-exporter/main/overview.puml)
+
 ## Features
 
 - Downloads railway data using Overpass API
