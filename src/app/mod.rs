@@ -158,3 +158,8 @@ pub fn init_app(root: web_sys::Element) {
     console_error_panic_hook::set_once();
     yew::Renderer::<App>::with_root(root).render();
 }
+
+#[cfg(test)]
+mod tests {
+    wasm_bindgen_test::wasm_bindgen_test_configure!(run_in_browser);
+}

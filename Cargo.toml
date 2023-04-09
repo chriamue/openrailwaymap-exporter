@@ -39,7 +39,9 @@ console_error_panic_hook = "0.1"
 
 [dev-dependencies]
 tokio = { version = "1.13", features = ["rt", "macros"] }
-criterion = { version = "0.4" }
+criterion = { version = "0.4", default-features = false }
+wasm-bindgen-test = "0.3.33"
+yew = { version = "0.20.0", features = ["csr", "ssr"] }
 
 [[bench]]
 name = "railway_graph"

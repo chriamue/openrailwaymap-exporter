@@ -32,3 +32,25 @@ impl Component for Statistics {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[wasm_bindgen_test::wasm_bindgen_test]
+    async fn test_render() {
+        let props = Props {
+            switches: 5,
+            tracks: 10,
+            total_length: 1500.0,
+        };
+        let rendered = yew::LocalServerRenderer::<Statistics>::with_props(props)
+            .render()
+            .await;
+
+        assert!(rendered.contains("<h2>Statistics</h2>"));
+        assert!(rendered.contains("Switches: 5"));
+        assert!(rendered.contains("Tracks: 10"));
+        assert!(rendered.contains("Total Length: 1500 m"));
+    }
+}
