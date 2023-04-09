@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["prelude","This prelude re-exports the most commonly used items from the library."]]};
+window.SIDEBAR_ITEMS = {"mod":[["export","Export module for the OpenRailwayMap Exporter."],["prelude","This prelude re-exports the most commonly used items from the library."],["railway_api_client","Railway API Client module for the OpenRailwayMap Exporter."],["railway_model","Railway Model module for the OpenRailwayMap Exporter."]]};
