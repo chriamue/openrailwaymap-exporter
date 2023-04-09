@@ -80,6 +80,7 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                         RailwayEdge {
                             id: element.id,
                             length,
+                            path: geometry.clone(),
                         },
                     );
                 }

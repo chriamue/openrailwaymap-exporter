@@ -1,6 +1,6 @@
 use crate::RailwayGraph;
 use petgraph::dot::{Config, Dot};
-use petgraph::visit::{EdgeRef, IntoNodeReferences, NodeRef};
+use petgraph::visit::{IntoNodeReferences, NodeRef};
 use std::error::Error;
 
 /// Generates a DOT string representation of a given RailwayGraph.
@@ -61,19 +61,23 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
     let mut svg_nodes = String::new();
 
     for edge in graph.graph.edge_references() {
-        let source = edge.source();
-        let target = edge.target();
-        let source_node = &graph.graph[source];
-        let target_node = &graph.graph[target];
+        let edge_data = edge.weight();
 
-        let x1 = (source_node.lon - min_coord.lon) * x_scale;
-        let y1 = height - (source_node.lat - min_coord.lat) * y_scale;
-        let x2 = (target_node.lon - min_coord.lon) * x_scale;
-        let y2 = height - (target_node.lat - min_coord.lat) * y_scale;
+        let mut path_data = String::new();
+        for (i, coord) in edge_data.path.iter().enumerate() {
+            let x = (coord.lon - min_coord.lon) * x_scale;
+            let y = height - (coord.lat - min_coord.lat) * y_scale;
+
+            if i == 0 {
+                path_data.push_str(&format!("M {} {}", x, y));
+            } else {
+                path_data.push_str(&format!(" L {} {}", x, y));
+            }
+        }
 
         svg_edges.push_str(&format!(
-            r#"<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="black" stroke-width="2" />"#,
-            x1, y1, x2, y2
+            r#"<path d="{}" stroke="black" stroke-width="2" fill="none" />"#,
+            path_data
         ));
     }
 
@@ -203,6 +207,6 @@ mod tests {
         assert!(svg_string.contains("<svg"));
         assert!(svg_string.contains("</svg>"));
         assert!(svg_string.contains("<circle"));
-        assert!(svg_string.contains("<line"));
+        assert!(svg_string.contains("<path"));
     }
 }
