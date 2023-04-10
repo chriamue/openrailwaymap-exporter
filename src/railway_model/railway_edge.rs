@@ -18,7 +18,7 @@ use geo_types::LineString;
 /// };
 /// assert_eq!(edge.id, 1);
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct RailwayEdge {
     /// The ID of the edge, typically corresponding to the ID of the underlying `RailwayElement` (e.g., way).
     pub id: i64,

@@ -11,7 +11,7 @@ use super::{RailwayEdge, RailwayNode};
 /// The graph consists of nodes representing railway stations and junctions, and edges representing
 /// the railway segments between the nodes. It also stores the node indices as a HashMap for easy
 /// retrieval.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct RailwayGraph {
     /// The internal graph used to represent the railway network.
     ///
@@ -24,6 +24,13 @@ pub struct RailwayGraph {
     /// This HashMap allows for quick and easy retrieval of node indices based on their IDs.
     pub node_indices: HashMap<i64, NodeIndex>,
 }
+
+impl PartialEq for RailwayGraph {
+    fn eq(&self, other: &Self) -> bool {
+        self.node_indices.eq(&other.node_indices)
+    }
+}
+
 impl RailwayGraph {
     /// Calculate the bounding box of the graph.
     ///

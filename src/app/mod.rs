@@ -25,6 +25,7 @@ pub struct App {
     track_count: u32,
     total_length: f64,
     show_svg: bool,
+    graph: Option<RailwayGraph>,
 }
 
 /// Represents the messages that can be sent to the `App` component.
@@ -52,6 +53,7 @@ impl Component for App {
             track_count: 0,
             total_length: 0.0,
             show_svg: true,
+            graph: None,
         }
     }
 
@@ -90,6 +92,7 @@ impl Component for App {
                 self.total_length = graph.total_length();
                 self.loading = false;
                 self.graph_svg = svg_string;
+                self.graph = Some(graph);
             }
             Msg::ToggleView => {
                 self.show_svg = !self.show_svg;
@@ -115,7 +118,7 @@ impl Component for App {
             }
         } else {
             html! {
-                <Kiss3dComponent />
+                <Kiss3dComponent graph={self.graph.clone()} />
             }
         };
 

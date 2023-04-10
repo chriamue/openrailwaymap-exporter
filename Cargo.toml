@@ -16,7 +16,6 @@ anyhow = "1.0"
 async-trait = "0.1.68"
 geoutils = "0.5.1"
 geo-types = "0.7.9"
-kiss3d = "0.32"
 petgraph = "0.6.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
@@ -30,6 +29,7 @@ reqwest = { version = "0.11", features = ["blocking", "json"] }
 tokio = { version = "1.0", features = ["full"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
+kiss3d = "0.32"
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3.59" }
 yew = { version = "0.20.0", features = ["csr"] }

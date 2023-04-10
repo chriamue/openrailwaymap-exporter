@@ -1,3 +1,4 @@
+use crate::prelude::RailwayGraph;
 use kiss3d::light::Light;
 use kiss3d::nalgebra::{Point3, Vector3};
 use kiss3d::scene::SceneNode;
@@ -9,7 +10,11 @@ use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-pub struct Kiss3dComponent {
+pub struct Kiss3dComponent {}
+
+#[derive(PartialEq, Properties)]
+pub struct Props {
+    pub graph: Option<RailwayGraph>,
 }
 
 #[derive(Clone)]
@@ -25,7 +30,7 @@ pub enum Msg {}
 
 impl Component for Kiss3dComponent {
     type Message = Msg;
-    type Properties = ();
+    type Properties = Props;
 
     fn create(_: &Context<Self>) -> Self {
         Self {}
