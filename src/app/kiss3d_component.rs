@@ -2,19 +2,15 @@ use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayNode;
 use instant::Instant;
 use kiss3d::camera::{ArcBall, Camera};
-use kiss3d::event::Modifiers;
-use kiss3d::event::{Action, Key, WindowEvent};
+use kiss3d::event::{Action, Key, Modifiers, WindowEvent};
 use kiss3d::light::Light;
 use kiss3d::nalgebra::{Point2, Point3};
 use kiss3d::planar_camera::PlanarCamera;
 use kiss3d::post_processing::PostProcessingEffect;
 use kiss3d::renderer::Renderer;
 use kiss3d::text::Font;
-use kiss3d::window::State;
-use kiss3d::window::Window;
-use petgraph::visit::EdgeRef;
-use petgraph::visit::IntoNodeReferences;
-use petgraph::visit::NodeRef;
+use kiss3d::window::{State, Window};
+use petgraph::visit::{EdgeRef, IntoNodeReferences, NodeRef};
 use std::rc::Rc;
 use yew::prelude::*;
 
@@ -35,20 +31,19 @@ struct AppState {
     total_nodes: usize,
     last_frame_time: Instant,
 }
+
 impl AppState {
     fn get_3d_coordinates(&self, coord: &RailwayNode) -> Point3<f32> {
-        let x = coord.lon as f32 * self.x_scale;
-        let y = coord.lat as f32 * self.y_scale;
-        let z = 0.0;
-
-        Point3::new(x, y, z)
+        Point3::new(
+            coord.lon as f32 * self.x_scale,
+            coord.lat as f32 * self.y_scale,
+            0.0,
+        )
     }
 
     fn add_nodes(&mut self, window: &mut Window) {
         for node in self.graph.graph.node_references() {
-            let node_data = node.weight();
-            let position = self.get_3d_coordinates(&node_data);
-            println!("Node position: {:?}", position); // Print node position
+            let position = self.get_3d_coordinates(node.weight());
 
             let mut sphere = window.add_sphere(2.0);
             sphere.set_color(0.0, 1.0, 0.0);
@@ -61,16 +56,15 @@ impl AppState {
             let start_node = self.graph.graph.node_weight(edge.source()).unwrap();
             let end_node = self.graph.graph.node_weight(edge.target()).unwrap();
 
-            let start = self.get_3d_coordinates(&start_node);
-            let end = self.get_3d_coordinates(&end_node);
+            let start = self.get_3d_coordinates(start_node);
+            let end = self.get_3d_coordinates(end_node);
             window.set_line_width(2.0);
             window.draw_line(&start, &end, &Point3::new(1.0, 0.0, 1.0));
         }
     }
 
     fn add_node_count_text(&mut self, window: &mut Window) {
-        let node_count = self.graph.graph.node_count();
-        let text = format!("Nodes: {}", node_count);
+        let text = format!("Nodes: {}", self.graph.graph.node_count());
         window.draw_text(
             &text,
             &Point2::new(0.0, 25.0),
@@ -81,20 +75,17 @@ impl AppState {
     }
 
     fn add_fps_text(&mut self, window: &mut Window) {
-        // Calculate the time delta and update the last frame time
         let now = Instant::now();
         let time_delta = now - self.last_frame_time;
         self.last_frame_time = now;
 
-        // Calculate the FPS and draw it as text on the screen
         let fps = 1.0 / time_delta.as_secs_f32();
         let fps_text = format!("{:.2} FPS", fps);
-        let font = Font::default();
         window.draw_text(
             &fps_text,
             &Point2::new(5.0, 5.0),
             30.0,
-            &font,
+            &self.font,
             &Point3::new(1.0, 1.0, 1.0),
         );
     }

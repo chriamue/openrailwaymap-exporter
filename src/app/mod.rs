@@ -7,10 +7,10 @@
 //! The `Msg` enum represents the different messages that can be sent to the `App` component to trigger
 //! state updates and UI changes.
 
+use crate::prelude::from_railway_elements;
 use crate::prelude::overpass_api_client::{
     count_node_elements, count_way_elements, RailwayElement,
 };
-use crate::prelude::{from_railway_elements, generate_svg_string};
 use crate::prelude::{OverpassApiClient, RailwayApiClient, RailwayGraph};
 use wasm_bindgen::prelude::*;
 use web_sys::EventTarget;
@@ -21,6 +21,9 @@ use yew::prelude::*;
 mod kiss3d_component;
 use kiss3d_component::Kiss3dComponent;
 
+mod svg_component;
+use svg_component::SvgComponent;
+
 mod statistics;
 use statistics::Statistics;
 
@@ -28,7 +31,6 @@ use statistics::Statistics;
 pub struct App {
     link: Scope<Self>,
     input_area: String,
-    graph_svg: String,
     loading: bool,
     switch_count: u32,
     track_count: u32,
@@ -44,7 +46,7 @@ pub enum Msg {
     /// Button clicked.
     GetGraph,
     /// Update Graph with loaded data.
-    GraphLoaded((Vec<RailwayElement>, RailwayGraph, String)),
+    GraphLoaded((Vec<RailwayElement>, RailwayGraph)),
     /// Toggle between svg and 3d.
     ToggleView,
 }
@@ -57,7 +59,6 @@ impl Component for App {
         App {
             link: _ctx.link().clone(),
             input_area: String::new(),
-            graph_svg: String::new(),
             loading: false,
             switch_count: 0,
             track_count: 0,
@@ -92,16 +93,14 @@ impl Component for App {
 
                     let railway_elements = RailwayElement::from_json(&api_json_value).unwrap();
                     let graph = from_railway_elements(&railway_elements);
-                    let svg_string = generate_svg_string(&graph).unwrap();
-                    callback.emit((railway_elements, graph, svg_string.to_string()));
+                    callback.emit((railway_elements, graph));
                 });
             }
-            Msg::GraphLoaded((railway_elements, graph, svg_string)) => {
+            Msg::GraphLoaded((railway_elements, graph)) => {
                 self.switch_count = count_node_elements(&railway_elements) as u32;
                 self.track_count = count_way_elements(&railway_elements) as u32;
                 self.total_length = graph.total_length();
                 self.loading = false;
-                self.graph_svg = svg_string;
                 self.graph = Some(graph);
             }
             Msg::ToggleView => {
@@ -124,7 +123,7 @@ impl Component for App {
 
         let view_content = if self.show_svg {
             html! {
-                <div>{ Html::from_html_unchecked(self.graph_svg.clone().into()) }</div>
+                <SvgComponent graph={self.graph.clone()} />
             }
         } else {
             html! {
