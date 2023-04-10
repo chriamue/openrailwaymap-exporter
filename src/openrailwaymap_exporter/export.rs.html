@@ -306,14 +306,14 @@
         ));
     }
 
-    <span class="kw">for </span>node <span class="kw">in </span>graph.graph.node_references() {
+    <span class="kw">for </span>(idx, node) <span class="kw">in </span>graph.graph.node_references().enumerate() {
         <span class="kw">let </span>node_data = node.weight();
         <span class="kw">let </span>x = (node_data.lon - min_coord.lon) * x_scale;
         <span class="kw">let </span>y = height - (node_data.lat - min_coord.lat) * y_scale;
 
         svg_nodes.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
-            <span class="string">r#&quot;&lt;circle cx=&quot;{}&quot; cy=&quot;{}&quot; r=&quot;5&quot; fill=&quot;red&quot; /&gt;&quot;#</span>,
-            x, y
+            <span class="string">r#&quot;&lt;g class=&quot;node&quot; onclick=&quot;onNodeClick(&#39;{:?}&#39;)&quot;&gt;&lt;circle cx=&quot;{}&quot; cy=&quot;{}&quot; r=&quot;5&quot; fill=&quot;red&quot; /&gt;&lt;/g&gt;&quot;#</span>,
+            idx, x, y
         ));
     }
 
