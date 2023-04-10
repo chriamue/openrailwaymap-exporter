@@ -1,3 +1,12 @@
+//! The `App` module contains the main application component and its associated messages.
+//!
+//! The `App` component is responsible for managing the state of the application, handling user input, and
+//! rendering the UI. The component uses the `RailwayApiClient` to fetch data from the Overpass API, and it
+//! displays the railway graph in either an SVG or a 3D view using the `Kiss3dComponent`.
+//!
+//! The `Msg` enum represents the different messages that can be sent to the `App` component to trigger
+//! state updates and UI changes.
+
 use crate::prelude::overpass_api_client::{
     count_node_elements, count_way_elements, RailwayElement,
 };
@@ -36,6 +45,7 @@ pub enum Msg {
     GetGraph,
     /// Update Graph with loaded data.
     GraphLoaded((Vec<RailwayElement>, RailwayGraph, String)),
+    /// Toggle between svg and 3d.
     ToggleView,
 }
 
