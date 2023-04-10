@@ -9,6 +9,9 @@ use web_sys::HtmlInputElement;
 use yew::html::Scope;
 use yew::prelude::*;
 
+mod kiss3d_component;
+use kiss3d_component::Kiss3dComponent;
+
 mod statistics;
 use statistics::Statistics;
 
@@ -21,6 +24,7 @@ pub struct App {
     switch_count: u32,
     track_count: u32,
     total_length: f64,
+    show_svg: bool,
 }
 
 /// Represents the messages that can be sent to the `App` component.
@@ -31,6 +35,7 @@ pub enum Msg {
     GetGraph,
     /// Update Graph with loaded data.
     GraphLoaded((Vec<RailwayElement>, RailwayGraph, String)),
+    ToggleView,
 }
 
 impl Component for App {
@@ -46,6 +51,7 @@ impl Component for App {
             switch_count: 0,
             track_count: 0,
             total_length: 0.0,
+            show_svg: true,
         }
     }
 
@@ -85,6 +91,9 @@ impl Component for App {
                 self.loading = false;
                 self.graph_svg = svg_string;
             }
+            Msg::ToggleView => {
+                self.show_svg = !self.show_svg;
+            }
         }
         true
     }
@@ -97,7 +106,18 @@ impl Component for App {
             let value = target.unchecked_into::<HtmlInputElement>().value();
             Msg::InputChanged(value)
         });
-        let svg = Html::from_html_unchecked(self.graph_svg.clone().into());
+
+        let on_toggle_view = self.link.callback(|_| Msg::ToggleView);
+
+        let view_content = if self.show_svg {
+            html! {
+                <div>{ Html::from_html_unchecked(self.graph_svg.clone().into()) }</div>
+            }
+        } else {
+            html! {
+                <Kiss3dComponent />
+            }
+        };
 
         let loading_message = if self.loading {
             html! { <p>{ "Loading..." }</p> }
@@ -114,10 +134,15 @@ impl Component for App {
                         placeholder="Enter area name"
                     />
                     <button onclick={self.link.callback(|_| Msg::GetGraph)}>{ "Get Graph" }</button>
+                    <div>
+                    <button onclick={on_toggle_view}>
+                        { if self.show_svg { "Show 3D View" } else { "Show SVG" } }
+                    </button>
+                </div>
                 </div>
                 <Statistics switches={self.switch_count} tracks={self.track_count} total_length={self.total_length} />
                 {loading_message}
-                <div>{svg}</div>
+                { view_content }
             </>
         }
     }

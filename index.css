@@ -71,3 +71,7 @@ svg {
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
 }
+
+canvas {
+    background-color: blue;
+}

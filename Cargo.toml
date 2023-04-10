@@ -16,6 +16,7 @@ anyhow = "1.0"
 async-trait = "0.1.68"
 geoutils = "0.5.1"
 geo-types = "0.7.9"
+kiss3d = "0.32"
 petgraph = "0.6.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
