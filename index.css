@@ -75,3 +75,20 @@ svg {
 canvas {
     background-color: blue;
 }
+
+.node {
+    cursor: pointer;
+}
+
+.node:hover circle {
+    stroke: red;
+    stroke-width: 5;
+}
+
+path {
+    transition: stroke-width 0.3s;
+}
+
+path:hover {
+    stroke-width: 8;
+}

@@ -24,8 +24,14 @@ use kiss3d_component::Kiss3dComponent;
 mod svg_component;
 use svg_component::SvgComponent;
 
+mod svg_edge;
+pub use svg_edge::SvgEdge;
+
+mod svg_node;
+pub use svg_node::SvgNode;
+
 mod statistics;
-use statistics::Statistics;
+pub use statistics::Statistics;
 
 /// Represents the main application component.
 pub struct App {
@@ -123,7 +129,7 @@ impl Component for App {
 
         let view_content = if self.show_svg {
             html! {
-                <SvgComponent graph={self.graph.clone()} />
+                <SvgComponent view_width={4000.0} view_height={4000.0} graph={self.graph.clone()} />
             }
         } else {
             html! {

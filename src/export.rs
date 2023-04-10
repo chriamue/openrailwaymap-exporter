@@ -86,14 +86,14 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
         ));
     }
 
-    for node in graph.graph.node_references() {
+    for (idx, node) in graph.graph.node_references().enumerate() {
         let node_data = node.weight();
         let x = (node_data.lon - min_coord.lon) * x_scale;
         let y = height - (node_data.lat - min_coord.lat) * y_scale;
 
         svg_nodes.push_str(&format!(
-            r#"<circle cx="{}" cy="{}" r="5" fill="red" />"#,
-            x, y
+            r#"<g class="node" onclick="onNodeClick('{:?}')"><circle cx="{}" cy="{}" r="5" fill="red" /></g>"#,
+            idx, x, y
         ));
     }
 

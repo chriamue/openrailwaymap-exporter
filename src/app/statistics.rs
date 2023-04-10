@@ -1,11 +1,19 @@
 use yew::{html, Component, Context, Html, Properties};
 
+/// The `Statistics` component displays statistics for a railway network.
+///
+/// It shows the number of switches, tracks, and the total length of the network.
+///
 pub struct Statistics {}
 
+/// Properties for the `Statistics` component.
 #[derive(Clone, PartialEq, Properties)]
 pub struct Props {
+    /// The number of switches in the railway network.
     pub switches: u32,
+    /// The number of tracks in the railway network.
     pub tracks: u32,
+    /// The total length of the railway network in meters.
     pub total_length: f64,
 }
 
