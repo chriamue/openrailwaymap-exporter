@@ -102,7 +102,7 @@
 /// };
 /// assert_eq!(edge.id, 1);
 /// ```
-</span><span class="attr">#[derive(Debug, PartialEq)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq)]
 </span><span class="kw">pub struct </span>RailwayEdge {
     <span class="doccomment">/// The ID of the edge, typically corresponding to the ID of the underlying `RailwayElement` (e.g., way).
     </span><span class="kw">pub </span>id: i64,

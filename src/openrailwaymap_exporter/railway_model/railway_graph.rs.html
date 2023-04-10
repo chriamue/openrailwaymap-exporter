@@ -187,6 +187,13 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
 </pre><pre class="rust"><code><span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 <span class="kw">use </span>std::collections::HashMap;
@@ -200,7 +207,7 @@
 /// The graph consists of nodes representing railway stations and junctions, and edges representing
 /// the railway segments between the nodes. It also stores the node indices as a HashMap for easy
 /// retrieval.
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>RailwayGraph {
     <span class="doccomment">/// The internal graph used to represent the railway network.
     ///
@@ -213,6 +220,13 @@
     /// This HashMap allows for quick and easy retrieval of node indices based on their IDs.
     </span><span class="kw">pub </span>node_indices: HashMap&lt;i64, NodeIndex&gt;,
 }
+
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>RailwayGraph {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.node_indices.eq(<span class="kw-2">&amp;</span>other.node_indices)
+    }
+}
+
 <span class="kw">impl </span>RailwayGraph {
     <span class="doccomment">/// Calculate the bounding box of the graph.
     ///
