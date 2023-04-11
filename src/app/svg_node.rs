@@ -5,6 +5,9 @@ use yew::prelude::*;
 /// A Yew component for visualizing railway nodes as SVG circles.
 pub struct SvgNode {
     hovered: bool,
+    client_x: i32,
+    client_y: i32,
+    clicked: bool,
 }
 
 #[derive(PartialEq, Properties, Clone)]
@@ -19,12 +22,15 @@ pub struct Props {
     pub view_height: f64,
     /// The minimum coordinates of the graph's bounding box.
     pub min_coord: Coordinate,
+    /// Callback for when the circle is clicked.
+    pub on_select: Option<Callback<i64>>,
 }
 
 /// Messages for the `SvgNode` component.
 pub enum Msg {
     MouseEnter,
     MouseLeave,
+    Click(MouseEvent),
 }
 
 impl Component for SvgNode {
@@ -32,16 +38,30 @@ impl Component for SvgNode {
     type Properties = Props;
 
     fn create(_ctx: &Context<Self>) -> Self {
-        SvgNode { hovered: false }
+        SvgNode {
+            hovered: false,
+            client_x: 0,
+            client_y: 0,
+            clicked: false,
+        }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::MouseEnter => {
                 self.hovered = true;
             }
             Msg::MouseLeave => {
                 self.hovered = false;
+            }
+            Msg::Click(event) => {
+                self.client_x = event.client_x();
+                self.client_y = event.client_y();
+                self.clicked = !self.clicked;
+                if let Some(on_select) = &ctx.props().on_select {
+                    let node_index = ctx.props().node.id;
+                    on_select.emit(node_index);
+                }
             }
         }
         true
@@ -53,14 +73,17 @@ impl Component for SvgNode {
         let y = ctx.props().view_height
             - (ctx.props().node.lat - ctx.props().min_coord.lat) * ctx.props().scale_y;
 
+        let color = if self.clicked { "blue" } else { "red" };
+
         html! {
             <circle
                 cx={format!("{}",x)}
                 cy={format!("{}", y)}
                 r={format!("{}", radius)}
-                fill={"red"}
+                fill={color}
                 onmouseover={ctx.link().callback(|_| Msg::MouseEnter)}
                 onmouseout={ctx.link().callback(|_| Msg::MouseLeave)}
+                onclick={ctx.link().callback(|event: MouseEvent| Msg::Click(event))}
             />
         }
     }

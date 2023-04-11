@@ -8,6 +8,7 @@ pub struct Props {
     pub graph: Option<RailwayGraph>,
     pub view_width: f64,
     pub view_height: f64,
+    pub on_select_node: Option<Callback<i64>>,
 }
 
 pub struct SvgComponent {}
@@ -49,7 +50,9 @@ impl Component for SvgComponent {
                     let node_data = node.weight();
 
                     html! {
-                        <SvgNode node={node_data.clone()} scale_x={scale_x} scale_y={scale_y} min_coord={min_coord.clone()} view_height={ctx.props().view_height} />
+                        <SvgNode node={node_data.clone()} scale_x={scale_x} scale_y={scale_y}
+                         min_coord={min_coord.clone()} view_height={ctx.props().view_height}
+                         on_select={ctx.props().on_select_node.clone()} />
                     }
                 })
                 .collect();

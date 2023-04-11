@@ -18,6 +18,9 @@ use web_sys::HtmlInputElement;
 use yew::html::Scope;
 use yew::prelude::*;
 
+mod node_context_menu;
+pub use node_context_menu::NodeContextMenu;
+
 mod kiss3d_component;
 use kiss3d_component::Kiss3dComponent;
 
@@ -42,6 +45,7 @@ pub struct App {
     track_count: u32,
     total_length: f64,
     show_svg: bool,
+    selected_node_id: Option<i64>,
     graph: Option<RailwayGraph>,
 }
 
@@ -55,6 +59,8 @@ pub enum Msg {
     GraphLoaded((Vec<RailwayElement>, RailwayGraph)),
     /// Toggle between svg and 3d.
     ToggleView,
+    /// Node selected
+    NodeSelected(i64)
 }
 
 impl Component for App {
@@ -71,6 +77,7 @@ impl Component for App {
             total_length: 0.0,
             show_svg: true,
             graph: None,
+            selected_node_id: None,
         }
     }
 
@@ -112,6 +119,10 @@ impl Component for App {
             Msg::ToggleView => {
                 self.show_svg = !self.show_svg;
             }
+            Msg::NodeSelected(node_id) => {
+                self.selected_node_id = Some(node_id)
+            }
+
         }
         true
     }
@@ -127,9 +138,11 @@ impl Component for App {
 
         let on_toggle_view = self.link.callback(|_| Msg::ToggleView);
 
+        let on_select_node = self.link.callback(|node_id| Msg::NodeSelected(node_id));
+
         let view_content = if self.show_svg {
             html! {
-                <SvgComponent view_width={4000.0} view_height={4000.0} graph={self.graph.clone()} />
+                <SvgComponent {on_select_node} view_width={4000.0} view_height={4000.0} graph={self.graph.clone()} />
             }
         } else {
             html! {
@@ -159,6 +172,7 @@ impl Component for App {
                 </div>
                 </div>
                 <Statistics switches={self.switch_count} tracks={self.track_count} total_length={self.total_length} />
+                <NodeContextMenu graph={self.graph.clone()} node_id={self.selected_node_id} />
                 {loading_message}
                 { view_content }
             </>
