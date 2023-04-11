@@ -1,0 +1,36 @@
+name: Benchmark
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+        override: true
+
+    - name: Cache cargo dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Run cargo bench
+      run: |
+        cargo install cargo-criterion
+        echo "### Cargo bench output:" >> $GITHUB_STEP_SUMMARY
+        cargo bench | tee -a $GITHUB_STEP_SUMMARY
