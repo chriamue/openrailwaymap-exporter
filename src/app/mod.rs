@@ -45,8 +45,10 @@ pub struct App {
     track_count: u32,
     total_length: f64,
     show_svg: bool,
-    selected_node_id: Option<i64>,
     graph: Option<RailwayGraph>,
+    selected_node_id: Option<i64>,
+    start_node_id: Option<i64>,
+    end_node_id: Option<i64>,
 }
 
 /// Represents the messages that can be sent to the `App` component.
@@ -60,7 +62,11 @@ pub enum Msg {
     /// Toggle between svg and 3d.
     ToggleView,
     /// Node selected
-    NodeSelected(i64)
+    NodeSelected(i64),
+    /// Start node selected.
+    StartNodeSelected(i64),
+    /// End node selected.
+    EndNodeSelected(i64),
 }
 
 impl Component for App {
@@ -78,6 +84,8 @@ impl Component for App {
             show_svg: true,
             graph: None,
             selected_node_id: None,
+            start_node_id: None,
+            end_node_id: None,
         }
     }
 
@@ -119,10 +127,13 @@ impl Component for App {
             Msg::ToggleView => {
                 self.show_svg = !self.show_svg;
             }
-            Msg::NodeSelected(node_id) => {
-                self.selected_node_id = Some(node_id)
+            Msg::NodeSelected(node_id) => self.selected_node_id = Some(node_id),
+            Msg::StartNodeSelected(start_node_id) => {
+                self.start_node_id = Some(start_node_id);
             }
-
+            Msg::EndNodeSelected(end_node_id) => {
+                self.end_node_id = Some(end_node_id);
+            }
         }
         true
     }
@@ -139,6 +150,10 @@ impl Component for App {
         let on_toggle_view = self.link.callback(|_| Msg::ToggleView);
 
         let on_select_node = self.link.callback(|node_id| Msg::NodeSelected(node_id));
+        let on_select_start_node = self
+            .link
+            .callback(|node_id| Msg::StartNodeSelected(node_id));
+        let on_select_end_node = self.link.callback(|node_id| Msg::EndNodeSelected(node_id));
 
         let view_content = if self.show_svg {
             html! {
@@ -165,14 +180,15 @@ impl Component for App {
                         placeholder="Enter area name"
                     />
                     <button onclick={self.link.callback(|_| Msg::GetGraph)}>{ "Get Graph" }</button>
-                    <div>
                     <button onclick={on_toggle_view}>
                         { if self.show_svg { "Show 3D View" } else { "Show SVG" } }
                     </button>
                 </div>
-                </div>
+                //<p>{format!("{:?}", self.start_node_id)}</p>
+                //<p>{format!("{:?}", self.end_node_id)}</p>
                 <Statistics switches={self.switch_count} tracks={self.track_count} total_length={self.total_length} />
-                <NodeContextMenu graph={self.graph.clone()} node_id={self.selected_node_id} />
+                <NodeContextMenu graph={self.graph.clone()} node_id={self.selected_node_id}
+                    on_from_here={on_select_start_node} on_to_here={on_select_end_node} />
                 {loading_message}
                 { view_content }
             </>
