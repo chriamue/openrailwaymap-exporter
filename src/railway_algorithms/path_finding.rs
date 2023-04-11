@@ -108,11 +108,12 @@ mod tests {
     use approx::assert_relative_eq;
 
     use crate::{
-        importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
-        prelude::from_railway_elements,
+        importer::overpass_importer::{
+            from_railway_elements, Coordinate, ElementType, RailwayElement,
+        },
+        railway_algorithms::PathFinding,
     };
 
-    use super::*;
     use std::collections::HashMap;
 
     fn test_elements() -> Vec<RailwayElement> {

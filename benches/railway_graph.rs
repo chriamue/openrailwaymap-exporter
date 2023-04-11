@@ -1,8 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 use openrailwaymap_exporter::{
-    importer::overpass_importer::RailwayElement,
-    prelude::{find_next_existing_node, from_railway_elements},
+    importer::overpass_importer::{find_next_existing_node, from_railway_elements, RailwayElement},
     railway_algorithms::PathFinding,
 };
 use petgraph::stable_graph::NodeIndex;

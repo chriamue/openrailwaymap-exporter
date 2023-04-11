@@ -45,7 +45,7 @@ impl RailwayGraphImporter for OverpassImporter {
 ///
 /// ```
 /// use openrailwaymap_exporter::importer::overpass_importer::{ElementType, RailwayElement, Coordinate};
-/// use openrailwaymap_exporter::prelude::from_railway_elements;
+/// use openrailwaymap_exporter::importer::overpass_importer::from_railway_elements;
 /// use std::collections::HashMap;
 ///
 /// let elements = vec![
@@ -141,7 +141,7 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
 /// ```
 /// use std::collections::HashMap;
 /// use petgraph::stable_graph::NodeIndex;
-/// use openrailwaymap_exporter::prelude::find_next_existing_node;
+/// use openrailwaymap_exporter::importer::overpass_importer::find_next_existing_node;
 ///
 /// let node_ids = vec![1, 3, 5];
 /// let mut node_indices = HashMap::new();
@@ -189,7 +189,7 @@ fn calculate_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 ///
 /// ```
 /// use openrailwaymap_exporter::importer::overpass_importer::Coordinate;
-/// use openrailwaymap_exporter::prelude::calculate_geometry_length;
+/// use openrailwaymap_exporter::importer::overpass_importer::calculate_geometry_length;
 ///
 /// let geometry = vec![
 ///     Coordinate { lat: 1.0, lon: 1.0 },
@@ -227,7 +227,7 @@ pub fn calculate_geometry_length(geometry: &[Coordinate]) -> f64 {
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::prelude::create_nodes;
+/// use openrailwaymap_exporter::importer::overpass_importer::create_nodes;
 /// use openrailwaymap_exporter::importer::overpass_importer::{ElementType, RailwayElement};
 /// use std::collections::HashMap;
 ///

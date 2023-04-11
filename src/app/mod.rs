@@ -7,8 +7,8 @@
 //! The `Msg` enum represents the different messages that can be sent to the `App` component to trigger
 //! state updates and UI changes.
 
+use crate::importer::overpass_importer::from_railway_elements;
 use crate::importer::overpass_importer::{count_node_elements, count_way_elements, RailwayElement};
-use crate::prelude::from_railway_elements;
 use crate::prelude::{OverpassApiClient, RailwayApiClient, RailwayGraph};
 use wasm_bindgen::prelude::*;
 use web_sys::EventTarget;

@@ -4,10 +4,11 @@ use petgraph::{Graph, Undirected};
 use serde_json::Value;
 
 use crate::{
-    importer::overpass_importer::{count_way_elements, RailwayElement},
-    prelude::{
-        create_nodes, find_next_existing_node, from_railway_elements, RailwayEdge, RailwayNode,
+    importer::overpass_importer::{
+        count_way_elements, create_nodes, find_next_existing_node, from_railway_elements,
+        RailwayElement,
     },
+    prelude::{RailwayEdge, RailwayNode},
 };
 
 pub fn test_json_1() -> Value {
