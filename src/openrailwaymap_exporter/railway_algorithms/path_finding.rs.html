@@ -224,6 +224,7 @@
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
 <a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::railway_model::RailwayGraph;
 <span class="kw">use </span>geoutils::Location;
 <span class="kw">use </span>petgraph::{
@@ -334,11 +335,12 @@
     <span class="kw">use </span>approx::assert_relative_eq;
 
     <span class="kw">use crate</span>::{
-        importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
-        prelude::from_railway_elements,
+        importer::overpass_importer::{
+            from_railway_elements, Coordinate, ElementType, RailwayElement,
+        },
+        railway_algorithms::PathFinding,
     };
 
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>std::collections::HashMap;
 
     <span class="kw">fn </span>test_elements() -&gt; Vec&lt;RailwayElement&gt; {

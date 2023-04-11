@@ -12,10 +12,6 @@
 <a href="#12" id="12">12</a>
 <a href="#13" id="13">13</a>
 <a href="#14" id="14">14</a>
-<a href="#15" id="15">15</a>
-<a href="#16" id="16">16</a>
-<a href="#17" id="17">17</a>
-<a href="#18" id="18">18</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Railway Model module for the OpenRailwayMap Exporter.
 //!
 //! This module provides data structures and functions for working with railway infrastructure data.
@@ -25,14 +21,10 @@
 </span><span class="kw">mod </span>railway_edge;
 <span class="doccomment">/// A module for working with railway graphs.
 </span><span class="kw">pub mod </span>railway_graph;
-<span class="kw">mod </span>railway_graph_builder;
 <span class="kw">mod </span>railway_node;
 
 <span class="kw">pub use </span>railway_edge::RailwayEdge;
 <span class="kw">pub use </span>railway_graph::RailwayGraph;
-<span class="kw">pub use </span>railway_graph_builder::{
-    calculate_geometry_length, create_nodes, find_next_existing_node, from_railway_elements,
-};
 <span class="kw">pub use </span>railway_node::RailwayNode;
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
