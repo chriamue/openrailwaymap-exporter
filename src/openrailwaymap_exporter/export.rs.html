@@ -244,7 +244,7 @@
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::prelude::overpass_api_client::RailwayElement;
+/// use openrailwaymap_exporter::importer::overpass_importer::RailwayElement;
 /// use openrailwaymap_exporter::prelude::generate_dot_string;
 /// use openrailwaymap_exporter::prelude::from_railway_elements;
 ///
@@ -329,9 +329,9 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::collections::HashMap;
 
-    <span class="kw">use </span><span class="kw">crate</span>::prelude::{
-        from_railway_elements,
-        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    <span class="kw">use crate</span>::{
+        importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
+        prelude::from_railway_elements,
     };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;

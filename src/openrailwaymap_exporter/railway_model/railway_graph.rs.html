@@ -274,11 +274,11 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>geo_types::coord;
 
-    <span class="kw">use </span><span class="kw">crate</span>::prelude::{
-        from_railway_elements,
-        overpass_api_client::{Coordinate, ElementType, RailwayElement},
-    };
     <span class="kw">use </span>std::collections::HashMap;
+
+    <span class="kw">use </span><span class="kw">crate</span>::importer::overpass_importer::{
+        from_railway_elements, Coordinate, ElementType, RailwayElement,
+    };
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_bounding_box() {

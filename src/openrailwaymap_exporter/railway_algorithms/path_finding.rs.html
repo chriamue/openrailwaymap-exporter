@@ -333,9 +333,9 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>approx::assert_relative_eq;
 
-    <span class="kw">use </span><span class="kw">crate</span>::prelude::{
-        from_railway_elements,
-        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    <span class="kw">use crate</span>::{
+        importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
+        prelude::from_railway_elements,
     };
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;

@@ -35,6 +35,8 @@
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
 <a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
 </pre><pre class="rust"><code><span class="doccomment">//! # OpenRailwayMap Exporter
 //!
 //! A library to fetch railway infrastructure data from an API, process it, and export the results.
@@ -56,6 +58,7 @@
 </span><span class="kw">pub mod </span>app;
 
 <span class="kw">pub mod </span>export;
+<span class="kw">pub mod </span>importer;
 <span class="kw">pub mod </span>railway_algorithms;
 <span class="kw">pub mod </span>railway_api_client;
 <span class="kw">pub mod </span>railway_model;
@@ -68,6 +71,7 @@
     <span class="attr">#[cfg(target_arch = <span class="string">&quot;wasm32&quot;</span>)]
     </span><span class="kw">pub use </span><span class="kw">super</span>::app::<span class="kw-2">*</span>;
     <span class="kw">pub use </span><span class="kw">super</span>::export::<span class="kw-2">*</span>;
+    <span class="kw">pub use </span><span class="kw">super</span>::importer::{OverpassImporter, RailwayGraphImporter};
     <span class="kw">pub use </span><span class="kw">super</span>::railway_api_client::overpass_api_client;
     <span class="kw">pub use </span><span class="kw">super</span>::railway_api_client::{OverpassApiClient, RailwayApiClient};
     <span class="kw">pub use </span><span class="kw">super</span>::railway_model::<span class="kw-2">*</span>;
