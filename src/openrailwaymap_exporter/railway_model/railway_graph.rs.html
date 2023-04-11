@@ -189,16 +189,10 @@
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
 <a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-</pre><pre class="rust"><code><span class="kw">use </span>petgraph::visit::IntoNodeReferences;
+</pre><pre class="rust"><code><span class="kw">use </span>geo_types::{coord, Coord};
+<span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 <span class="kw">use </span>std::collections::HashMap;
-
-<span class="kw">use </span><span class="kw">crate</span>::prelude::overpass_api_client::Coordinate;
 
 <span class="kw">use super</span>::{RailwayEdge, RailwayNode};
 
@@ -238,7 +232,7 @@
     /// A tuple containing two `Coordinate` structs representing the minimum and maximum coordinates
     /// of the bounding box of the graph.
     ///
-    </span><span class="kw">pub fn </span>bounding_box(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Coordinate, Coordinate) {
+    </span><span class="kw">pub fn </span>bounding_box(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Coord, Coord) {
         <span class="kw">let </span><span class="kw-2">mut </span>min_lat = std::f64::MAX;
         <span class="kw">let </span><span class="kw-2">mut </span>min_lon = std::f64::MAX;
         <span class="kw">let </span><span class="kw-2">mut </span>max_lat = std::f64::MIN;
@@ -255,14 +249,8 @@
         }
 
         (
-            Coordinate {
-                lat: min_lat,
-                lon: min_lon,
-            },
-            Coordinate {
-                lat: max_lat,
-                lon: max_lon,
-            },
+            <span class="macro">coord! </span>{ x: min_lon, y: min_lat},
+            <span class="macro">coord! </span>{ x: max_lon, y: max_lat},
         )
     }
 
@@ -284,6 +272,8 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>geo_types::coord;
+
     <span class="kw">use </span><span class="kw">crate</span>::prelude::{
         from_railway_elements,
         overpass_api_client::{Coordinate, ElementType, RailwayElement},
@@ -330,17 +320,17 @@
 
         <span class="macro">assert_eq!</span>(
             min_coord,
-            Coordinate {
-                lat: <span class="number">49.1109</span>,
-                lon: <span class="number">7.6821
-            </span>}
+            <span class="macro">coord! </span>{
+                x: <span class="number">7.6821</span>,
+                y: <span class="number">49.1109</span>,
+            }
         );
         <span class="macro">assert_eq!</span>(
             max_coord,
-            Coordinate {
-                lat: <span class="number">51.1109</span>,
-                lon: <span class="number">9.6821
-            </span>}
+            <span class="macro">coord! </span>{
+                x: <span class="number">9.6821</span>,
+                y: <span class="number">51.1109</span>,
+            }
         );
     }
 
