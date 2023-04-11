@@ -61,10 +61,10 @@ impl Component for NodeContextMenu {
                         <h2>{node_id}</h2>
                         <p>{node_coordinates}</p>
                         <button onclick={ctx.link().callback(|_| Msg::FromHere)}>
-                            { "From here" }
+                            { "Start here" }
                         </button>
                         <button onclick={ctx.link().callback(|_| Msg::ToHere)}>
-                            { "To here" }
+                            { "End here" }
                         </button>
                     </div>
                 }

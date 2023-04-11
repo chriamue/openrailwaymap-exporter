@@ -59,8 +59,8 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
     let width = 10000.0;
     let height = 10000.0;
 
-    let x_scale = width / (max_coord.lon - min_coord.lon);
-    let y_scale = height / (max_coord.lat - min_coord.lat);
+    let x_scale = width / (max_coord.x - min_coord.x);
+    let y_scale = height / (max_coord.y - min_coord.y);
 
     let mut svg_edges = String::new();
     let mut svg_nodes = String::new();
@@ -70,8 +70,8 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
 
         let mut path_data = String::new();
         for (i, coord) in edge_data.path.0.iter().enumerate() {
-            let x = (coord.x - min_coord.lon) * x_scale;
-            let y = height - (coord.y - min_coord.lat) * y_scale;
+            let x = (coord.x - min_coord.x) * x_scale;
+            let y = height - (coord.y - min_coord.y) * y_scale;
 
             if i == 0 {
                 path_data.push_str(&format!("M {} {}", x, y));
@@ -88,8 +88,8 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
 
     for (idx, node) in graph.graph.node_references().enumerate() {
         let node_data = node.weight();
-        let x = (node_data.lon - min_coord.lon) * x_scale;
-        let y = height - (node_data.lat - min_coord.lat) * y_scale;
+        let x = (node_data.lon - min_coord.x) * x_scale;
+        let y = height - (node_data.lat - min_coord.y) * y_scale;
 
         svg_nodes.push_str(&format!(
             r#"<g class="node" onclick="onNodeClick('{:?}')"><circle cx="{}" cy="{}" r="5" fill="red" /></g>"#,

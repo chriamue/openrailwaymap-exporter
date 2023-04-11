@@ -162,11 +162,11 @@ impl Component for Kiss3dComponent {
                 let width = 1000.0;
                 let height = 1000.0;
 
-                let x_scale = width / (max_coord.lon - min_coord.lon) as f32;
-                let y_scale = height / (max_coord.lat - min_coord.lat) as f32;
+                let x_scale = width / (max_coord.x - min_coord.x) as f32;
+                let y_scale = height / (max_coord.y - min_coord.y) as f32;
 
-                let scene_center_x = (max_coord.lon + min_coord.lon) as f32 * x_scale / 2.0;
-                let scene_center_y = (max_coord.lat + min_coord.lat) as f32 * y_scale / 2.0;
+                let scene_center_x = (max_coord.x + min_coord.x) as f32 * x_scale / 2.0;
+                let scene_center_y = (max_coord.y + min_coord.y) as f32 * y_scale / 2.0;
                 let scene_center_z = 0.0;
 
                 let target_pos = Point3::new(scene_center_x, scene_center_y, scene_center_z);

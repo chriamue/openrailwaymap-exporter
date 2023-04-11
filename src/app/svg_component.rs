@@ -32,8 +32,8 @@ impl Component for SvgComponent {
     fn view(&self, ctx: &Context<Self>) -> Html {
         if let Some(graph) = ctx.props().graph.as_ref() {
             let (min_coord, max_coord) = graph.bounding_box();
-            let scale_x = ctx.props().view_width / (max_coord.lon - min_coord.lon);
-            let scale_y = ctx.props().view_height / (max_coord.lat - min_coord.lat);
+            let scale_x = ctx.props().view_width / (max_coord.x - min_coord.x);
+            let scale_y = ctx.props().view_height / (max_coord.y - min_coord.y);
 
             let svg_edges: Vec<Html> = graph
                 .graph
@@ -42,7 +42,7 @@ impl Component for SvgComponent {
                     let edge_data = edge.weight();
 
                     html! {
-                        <SvgEdge edge={edge_data.clone()} scale_x={scale_x} scale_y={scale_y} min_coord={min_coord.clone()} view_height={ctx.props().view_height} />
+                        <SvgEdge edge={edge_data.clone()} scale_x={scale_x} scale_y={scale_y} min_coord={(min_coord.x, min_coord.y)} view_height={ctx.props().view_height} />
                     }
                 })
                 .collect();
@@ -55,7 +55,7 @@ impl Component for SvgComponent {
 
                     html! {
                         <SvgNode node={node_data.clone()} scale_x={scale_x} scale_y={scale_y}
-                         min_coord={min_coord.clone()} view_height={ctx.props().view_height}
+                         min_coord={(min_coord.x, min_coord.y)} view_height={ctx.props().view_height}
                          on_select={ctx.props().on_select_node.clone()} />
                     }
                 })
@@ -93,7 +93,7 @@ impl Component for SvgComponent {
                             edge={edge_data.clone()}
                             scale_x={scale_x}
                             scale_y={scale_y}
-                            min_coord={min_coord.clone()}
+                            min_coord={(min_coord.x, min_coord.y)}
                             view_height={ctx.props().view_height}
                             stroke_color={Some("red".to_string())}
                         />

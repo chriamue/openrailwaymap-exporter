@@ -1,4 +1,3 @@
-use crate::prelude::overpass_api_client::Coordinate;
 use crate::prelude::RailwayEdge;
 use yew::prelude::*;
 
@@ -18,7 +17,7 @@ pub struct Props {
     /// The height of the SVG view.
     pub view_height: f64,
     /// The minimum coordinates of the graph's bounding box.
-    pub min_coord: Coordinate,
+    pub min_coord: (f64, f64),
     pub stroke_color: Option<String>,
 }
 
@@ -56,9 +55,9 @@ impl Component for SvgEdge {
             .iter()
             .enumerate()
             .map(|(i, coord)| {
-                let x = (coord.x - ctx.props().min_coord.lon) * ctx.props().scale_x;
+                let x = (coord.x - ctx.props().min_coord.0) * ctx.props().scale_x;
                 let y = ctx.props().view_height
-                    - (coord.y - ctx.props().min_coord.lat) * ctx.props().scale_y;
+                    - (coord.y - ctx.props().min_coord.1) * ctx.props().scale_y;
 
                 if i == 0 {
                     format!("M {:.1} {:.1}", x, y)

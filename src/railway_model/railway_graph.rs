@@ -1,8 +1,7 @@
+use geo_types::{coord, Coord};
 use petgraph::visit::IntoNodeReferences;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
-
-use crate::prelude::overpass_api_client::Coordinate;
 
 use super::{RailwayEdge, RailwayNode};
 
@@ -42,7 +41,7 @@ impl RailwayGraph {
     /// A tuple containing two `Coordinate` structs representing the minimum and maximum coordinates
     /// of the bounding box of the graph.
     ///
-    pub fn bounding_box(&self) -> (Coordinate, Coordinate) {
+    pub fn bounding_box(&self) -> (Coord, Coord) {
         let mut min_lat = std::f64::MAX;
         let mut min_lon = std::f64::MAX;
         let mut max_lat = std::f64::MIN;
@@ -59,14 +58,8 @@ impl RailwayGraph {
         }
 
         (
-            Coordinate {
-                lat: min_lat,
-                lon: min_lon,
-            },
-            Coordinate {
-                lat: max_lat,
-                lon: max_lon,
-            },
+            coord! { x: min_lon, y: min_lat},
+            coord! { x: max_lon, y: max_lat},
         )
     }
 
@@ -88,6 +81,8 @@ impl RailwayGraph {
 
 #[cfg(test)]
 mod tests {
+    use geo_types::coord;
+
     use crate::prelude::{
         from_railway_elements,
         overpass_api_client::{Coordinate, ElementType, RailwayElement},
@@ -134,16 +129,16 @@ mod tests {
 
         assert_eq!(
             min_coord,
-            Coordinate {
-                lat: 49.1109,
-                lon: 7.6821
+            coord! {
+                x: 7.6821,
+                y: 49.1109,
             }
         );
         assert_eq!(
             max_coord,
-            Coordinate {
-                lat: 51.1109,
-                lon: 9.6821
+            coord! {
+                x: 9.6821,
+                y: 51.1109,
             }
         );
     }

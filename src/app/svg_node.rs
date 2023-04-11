@@ -1,4 +1,3 @@
-use crate::prelude::overpass_api_client::Coordinate;
 use crate::prelude::RailwayNode;
 use yew::prelude::*;
 
@@ -21,7 +20,7 @@ pub struct Props {
     /// The height of the SVG view.
     pub view_height: f64,
     /// The minimum coordinates of the graph's bounding box.
-    pub min_coord: Coordinate,
+    pub min_coord: (f64, f64),
     /// Callback for when the circle is clicked.
     pub on_select: Option<Callback<i64>>,
 }
@@ -69,9 +68,9 @@ impl Component for SvgNode {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let radius = if self.hovered { 5.0 } else { 2.0 };
-        let x = (ctx.props().node.lon - ctx.props().min_coord.lon) * ctx.props().scale_x;
+        let x = (ctx.props().node.lon - ctx.props().min_coord.0) * ctx.props().scale_x;
         let y = ctx.props().view_height
-            - (ctx.props().node.lat - ctx.props().min_coord.lat) * ctx.props().scale_y;
+            - (ctx.props().node.lat - ctx.props().min_coord.1) * ctx.props().scale_y;
 
         let color = if self.clicked { "blue" } else { "red" };
 
