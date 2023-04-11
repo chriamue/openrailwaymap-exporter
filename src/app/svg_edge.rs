@@ -19,6 +19,7 @@ pub struct Props {
     pub view_height: f64,
     /// The minimum coordinates of the graph's bounding box.
     pub min_coord: Coordinate,
+    pub stroke_color: Option<String>,
 }
 
 /// Messages for the `SvgEdge` component.
@@ -73,7 +74,7 @@ impl Component for SvgEdge {
         html! {
             <path
                 d={path_data}
-                stroke="black"
+                stroke={ctx.props().stroke_color.as_ref().unwrap_or(&"black".to_string()).to_string()}
                 stroke-width={format!("{}", stroke_width)}
                 fill="none"
                 onmouseover={ctx.link().callback(|_| Msg::MouseEnter)}

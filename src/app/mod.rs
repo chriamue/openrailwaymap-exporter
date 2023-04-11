@@ -160,7 +160,8 @@ impl Component for App {
 
         let view_content = if self.show_svg {
             html! {
-                <SvgComponent {on_select_node} view_width={4000.0} view_height={4000.0} graph={self.graph.clone()} />
+                <SvgComponent {on_select_node} view_width={4000.0} view_height={4000.0} graph={self.graph.clone()}
+                    start_node_id={self.start_node_id} end_node_id={self.end_node_id} />
             }
         } else {
             html! {
