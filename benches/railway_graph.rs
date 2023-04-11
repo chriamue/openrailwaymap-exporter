@@ -1,7 +1,10 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
-use openrailwaymap_exporter::prelude::{
-    find_next_existing_node, from_railway_elements, overpass_api_client::RailwayElement,
+use openrailwaymap_exporter::{
+    prelude::{
+        find_next_existing_node, from_railway_elements, overpass_api_client::RailwayElement,
+    },
+    railway_algorithms::PathFinding,
 };
 use petgraph::stable_graph::NodeIndex;
 use std::collections::HashMap;
@@ -37,9 +40,23 @@ fn find_next_existing_node_benchmark(c: &mut Criterion) {
     });
 }
 
+fn shortest_path_edges_benchmark(c: &mut Criterion) {
+    let elements = railway_elements();
+    let railway_graph = from_railway_elements(&elements);
+
+    c.bench_function("shortest_path_edges", |b| {
+        b.iter(|| {
+            let start = black_box(6204567489);
+            let end = black_box(6204567501);
+            assert!(railway_graph.shortest_path_edges(start, end).unwrap().len() > 0);
+        })
+    });
+}
+
 criterion_group!(
     benches,
     benchmark_from_railway_elements,
-    find_next_existing_node_benchmark
+    find_next_existing_node_benchmark,
+    shortest_path_edges_benchmark
 );
 criterion_main!(benches);

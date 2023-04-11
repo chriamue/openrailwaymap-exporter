@@ -41,6 +41,7 @@ console_error_panic_hook = "0.1"
 
 
 [dev-dependencies]
+approx = "0.5.1"
 tokio = { version = "1.13", features = ["rt", "macros"] }
 criterion = { version = "0.4", default-features = false }
 wasm-bindgen-test = "0.3.33"

@@ -19,6 +19,7 @@
 pub mod app;
 
 pub mod export;
+pub mod railway_algorithms;
 pub mod railway_api_client;
 pub mod railway_model;
 

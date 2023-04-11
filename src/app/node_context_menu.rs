@@ -31,12 +31,16 @@ impl Component for NodeContextMenu {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::FromHere => {
-                if let (Some(on_from_here), Some(node_id)) = (&ctx.props().on_from_here, ctx.props().node_id) {
+                if let (Some(on_from_here), Some(node_id)) =
+                    (&ctx.props().on_from_here, ctx.props().node_id)
+                {
                     on_from_here.emit(node_id);
                 }
             }
             Msg::ToHere => {
-                if let (Some(on_to_here), Some(node_id)) = (&ctx.props().on_to_here, ctx.props().node_id) {
+                if let (Some(on_to_here), Some(node_id)) =
+                    (&ctx.props().on_to_here, ctx.props().node_id)
+                {
                     on_to_here.emit(node_id);
                 }
             }
