@@ -24,6 +24,9 @@ pub use node_context_menu::NodeContextMenu;
 mod kiss3d_component;
 use kiss3d_component::Kiss3dComponent;
 
+mod path_display;
+pub use path_display::PathDisplay;
+
 mod svg_component;
 use svg_component::SvgComponent;
 
@@ -184,13 +187,12 @@ impl Component for App {
                         { if self.show_svg { "Show 3D View" } else { "Show SVG" } }
                     </button>
                 </div>
-                //<p>{format!("{:?}", self.start_node_id)}</p>
-                //<p>{format!("{:?}", self.end_node_id)}</p>
                 <Statistics switches={self.switch_count} tracks={self.track_count} total_length={self.total_length} />
                 <NodeContextMenu graph={self.graph.clone()} node_id={self.selected_node_id}
                     on_from_here={on_select_start_node} on_to_here={on_select_end_node} />
-                {loading_message}
+                { loading_message }
                 { view_content }
+                <PathDisplay graph={self.graph.clone()} start_node_id={self.start_node_id} end_node_id={self.end_node_id} />
             </>
         }
     }
