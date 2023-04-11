@@ -24,7 +24,7 @@ use crate::prelude::RailwayGraph;
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::prelude::overpass_api_client::RailwayElement;
+/// use openrailwaymap_exporter::importer::overpass_importer::RailwayElement;
 /// use openrailwaymap_exporter::prelude::generate_dot_string;
 /// use openrailwaymap_exporter::prelude::from_railway_elements;
 ///
@@ -109,9 +109,9 @@ pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error
 mod tests {
     use std::collections::HashMap;
 
-    use crate::prelude::{
-        from_railway_elements,
-        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    use crate::{
+        importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
+        prelude::from_railway_elements,
     };
 
     use super::*;

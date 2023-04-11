@@ -1,13 +1,33 @@
-use crate::{
-    importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
-    railway_model::{RailwayEdge, RailwayGraph, RailwayNode},
-};
+//! `OverpassImporter` is a struct that implements the `RailwayGraphImporter` trait for importing
+//! railway graph data from the Overpass API.
+mod coordinate;
+mod railway_element;
+use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
+use anyhow::Result;
+pub use coordinate::Coordinate;
 use geo_types::{coord, LineString};
 use geoutils::Location;
 use petgraph::graph::Graph;
 use petgraph::stable_graph::NodeIndex;
 use petgraph::Undirected;
+pub use railway_element::RailwayElement;
+use serde_json::Value;
 use std::collections::{HashMap, HashSet};
+
+pub use self::railway_element::{count_node_elements, count_way_elements, ElementType};
+
+use super::RailwayGraphImporter;
+
+/// `OverpassImporter` is a struct that implements the `RailwayGraphImporter` trait for importing
+/// railway graph data from the Overpass API.
+pub struct OverpassImporter;
+
+impl RailwayGraphImporter for OverpassImporter {
+    fn import(input: &Value) -> Result<RailwayGraph> {
+        let railway_elements = RailwayElement::from_json(input)?;
+        Ok(from_railway_elements(&railway_elements))
+    }
+}
 
 /// Create a `RailwayGraph` from a vector of `RailwayElement`s.
 ///
@@ -328,7 +348,9 @@ fn create_nodes_from_way_elements_without_existing(
 #[cfg(test)]
 mod tests {
 
-    use crate::importer::overpass_importer::Coordinate;
+    use serde_json::json;
+
+    use crate::importer::overpass_importer::railway_element::ElementType;
 
     use super::*;
 
@@ -403,6 +425,41 @@ mod tests {
         let node_3 = &railway_graph.graph[*node_index_3];
         assert_eq!(node_3.lat, 0.0);
         assert_eq!(node_3.lon, 0.0);
+    }
+
+    #[test]
+    fn test_importer() {
+        let json_value = json!({
+            "elements": [
+                {
+                    "type": "node",
+                    "id": 1,
+                    "lat": 50.1191127,
+                    "lon": 8.6090232,
+                    "tags": {
+                        "railway": "switch",
+                        "railway:switch": "default",
+                        "railway:turnout_side": "right"
+                    }
+                },
+                {
+                    "type": "way",
+                    "id": 2,
+                    "nodes": [1, 2, 3],
+                    "tags": {
+                        "railway": "rail"
+                    }
+                }
+            ]
+        });
+
+        let railway_graph = OverpassImporter::import(&json_value).unwrap();
+        assert_eq!(railway_graph.graph.node_count(), 1);
+
+        let node_index_1 = railway_graph.node_indices.get(&1).unwrap();
+        let node_1 = &railway_graph.graph[*node_index_1];
+        assert_eq!(node_1.lat, 50.1191127);
+        assert_eq!(node_1.lon, 8.6090232);
     }
 
     #[test]

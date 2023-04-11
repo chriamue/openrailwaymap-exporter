@@ -83,11 +83,11 @@ impl RailwayGraph {
 mod tests {
     use geo_types::coord;
 
-    use crate::prelude::{
-        from_railway_elements,
-        overpass_api_client::{Coordinate, ElementType, RailwayElement},
-    };
     use std::collections::HashMap;
+
+    use crate::importer::overpass_importer::{
+        from_railway_elements, Coordinate, ElementType, RailwayElement,
+    };
 
     #[test]
     fn test_bounding_box() {

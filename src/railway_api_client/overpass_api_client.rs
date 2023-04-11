@@ -4,14 +4,6 @@ use async_trait::async_trait;
 use reqwest::Client;
 use serde_json::Value;
 
-mod coordinate;
-mod railway_element;
-
-pub use self::railway_element::{
-    count_node_elements, count_way_elements, ElementType, RailwayElement,
-};
-pub use coordinate::Coordinate;
-
 /// A basic client for the OpenRailwayMap API.
 ///
 pub struct OverpassApiClient {

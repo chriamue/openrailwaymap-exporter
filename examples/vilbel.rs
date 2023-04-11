@@ -1,5 +1,5 @@
-use openrailwaymap_exporter::prelude::{
-    from_railway_elements, overpass_api_client::RailwayElement,
+use openrailwaymap_exporter::{
+    importer::overpass_importer::RailwayElement, prelude::from_railway_elements,
 };
 
 fn railway_elements() -> Vec<RailwayElement> {

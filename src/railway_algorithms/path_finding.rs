@@ -107,9 +107,9 @@ impl PathFinding for RailwayGraph {
 mod tests {
     use approx::assert_relative_eq;
 
-    use crate::prelude::{
-        from_railway_elements,
-        overpass_api_client::{Coordinate, ElementType, RailwayElement},
+    use crate::{
+        importer::overpass_importer::{Coordinate, ElementType, RailwayElement},
+        prelude::from_railway_elements,
     };
 
     use super::*;

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use openrailwaymap_exporter::prelude::overpass_api_client::Coordinate;
+/// use openrailwaymap_exporter::importer::overpass_importer::Coordinate;
 ///
 /// let coord = Coordinate { lat: 50.1109, lon: 8.6821 };
 /// println!("Latitude: {}, Longitude: {}", coord.lat, coord.lon);

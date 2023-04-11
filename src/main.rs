@@ -1,7 +1,6 @@
-use openrailwaymap_exporter::prelude::overpass_api_client::RailwayElement;
 use openrailwaymap_exporter::prelude::{
-    from_railway_elements, generate_dot_string, generate_svg_string, OverpassApiClient,
-    RailwayApiClient,
+    generate_dot_string, generate_svg_string, OverpassApiClient, OverpassImporter,
+    RailwayApiClient, RailwayGraphImporter,
 };
 use std::fs::File;
 use std::io::Write;
@@ -52,6 +51,14 @@ struct Opt {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Opt::from_args();
 
+    // Check if no parameters are given
+    if opt.bbox.is_none() && opt.area.is_none() {
+        // Display help message
+        Opt::clap().print_help()?;
+        println!();
+        return Ok(());
+    }
+
     let api_client: Box<dyn RailwayApiClient> = Box::new(OverpassApiClient::new());
 
     let api_json_value = if let Some(area) = &opt.area {
@@ -61,9 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         api_client.fetch_by_bbox(&bbox).await?
     };
 
-    let railway_elements = RailwayElement::from_json(&api_json_value)?;
-
-    let graph = from_railway_elements(&railway_elements);
+    let graph = OverpassImporter::import(&api_json_value).unwrap();
 
     println!("Railway Graph: {:?}", &graph.graph.edge_count());
 
