@@ -12,9 +12,13 @@ use kiss3d::text::Font;
 use kiss3d::window::{State, Window};
 use petgraph::visit::{EdgeRef, IntoNodeReferences, NodeRef};
 use std::rc::Rc;
+use wasm_bindgen::JsValue;
+use wasm_bindgen_futures::JsFuture;
 use yew::prelude::*;
 
-pub struct Kiss3dComponent {}
+pub struct Kiss3dComponent {
+    window_loop: Option<JsFuture>,
+}
 
 #[derive(PartialEq, Properties)]
 pub struct Props {
@@ -132,6 +136,50 @@ impl State for AppState {
     }
 }
 
+fn show_graph(graph: RailwayGraph) {
+    let mut window = Window::new("Kiss3d + Yew");
+
+    window.set_light(Light::StickToCamera);
+    let (min_coord, max_coord) = graph.bounding_box();
+    let width = 1000.0;
+    let height = 1000.0;
+
+    let x_scale = width / (max_coord.x - min_coord.x) as f32;
+    let y_scale = height / (max_coord.y - min_coord.y) as f32;
+
+    let scene_center_x = (max_coord.x + min_coord.x) as f32 * x_scale / 2.0;
+    let scene_center_y = (max_coord.y + min_coord.y) as f32 * y_scale / 2.0;
+    let scene_center_z = 0.0;
+
+    let target_pos = Point3::new(scene_center_x, scene_center_y, scene_center_z);
+
+    // Calculate the camera position based on the scene's dimensions
+    let camera_distance = 0.5 * f32::max(width, height);
+    let camera_pos = Point3::new(
+        scene_center_x,
+        scene_center_y - camera_distance,
+        camera_distance,
+    );
+
+    let mut camera = ArcBall::new(camera_pos, target_pos);
+    camera.set_drag_modifiers(Some(Modifiers::Shift));
+
+    let total_nodes = graph.graph.node_count();
+
+    let mut state = AppState {
+        graph,
+        x_scale,
+        y_scale,
+        camera: Box::new(camera),
+        font: Font::default(),
+        current_node_index: 0,
+        total_nodes,
+        last_frame_time: Instant::now(),
+    };
+    state.look_at_node(0);
+    window.render_loop(state);
+}
+
 pub enum Msg {}
 
 impl Component for Kiss3dComponent {
@@ -139,11 +187,7 @@ impl Component for Kiss3dComponent {
     type Properties = Props;
 
     fn create(_: &Context<Self>) -> Self {
-        Self {}
-    }
-
-    fn update(&mut self, _: &Context<Self>, _: Self::Message) -> bool {
-        false
+        Self { window_loop: None }
     }
 
     fn view(&self, _: &Context<Self>) -> Html {
@@ -152,50 +196,29 @@ impl Component for Kiss3dComponent {
         }
     }
 
+    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
+        if let Some(graph) = ctx.props().graph.clone() {
+            let future = async move {
+                show_graph(graph);
+                Ok(JsValue::null())
+            };
+
+            let promise = wasm_bindgen_futures::future_to_promise(future);
+            self.window_loop = Some(JsFuture::from(promise));
+        }
+        false
+    }
+
     fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
         if first_render {
             if let Some(graph) = ctx.props().graph.clone() {
-                let mut window = Window::new("Kiss3d + Yew");
-
-                window.set_light(Light::StickToCamera);
-                let (min_coord, max_coord) = graph.bounding_box();
-                let width = 1000.0;
-                let height = 1000.0;
-
-                let x_scale = width / (max_coord.x - min_coord.x) as f32;
-                let y_scale = height / (max_coord.y - min_coord.y) as f32;
-
-                let scene_center_x = (max_coord.x + min_coord.x) as f32 * x_scale / 2.0;
-                let scene_center_y = (max_coord.y + min_coord.y) as f32 * y_scale / 2.0;
-                let scene_center_z = 0.0;
-
-                let target_pos = Point3::new(scene_center_x, scene_center_y, scene_center_z);
-
-                // Calculate the camera position based on the scene's dimensions
-                let camera_distance = 0.5 * f32::max(width, height);
-                let camera_pos = Point3::new(
-                    scene_center_x,
-                    scene_center_y - camera_distance,
-                    camera_distance,
-                );
-
-                let mut camera = ArcBall::new(camera_pos, target_pos);
-                camera.set_drag_modifiers(Some(Modifiers::Shift));
-
-                let total_nodes = graph.graph.node_count();
-
-                let mut state = AppState {
-                    graph,
-                    x_scale,
-                    y_scale,
-                    camera: Box::new(camera),
-                    font: Font::default(),
-                    current_node_index: 0,
-                    total_nodes,
-                    last_frame_time: Instant::now(),
+                let future = async move {
+                    show_graph(graph);
+                    Ok(JsValue::null())
                 };
-                state.look_at_node(0);
-                window.render_loop(state);
+
+                let promise = wasm_bindgen_futures::future_to_promise(future);
+                self.window_loop = Some(JsFuture::from(promise));
             }
         }
     }
