@@ -13,13 +13,14 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = []
-app3d = ["bevy", "bevy_egui"]
+app3d = ["bevy", "bevy_egui", "bevy_pancam"]
 
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1.68"
 bevy = { version = "0.10.1", optional = true }
 bevy_egui = { version = "0.20.2", optional = true }
+bevy_pancam = { verion="0.8.0", optional = true}
 geoutils = "0.5.1"
 geo-types = "0.7.9"
 petgraph = "0.6.3"

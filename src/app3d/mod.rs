@@ -10,6 +10,7 @@ use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts, EguiPlugin};
+use bevy_pancam::{PanCam, PanCamPlugin};
 
 use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
@@ -58,6 +59,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
+        .add_plugin(PanCamPlugin::default())
         .insert_resource(app_resource)
         .insert_resource(projection)
         .add_startup_system(setup)
@@ -76,6 +78,7 @@ pub fn init() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
+        .add_plugin(PanCamPlugin::default())
         .insert_resource(AppResource::default())
         .insert_resource(projection)
         .add_startup_system(setup)
@@ -85,9 +88,9 @@ pub fn init() {
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn(Camera2dBundle {
-        ..Default::default()
-    });
+    commands
+        .spawn(Camera2dBundle::default())
+        .insert(PanCam::default());
 }
 
 fn ui_system(
