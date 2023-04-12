@@ -280,7 +280,10 @@
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
 //! and provides systems for displaying the graph, interacting with the user interface, and updating the camera.
 //!
-</span><span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassApiClient;
+</span><span class="attr">#![cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, allow(dead_code, unused_imports))]
+</span><span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassApiClient;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassImporter;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayApiClient;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
@@ -295,7 +298,6 @@
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::visit::NodeRef;
-<span class="kw">use </span>tokio::runtime::Runtime;
 
 <span class="attr">#[cfg(target_arch = <span class="string">&quot;wasm32&quot;</span>)]
 </span><span class="kw">use </span>wasm_bindgen::prelude::<span class="kw-2">*</span>;
@@ -329,12 +331,15 @@
 /// * `graph` - A `RailwayGraph` to display in the application.
 ///
 </span><span class="kw">pub fn </span>init_with_graph(graph: RailwayGraph) {
+    <span class="kw">let </span><span class="kw-2">mut </span>projection = Projection::new(<span class="number">5000.0</span>, <span class="number">5000.0</span>);
+    <span class="kw">let </span>(min_coord, max_coord) = graph.bounding_box();
+    projection.set_bounding_box(min_coord, max_coord);
+
     <span class="kw">let </span>app_resource = AppResource {
         area_name: <span class="string">&quot;&quot;</span>.to_string(),
         graph: <span class="prelude-val">Some</span>(graph),
         look_at_position: <span class="prelude-val">None</span>,
     };
-    <span class="kw">let </span>projection = Projection::new(<span class="number">5000.0</span>, <span class="number">5000.0</span>);
 
     App::new()
         .add_plugins(DefaultPlugins)
@@ -354,6 +359,7 @@
 /// resources, and systems. It inserts a default `AppResource` and starts the
 /// Bevy application. The user can load a `RailwayGraph` through the UI.
 ///
+</span><span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
 </span><span class="kw">pub fn </span>init() {
     <span class="kw">let </span>projection = Projection::new(<span class="number">1000.0</span>, <span class="number">1000.0</span>);
     App::new()
@@ -374,7 +380,8 @@
         .insert(PanCam::default());
 }
 
-<span class="attr">#[allow(clippy::too_many_arguments)]
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
+#[allow(clippy::too_many_arguments)]
 </span><span class="kw">fn </span>ui_system(
     <span class="kw-2">mut </span>contexts: EguiContexts,
     commands: Commands,
@@ -394,7 +401,7 @@
             <span class="comment">// Process input and update Bevy resources or systems
             </span><span class="macro">println!</span>(<span class="string">&quot;Loading railway graph data: {}&quot;</span>, area_name);
 
-            <span class="kw">let </span>rt = Runtime::new().unwrap();
+            <span class="kw">let </span>rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(<span class="kw">async move </span>{
                 <span class="kw">let </span>client = OverpassApiClient::new();
 
@@ -544,13 +551,6 @@
             }
         }
     }
-}
-
-<span class="attr">#[cfg(target_arch = <span class="string">&quot;wasm32&quot;</span>)]
-#[wasm_bindgen]
-</span><span class="kw">pub fn </span>init_app3d() {
-    console_error_panic_hook::set_once();
-    init();
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
