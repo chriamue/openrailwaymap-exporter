@@ -50,14 +50,12 @@ impl Projection {
     ///
     pub fn project(&self, coord: Coord) -> Option<Vec3> {
         if let Some((min_coord, max_coord)) = self.bounding_box {
-            let x =
-                ((coord.x - min_coord.x) / (max_coord.x - min_coord.x)) * self.view_width as f64;
-            let y =
-                ((coord.y - min_coord.y) / (max_coord.y - min_coord.y)) * self.view_height as f64;
+            let x = ((coord.x - min_coord.x) / (max_coord.x - min_coord.x)) * self.view_width;
+            let y = ((coord.y - min_coord.y) / (max_coord.y - min_coord.y)) * self.view_height;
 
             // Center the projection
-            let centered_x = x - self.view_width as f64 / 2.0;
-            let centered_y = y - self.view_height as f64 / 2.0;
+            let centered_x = x - self.view_width / 2.0;
+            let centered_y = y - self.view_height / 2.0;
 
             Some(Vec3::new(centered_x as f32, centered_y as f32, 0.0))
         } else {
@@ -75,9 +73,13 @@ mod tests {
         let mut projection = Projection::new(1000.0, 1000.0);
         projection.set_bounding_box(Coord { x: 0.0, y: 0.0 }, Coord { x: 10.0, y: 10.0 });
 
+        let coord = Coord { x: 0.0, y: 0.0 };
+        let projected_coord = projection.project(coord).unwrap();
+
+        assert_eq!(projected_coord, Vec3::new(-500.0, -500.0, 0.0));
         let coord = Coord { x: 5.0, y: 5.0 };
         let projected_coord = projection.project(coord).unwrap();
 
-        assert_eq!(projected_coord, Vec3::new(500.0, 500.0, 0.0));
+        assert_eq!(projected_coord, Vec3::new(0.0, 0.0, 0.0));
     }
 }

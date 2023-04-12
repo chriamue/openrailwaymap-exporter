@@ -8,8 +8,11 @@ use crate::prelude::OverpassImporter;
 use crate::prelude::RailwayApiClient;
 use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
+use bevy::prelude::shape::Circle;
 use bevy::prelude::*;
+use bevy::sprite::MaterialMesh2dBundle;
 use bevy_egui::{egui, EguiContexts, EguiPlugin};
+
 use bevy_pancam::{PanCam, PanCamPlugin};
 
 use geo_types::coord;
@@ -54,7 +57,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
         graph: Some(graph),
         look_at_position: None,
     };
-    let projection = Projection::new(1000.0, 1000.0);
+    let projection = Projection::new(5000.0, 5000.0);
 
     App::new()
         .add_plugins(DefaultPlugins)
@@ -63,6 +66,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
         .insert_resource(app_resource)
         .insert_resource(projection)
         .add_startup_system(setup)
+        .add_startup_system(display_graph)
         .add_system(update_look_at_position_system)
         .run()
 }
@@ -93,6 +97,7 @@ fn setup(mut commands: Commands) {
         .insert(PanCam::default());
 }
 
+#[allow(clippy::too_many_arguments)]
 fn ui_system(
     mut contexts: EguiContexts,
     commands: Commands,
@@ -100,8 +105,10 @@ fn ui_system(
     edge_query: Query<Entity, With<Edge>>,
     node_query: Query<Entity, With<Node>>,
     mut projection: ResMut<Projection>,
+    meshes: ResMut<Assets<Mesh>>,
+    materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    egui::Window::new("").show(&contexts.ctx_mut(), |ui| {
+    egui::Window::new("").show(contexts.ctx_mut(), |ui| {
         ui.label("Enter an Area:");
         ui.text_edit_singleline(&mut app_resource.area_name);
 
@@ -115,7 +122,7 @@ fn ui_system(
                 let client = OverpassApiClient::new();
 
                 let api_json_value = {
-                    if area_name.contains(",") {
+                    if area_name.contains(',') {
                         client
                             .fetch_by_bbox(&area_name)
                             .await
@@ -135,6 +142,8 @@ fn ui_system(
                     edge_query,
                     node_query,
                     projection.into(),
+                    meshes,
+                    materials,
                 );
             });
         }
@@ -194,6 +203,8 @@ fn display_graph(
     edge_query: Query<Entity, With<Edge>>,
     node_query: Query<Entity, With<Node>>,
     projection: Res<Projection>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     if let Some(graph) = &app_resource.graph {
         // Clear previous edges and nodes
@@ -220,11 +231,12 @@ fn display_graph(
                 commands
                     .spawn(SpriteBundle {
                         sprite: {
-                            let sprite_size = Vec2::new(distance as f32, 2.0);
-                            let mut sprite = Sprite::default();
-                            sprite.custom_size = Some(sprite_size);
-                            sprite.color = Color::BLUE;
-                            sprite
+                            let sprite_size = Vec2::new(distance, 1.0);
+                            Sprite {
+                                custom_size: Some(sprite_size),
+                                color: Color::BLUE,
+                                ..Default::default()
+                            }
                         },
 
                         transform: Transform::from_translation(start)
@@ -245,16 +257,11 @@ fn display_graph(
 
             if let Some(position) = position {
                 commands
-                    .spawn(SpriteBundle {
-                        sprite: {
-                            let sprite_size = Vec2::new(5.0, 5.0);
-                            let mut sprite = Sprite::default();
-                            sprite.custom_size = Some(sprite_size);
-                            sprite.color = Color::RED;
-                            sprite
-                        },
+                    .spawn(MaterialMesh2dBundle {
+                        mesh: meshes.add(Circle::new(5.).into()).into(),
+                        material: materials.add(ColorMaterial::from(Color::RED)),
                         transform: Transform::from_translation(position),
-                        ..Default::default()
+                        ..default()
                     })
                     .insert(Node);
             }
