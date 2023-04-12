@@ -16,10 +16,17 @@ use web_sys::HtmlInputElement;
 use yew::html::Scope;
 use yew::prelude::*;
 
+#[cfg(feature = "app3d")]
+mod bevy_component;
+#[cfg(feature = "app3d")]
+use bevy_component::BevyComponent;
+
 mod node_context_menu;
 pub use node_context_menu::NodeContextMenu;
 
+#[cfg(not(feature = "app3d"))]
 mod kiss3d_component;
+#[cfg(not(feature = "app3d"))]
 use kiss3d_component::Kiss3dComponent;
 
 mod path_display;
@@ -162,6 +169,11 @@ impl Component for App {
                     start_node_id={self.start_node_id} end_node_id={self.end_node_id} />
             }
         } else {
+            #[cfg(feature = "app3d")]
+            html! {
+            <BevyComponent graph={self.graph.clone()} />
+            }
+            #[cfg(not(feature = "app3d"))]
             html! {
                 <Kiss3dComponent graph={self.graph.clone()} />
             }

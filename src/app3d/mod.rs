@@ -3,6 +3,9 @@
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
 //! and provides systems for displaying the graph, interacting with the user interface, and updating the camera.
 //!
+#![cfg_attr(target_arch = "wasm32", allow(dead_code, unused_imports))]
+use std::sync::Arc;
+
 use crate::prelude::OverpassApiClient;
 use crate::prelude::OverpassImporter;
 use crate::prelude::RailwayApiClient;
@@ -18,7 +21,6 @@ use bevy_pancam::{PanCam, PanCamPlugin};
 use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
-use tokio::runtime::Runtime;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -52,12 +54,15 @@ struct AppResource {
 /// * `graph` - A `RailwayGraph` to display in the application.
 ///
 pub fn init_with_graph(graph: RailwayGraph) {
+    let mut projection = Projection::new(5000.0, 5000.0);
+    let (min_coord, max_coord) = graph.bounding_box();
+    projection.set_bounding_box(min_coord, max_coord);
+
     let app_resource = AppResource {
         area_name: "".to_string(),
         graph: Some(graph),
         look_at_position: None,
     };
-    let projection = Projection::new(5000.0, 5000.0);
 
     App::new()
         .add_plugins(DefaultPlugins)
@@ -77,6 +82,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
 /// resources, and systems. It inserts a default `AppResource` and starts the
 /// Bevy application. The user can load a `RailwayGraph` through the UI.
 ///
+#[cfg(not(target_arch = "wasm32"))]
 pub fn init() {
     let projection = Projection::new(1000.0, 1000.0);
     App::new()
@@ -97,6 +103,7 @@ fn setup(mut commands: Commands) {
         .insert(PanCam::default());
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 #[allow(clippy::too_many_arguments)]
 fn ui_system(
     mut contexts: EguiContexts,
@@ -117,7 +124,7 @@ fn ui_system(
             // Process input and update Bevy resources or systems
             println!("Loading railway graph data: {}", area_name);
 
-            let rt = Runtime::new().unwrap();
+            let rt = tokio::runtime::Runtime::new().unwrap();
             rt.block_on(async move {
                 let client = OverpassApiClient::new();
 
@@ -267,11 +274,4 @@ fn display_graph(
             }
         }
     }
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn init_app3d() {
-    console_error_panic_hook::set_once();
-    init();
 }
