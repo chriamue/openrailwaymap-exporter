@@ -18,6 +18,9 @@
 #[cfg(target_arch = "wasm32")]
 pub mod app;
 
+#[cfg(feature = "app3d")]
+pub mod app3d;
+
 pub mod export;
 pub mod importer;
 pub mod railway_algorithms;

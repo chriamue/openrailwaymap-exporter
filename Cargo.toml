@@ -11,9 +11,15 @@ repository = "https://github.com/chriamue/openrailwaymap-exporter"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[features]
+default = []
+app3d = ["bevy", "bevy_egui"]
+
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1.68"
+bevy = { version = "0.10.1", optional = true }
+bevy_egui = { version = "0.20.2", optional = true }
 geoutils = "0.5.1"
 geo-types = "0.7.9"
 petgraph = "0.6.3"
@@ -30,6 +36,7 @@ tokio = { version = "1.0", features = ["full"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 instant = "0.1.12"
+js-sys = "0.3.61"
 kiss3d = "0.32"
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3.59" }
@@ -51,3 +58,8 @@ yew = { version = "0.20.0", features = ["csr", "ssr"] }
 name = "railway_graph"
 path = "benches/railway_graph.rs"
 harness = false
+
+[[example]]
+name = "app3d"
+path = "examples/app3d.rs"
+required-features = ["app3d"]
