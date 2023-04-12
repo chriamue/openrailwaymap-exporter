@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["init","Initializes the Bevy application with a default `RailwayGraph`."],["init_with_graph","Initializes the Bevy application with a given `RailwayGraph`."]]};
