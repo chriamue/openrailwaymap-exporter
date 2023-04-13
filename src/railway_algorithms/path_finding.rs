@@ -108,81 +108,9 @@ mod tests {
     use approx::assert_relative_eq;
 
     use crate::{
-        importer::overpass_importer::{
-            from_railway_elements, Coordinate, ElementType, RailwayElement,
-        },
-        railway_algorithms::PathFinding,
+        importer::overpass_importer::from_railway_elements,
+        railway_algorithms::{tests::test_elements, PathFinding},
     };
-
-    use std::collections::HashMap;
-
-    fn test_elements() -> Vec<RailwayElement> {
-        vec![
-            RailwayElement {
-                id: 1,
-                element_type: ElementType::Node,
-                lat: Some(50.1109),
-                lon: Some(8.6821),
-                tags: Some(HashMap::new()),
-                nodes: None,
-                geometry: None,
-            },
-            RailwayElement {
-                id: 2,
-                element_type: ElementType::Node,
-                lat: Some(50.1209),
-                lon: Some(8.6921),
-                tags: Some(HashMap::new()),
-                nodes: None,
-                geometry: None,
-            },
-            RailwayElement {
-                id: 3,
-                element_type: ElementType::Node,
-                lat: Some(50.1309),
-                lon: Some(8.6721),
-                tags: Some(HashMap::new()),
-                nodes: None,
-                geometry: None,
-            },
-            RailwayElement {
-                id: 4,
-                element_type: ElementType::Way,
-                lat: None,
-                lon: None,
-                tags: Some(HashMap::new()),
-                nodes: Some(vec![1, 2]),
-                geometry: Some(vec![
-                    Coordinate {
-                        lat: 50.1109,
-                        lon: 8.6821,
-                    },
-                    Coordinate {
-                        lat: 50.1209,
-                        lon: 8.6921,
-                    },
-                ]),
-            },
-            RailwayElement {
-                id: 5,
-                element_type: ElementType::Way,
-                lat: None,
-                lon: None,
-                tags: Some(HashMap::new()),
-                nodes: Some(vec![2, 3]),
-                geometry: Some(vec![
-                    Coordinate {
-                        lat: 50.1209,
-                        lon: 8.6921,
-                    },
-                    Coordinate {
-                        lat: 50.1309,
-                        lon: 8.6721,
-                    },
-                ]),
-            },
-        ]
-    }
 
     #[test]
     fn test_shortest_path_distance() {

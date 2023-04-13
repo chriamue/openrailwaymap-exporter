@@ -51,10 +51,25 @@ fn shortest_path_edges_benchmark(c: &mut Criterion) {
     });
 }
 
+fn reachable_nodes_benchmark(c: &mut Criterion) {
+    let elements = railway_elements();
+    let railway_graph = from_railway_elements(&elements);
+
+    c.bench_function("reachable_nodes", |b| {
+        b.iter(|| {
+            let start = black_box(6204567489);
+            let reachable_nodes = railway_graph.reachable_nodes(start);
+            assert!(!reachable_nodes.is_empty());
+        })
+    });
+}
+
+
 criterion_group!(
     benches,
     benchmark_from_railway_elements,
     find_next_existing_node_benchmark,
-    shortest_path_edges_benchmark
+    shortest_path_edges_benchmark,
+    reachable_nodes_benchmark
 );
 criterion_main!(benches);

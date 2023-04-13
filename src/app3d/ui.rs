@@ -12,7 +12,6 @@ use crate::prelude::RailwayApiClient;
 use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
-use bevy::app::AppExit;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
