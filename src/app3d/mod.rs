@@ -316,7 +316,7 @@ fn select_node_system(
 
                 if distance < 15.0 && distance < min_distance {
                     min_distance = distance;
-                    closest = Some((entity, node.id, transform.clone()));
+                    closest = Some((entity, node.id, *transform));
                 }
             }
         }

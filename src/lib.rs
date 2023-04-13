@@ -18,6 +18,9 @@
 #[cfg(target_arch = "wasm32")]
 pub mod app;
 
+#[cfg(feature = "ai")]
+pub mod ai;
+
 #[cfg(feature = "app3d")]
 pub mod app3d;
 

@@ -12,7 +12,8 @@ repository = "https://github.com/chriamue/openrailwaymap-exporter"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["app3d"]
+default = ["app3d", "ai"]
+ai = ["rurel"]
 app3d = ["bevy", "bevy_egui", "bevy_pancam"]
 
 [dependencies]
@@ -33,6 +34,7 @@ geoutils = "0.5.1"
 geo-types = "0.7.9"
 petgraph = "0.6.3"
 rand = "0.8.4"
+rurel = { version = "0.4.0", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 structopt = "0.3"

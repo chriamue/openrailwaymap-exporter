@@ -1,4 +1,3 @@
-// train_agent.rs
 use bevy::prelude::*;
 use geo_types::coord;
 use rand::seq::SliceRandom;
@@ -110,7 +109,7 @@ pub fn train_agent_system(
     if let Some(ref railway_graph) = app_resource.graph {
         for (mut train_agent, mut transform) in train_agent_query.iter_mut() {
             if let Some(current_node_id) = train_agent.current_node_id {
-                update_train_target(&mut train_agent, &railway_graph);
+                update_train_target(&mut train_agent, railway_graph);
                 if let Some(target_node_id) = train_agent.target_node_id {
                     if current_node_id == target_node_id {
                         train_agent.target_node_id = None;
