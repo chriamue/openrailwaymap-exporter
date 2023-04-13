@@ -349,6 +349,8 @@
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -456,6 +458,7 @@
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
         .add_system(show_path)
+        .add_system(train_agent::train_agent_system)
         .run()
 }
 
@@ -481,6 +484,7 @@
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
         .add_system(show_path)
+        .add_system(train_agent::train_agent_system)
         .run()
 }
 
