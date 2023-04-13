@@ -12,7 +12,7 @@ use std::sync::atomic::{AtomicI32, Ordering};
 
 static TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(0);
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 pub struct TrainAgent {
     pub id: i32,
     pub current_node_id: Option<i64>,
@@ -99,6 +99,7 @@ pub fn create_train_agent_sprite_bundle() -> impl FnOnce(&mut ChildBuilder) {
         });
     }
 }
+
 pub fn train_agent_system(
     mut train_agent_query: Query<(&mut TrainAgent, &mut Transform)>,
     node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
@@ -142,7 +143,7 @@ pub fn train_agent_system(
                         &mut train_agent,
                         &mut transform,
                         &edge,
-                        edge_progress,
+                        time.delta_seconds() as f64,
                         &projection,
                     );
                     train_agent.edge_progress = edge_progress;
@@ -175,6 +176,7 @@ fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGrap
     } else if let Some(target_node_id) = train_agent.target_node_id {
         if train_agent.current_node_id.unwrap() == target_node_id {
             train_agent.target_node_id = None;
+            train_agent.current_edge = None; // Reset the current edge when the target node is reached
         } else {
             if let Some(path) = railway_graph
                 .shortest_path_nodes(train_agent.current_node_id.unwrap(), target_node_id)
@@ -184,6 +186,15 @@ fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGrap
                     if path.len() == 2 {
                         train_agent.target_node_id = None;
                     }
+                }
+            }
+            // Set the current edge if it's not already set
+            if train_agent.current_edge.is_none() {
+                if let Some(edge) =
+                    railway_graph.railway_edge(train_agent.current_node_id.unwrap(), target_node_id)
+                {
+                    train_agent.current_edge = Some(edge.clone());
+                    train_agent.edge_progress = 0.0;
                 }
             }
         }
@@ -204,28 +215,37 @@ fn update_train_position(
     train_agent: &mut TrainAgent,
     transform: &mut Transform,
     edge: &RailwayEdge,
-    edge_progress: f64,
+    time_delta: f64,
     projection: &super::Projection,
 ) {
-    let start_coord = edge.path.coords().next().unwrap();
-    let end_coord = edge.path.coords().last().unwrap();
-    let progress_ratio = edge_progress / edge.length;
+    if let (Some(start_coord), Some(end_coord)) =
+        (edge.path.coords().next(), edge.path.coords().last())
+    {
+        let edge_length = edge.length;
 
-    let new_coord = coord! {
-        x: start_coord.x + (end_coord.x - start_coord.x) * progress_ratio,
-        y: start_coord.y + (end_coord.y - start_coord.y) * progress_ratio,
-    };
+        let distance = train_agent.speed * time_delta;
+        let edge_progress = train_agent.edge_progress + distance;
+        if edge_progress < edge_length {
+            let progress_ratio = edge_progress / edge_length;
+            train_agent.edge_progress = progress_ratio;
 
-    if let Some(view_coord) = projection.project(new_coord) {
-        transform.translation.x = view_coord.x;
-        transform.translation.y = view_coord.y;
-    }
+            let new_coord = coord! {
+                x: start_coord.x + (end_coord.x - start_coord.x) * progress_ratio,
+                y: start_coord.y + (end_coord.y - start_coord.y) * progress_ratio,
+            };
 
-    // Check if the train has reached the end of the current edge
-    if edge_progress >= edge.length {
-        train_agent.current_node_id = Some(train_agent.target_node_id.unwrap());
-        train_agent.target_node_id = None;
-        train_agent.current_edge = None;
-        train_agent.edge_progress = 0.0;
+            if let Some(view_coord) = projection.project(new_coord) {
+                transform.translation.x = view_coord.x;
+                transform.translation.y = view_coord.y;
+            }
+        } else {
+            // The train has reached the end of the edge
+            if let Some(target_node_id) = train_agent.target_node_id {
+                train_agent.current_node_id = Some(target_node_id);
+                train_agent.target_node_id = None;
+                train_agent.current_edge = None;
+                train_agent.edge_progress = 0.0;
+            }
+        }
     }
 }
