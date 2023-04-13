@@ -1,6 +1,9 @@
-on: [push]
-
 name: Rust Docs
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build_docs:
