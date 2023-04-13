@@ -5,6 +5,7 @@
 //!
 #![cfg_attr(target_arch = "wasm32", allow(dead_code, unused_imports))]
 
+use crate::app3d::train_agent::TrainAgent;
 use crate::prelude::RailwayGraph;
 use crate::railway_algorithms::PathFinding;
 use bevy::input::Input;
@@ -17,6 +18,7 @@ use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 
+mod train_agent;
 mod ui;
 
 #[cfg(target_arch = "wasm32")]
@@ -94,6 +96,8 @@ pub fn init_with_graph(graph: RailwayGraph) {
         .add_plugin(EguiPlugin)
         .add_plugin(PanCamPlugin::default())
         .insert_resource(app_resource)
+        .insert_resource(SelectedNode::default())
+        .insert_resource(InteractionModeResource::default())
         .insert_resource(projection)
         .add_startup_system(setup)
         .add_startup_system(display_graph)
@@ -116,6 +120,7 @@ pub fn init() {
         .add_plugin(PanCamPlugin::default())
         .insert_resource(AppResource::default())
         .insert_resource(SelectedNode::default())
+        .insert_resource(InteractionModeResource::default())
         .insert_resource(projection)
         .add_startup_system(setup)
         .add_system(ui::ui_system)
@@ -284,6 +289,8 @@ fn select_node_system(
     mut windows: Query<&mut Window>,
     q_node: Query<(Entity, &Node, &Transform)>,
     camera_q: Query<(&Camera, &GlobalTransform)>,
+    interaction_mode: Res<InteractionModeResource>,
+    mut commands: Commands,
 ) {
     if mouse_button_inputs.just_pressed(MouseButton::Left) {
         let window = windows.single_mut();
@@ -304,15 +311,36 @@ fn select_node_system(
 
                 if distance < 15.0 && distance < min_distance {
                     min_distance = distance;
-                    closest = Some((entity, node.id));
+                    closest = Some((entity, node.id, transform.clone()));
                 }
             }
         }
 
-        if let Some((entity, id)) = closest {
-            println!("Selected node: {:?}", entity);
-            selected_node.end_node_id = selected_node.start_node_id;
-            selected_node.start_node_id = Some(id);
+        if let Some((entity, id, transform)) = closest {
+            // Check the current interaction mode
+            match interaction_mode.mode {
+                InteractionMode::SelectNode => {
+                    println!("Selected node: {:?}", entity);
+                    selected_node.end_node_id = selected_node.start_node_id;
+                    selected_node.start_node_id = Some(id);
+                }
+                InteractionMode::PlaceTrain => {
+                    println!("Placing train on node: {:?}", id);
+                    commands
+                        .spawn((
+                            Transform::from_xyz(
+                                transform.translation.x,
+                                transform.translation.y,
+                                transform.translation.z + 1.0,
+                            ),
+                            GlobalTransform::default(),
+                            ComputedVisibility::default(),
+                            Visibility::Inherited,
+                            TrainAgent::on_node(id),
+                        ))
+                        .with_children(train_agent::create_train_agent_sprite_bundle());
+                }
+            }
         } else {
             selected_node.start_node_id = None;
         }
