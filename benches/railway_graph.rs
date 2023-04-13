@@ -64,7 +64,6 @@ fn reachable_nodes_benchmark(c: &mut Criterion) {
     });
 }
 
-
 criterion_group!(
     benches,
     benchmark_from_railway_elements,

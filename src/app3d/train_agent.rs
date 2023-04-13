@@ -1,6 +1,9 @@
 // train_agent.rs
 use bevy::prelude::*;
+use rand::seq::SliceRandom;
 
+use super::{AppResource, Node};
+use crate::railway_algorithms::PathFinding;
 use std::sync::atomic::{AtomicI32, Ordering};
 
 static TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(0);
@@ -84,5 +87,49 @@ pub fn create_train_agent_sprite_bundle() -> impl FnOnce(&mut ChildBuilder) {
             parent.spawn(left_wheel);
             parent.spawn(right_wheel);
         });
+    }
+}
+
+pub fn train_agent_system(
+    mut train_agent_query: Query<(&mut TrainAgent, &mut Transform)>,
+    node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
+    app_resource: Res<AppResource>,
+) {
+    if let Some(ref railway_graph) = app_resource.graph {
+        for (mut train_agent, mut transform) in train_agent_query.iter_mut() {
+            if let Some(current_node_id) = train_agent.current_node_id {
+                if train_agent.target_node_id.is_none() {
+                    let reachable_nodes = railway_graph.reachable_nodes(current_node_id);
+                    if !reachable_nodes.is_empty() {
+                        let mut rng = rand::thread_rng();
+                        train_agent.target_node_id =
+                            Some(*reachable_nodes.choose(&mut rng).unwrap());
+                    }
+                } else if let Some(target_node_id) = train_agent.target_node_id {
+                    if current_node_id == target_node_id {
+                        train_agent.target_node_id = None;
+                    } else {
+                        if let Some(path) =
+                            railway_graph.shortest_path_nodes(current_node_id, target_node_id)
+                        {
+                            if !path.is_empty() {
+                                train_agent.current_node_id = Some(path[1]);
+                                if path.len() == 2 {
+                                    train_agent.target_node_id = None;
+                                } else {
+                                    if let Some((_, target_node_transform)) =
+                                        node_query.iter().find(|(node, _)| {
+                                            node.id == train_agent.target_node_id.unwrap()
+                                        })
+                                    {
+                                        transform.translation = target_node_transform.translation;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

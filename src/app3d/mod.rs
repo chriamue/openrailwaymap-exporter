@@ -105,6 +105,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
         .add_system(show_path)
+        .add_system(train_agent::train_agent_system)
         .run()
 }
 
@@ -130,6 +131,7 @@ pub fn init() {
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
         .add_system(show_path)
+        .add_system(train_agent::train_agent_system)
         .run()
 }
 
