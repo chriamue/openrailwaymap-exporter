@@ -4,21 +4,20 @@
 //! and provides systems for displaying the graph, interacting with the user interface, and updating the camera.
 //!
 #![cfg_attr(target_arch = "wasm32", allow(dead_code, unused_imports))]
-use crate::prelude::OverpassApiClient;
-use crate::prelude::OverpassImporter;
-use crate::prelude::RailwayApiClient;
+
 use crate::prelude::RailwayGraph;
-use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
 use bevy::input::Input;
 use bevy::prelude::shape::Circle;
 use bevy::prelude::*;
 use bevy::sprite::MaterialMesh2dBundle;
-use bevy_egui::{egui, EguiContexts, EguiPlugin};
+use bevy_egui::EguiPlugin;
 use bevy_pancam::{PanCam, PanCamPlugin};
 use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
+
+mod ui;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -26,29 +25,47 @@ use wasm_bindgen::prelude::*;
 mod projection;
 use projection::Projection;
 
-// Components
+/// Represents an edge in the railway graph.
 #[derive(Component)]
-struct Edge {
-    id: i64,
-}
-// Components
-#[derive(Component)]
-struct Node {
+pub struct Edge {
     id: i64,
 }
 
-// Resources
+/// Represents a node in the railway graph.
+#[derive(Component)]
+pub struct Node {
+    id: i64,
+}
+
+/// Holds application state, including the area name, railway graph, and camera look-at position.
 #[derive(Default, Resource)]
-struct AppResource {
+pub struct AppResource {
     area_name: String,
     graph: Option<RailwayGraph>,
     look_at_position: Option<Vec3>,
 }
 
+/// Keeps track of the currently selected start and end nodes.
 #[derive(Default, Resource)]
-struct SelectedNode {
-    pub start_node_id: Option<i64>,
-    pub end_node_id: Option<i64>,
+pub struct SelectedNode {
+    start_node_id: Option<i64>,
+    end_node_id: Option<i64>,
+}
+
+/// Defines the different interaction modes for the application.
+#[derive(Debug, PartialEq, Clone, Default)]
+pub enum InteractionMode {
+    /// Default mode: selecting nodes to display information or find the shortest path.
+    #[default]
+    SelectNode,
+    /// Mode for placing trains on the railway network.
+    PlaceTrain,
+}
+
+/// Stores the current interaction mode.
+#[derive(Default, Resource)]
+pub struct InteractionModeResource {
+    mode: InteractionMode,
 }
 
 /// Initializes the Bevy application with a given `RailwayGraph`.
@@ -101,7 +118,7 @@ pub fn init() {
         .insert_resource(SelectedNode::default())
         .insert_resource(projection)
         .add_startup_system(setup)
-        .add_system(ui_system)
+        .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
         .add_system(show_path)
@@ -112,113 +129,6 @@ fn setup(mut commands: Commands) {
     commands
         .spawn(Camera2dBundle::default())
         .insert(PanCam::default());
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-#[allow(clippy::too_many_arguments)]
-fn ui_system(
-    mut contexts: EguiContexts,
-    commands: Commands,
-    mut app_resource: ResMut<AppResource>,
-    edge_query: Query<Entity, With<Edge>>,
-    node_query: Query<Entity, With<Node>>,
-    mut projection: ResMut<Projection>,
-    meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<ColorMaterial>>,
-    selected_node: Res<SelectedNode>,
-) {
-    egui::Window::new("").show(contexts.ctx_mut(), |ui| {
-        if let Some(node_id) = selected_node.start_node_id {
-            if let Some(graph) = &app_resource.graph {
-                display_selected_node_info(ui, graph, node_id);
-            }
-        } else {
-            ui.label("No node selected");
-        }
-        if let (Some(start_node_id), Some(end_node_id)) =
-            (selected_node.start_node_id, selected_node.end_node_id)
-        {
-            if let Some(graph) = &app_resource.graph {
-                display_path_info(ui, graph, start_node_id, end_node_id);
-            }
-        }
-
-        ui.label("Enter an Area:");
-        ui.text_edit_singleline(&mut app_resource.area_name);
-
-        if ui.button("Load Railway Graph").clicked() {
-            let area_name = app_resource.area_name.clone();
-            // Process input and update Bevy resources or systems
-            println!("Loading railway graph data: {}", area_name);
-
-            let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(async move {
-                let client = OverpassApiClient::new();
-
-                let api_json_value = {
-                    if area_name.contains(',') {
-                        client
-                            .fetch_by_bbox(&area_name)
-                            .await
-                            .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
-                    } else {
-                        client.fetch_by_area_name(&area_name).await.unwrap()
-                    }
-                };
-
-                let graph = OverpassImporter::import(&api_json_value).unwrap();
-                let (min_coord, max_coord) = graph.bounding_box();
-                projection.set_bounding_box(min_coord, max_coord);
-                app_resource.graph = Some(graph);
-                display_graph(
-                    commands,
-                    app_resource.into(),
-                    edge_query,
-                    node_query,
-                    projection.into(),
-                    meshes,
-                    materials,
-                );
-            });
-        }
-    });
-}
-
-fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_id: i64) {
-    if let Some(node_index) = graph.node_indices.get(&node_id) {
-        let node = &graph.graph[*node_index];
-        ui.label(format!("ID: {}", node.id));
-        ui.label(format!("Latitude: {}", node.lat));
-        ui.label(format!("Longitude: {}", node.lon));
-    }
-}
-
-fn display_path_info(
-    ui: &mut egui::Ui,
-    graph: &RailwayGraph,
-    start_node_id: i64,
-    end_node_id: i64,
-) {
-    if let (Some(start_node_index), Some(end_node_index)) = (
-        graph.node_indices.get(&start_node_id),
-        graph.node_indices.get(&end_node_id),
-    ) {
-        let start_node = &graph.graph[*start_node_index];
-        ui.label(format!("Start: {}", start_node.id));
-        let end_node = &graph.graph[*end_node_index];
-        ui.label(format!("End: {}", end_node.id));
-
-        if graph
-            .shortest_path_nodes(start_node_id, end_node_id)
-            .is_some()
-        {
-            let distance = graph
-                .shortest_path_distance(start_node_id, end_node_id)
-                .map(|d| format!("{:.2} meters", d))
-                .unwrap_or_else(|| "unknown".to_string());
-            ui.label(format!("Distance: {}", distance));
-        }
-    }
 }
 
 fn update_look_at_position_system(
