@@ -31,6 +31,45 @@ impl PartialEq for RailwayGraph {
 }
 
 impl RailwayGraph {
+    /// Retrieve an edge from the graph by its ID.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The ID of the edge to be retrieved.
+    ///
+    /// # Returns
+    ///
+    /// An `Option<RailwayEdge>` that contains the edge if found, or `None` if not found.
+    ///
+    pub fn get_edge_by_id(&self, id: i64) -> Option<RailwayEdge> {
+        for edge in self.graph.edge_references() {
+            if edge.weight().id == id {
+                return Some(edge.weight().clone());
+            }
+        }
+        None
+    }
+
+    /// Retrieve the railway edge between two nodes.
+    ///
+    /// # Arguments
+    ///
+    /// * `start_node_id` - The ID of the starting node.
+    /// * `end_node_id` - The ID of the ending node.
+    ///
+    /// # Returns
+    ///
+    /// An `Option<&RailwayEdge>` that contains the railway edge connecting the two nodes if it exists,
+    /// or `None` if no such edge exists.
+    ///
+    pub fn railway_edge(&self, start_node_id: i64, end_node_id: i64) -> Option<&RailwayEdge> {
+        let start_node_index = *self.node_indices.get(&start_node_id)?;
+        let end_node_index = *self.node_indices.get(&end_node_id)?;
+
+        let edge_index = self.graph.find_edge(start_node_index, end_node_index)?;
+        Some(&self.graph[edge_index])
+    }
+
     /// Calculate the bounding box of the graph.
     ///
     /// The bounding box is represented as a tuple containing the minimum and maximum
@@ -187,5 +226,70 @@ mod tests {
         let railway_graph = from_railway_elements(&elements);
         let total_length = railway_graph.total_length();
         assert_eq!(total_length, 132.246);
+    }
+
+    #[test]
+    fn test_railway_edge() {
+        let mut tags = HashMap::new();
+        tags.insert("railway".to_string(), "station".to_string());
+
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Node,
+                lat: Some(51.1109),
+                lon: Some(9.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Node,
+                lat: Some(49.1109),
+                lon: Some(7.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 4,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![1, 2]),
+                geometry: Some(vec![
+                    Coordinate {
+                        lat: 50.1109,
+                        lon: 8.6821,
+                    },
+                    Coordinate {
+                        lat: 51.1109,
+                        lon: 9.6821,
+                    },
+                ]),
+            },
+        ];
+
+        let railway_graph = from_railway_elements(&elements);
+
+        // Test for a valid edge.
+        let edge = railway_graph.railway_edge(1, 2);
+        assert!(edge.is_some());
+        assert_eq!(edge.unwrap().id, 4);
+
+        // Test for an invalid edge.
+        let edge = railway_graph.railway_edge(1, 3);
+        assert!(edge.is_none());
     }
 }

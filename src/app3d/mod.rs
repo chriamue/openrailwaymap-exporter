@@ -25,7 +25,7 @@ mod ui;
 use wasm_bindgen::prelude::*;
 
 mod projection;
-use projection::Projection;
+pub use projection::Projection;
 
 /// Represents an edge in the railway graph.
 #[derive(Component)]

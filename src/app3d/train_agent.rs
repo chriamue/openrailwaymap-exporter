@@ -1,9 +1,13 @@
 // train_agent.rs
 use bevy::prelude::*;
+use geo_types::coord;
 use rand::seq::SliceRandom;
 
 use super::{AppResource, Node};
-use crate::railway_algorithms::PathFinding;
+use crate::{
+    prelude::{RailwayEdge, RailwayGraph},
+    railway_algorithms::PathFinding,
+};
 use std::sync::atomic::{AtomicI32, Ordering};
 
 static TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(0);
@@ -13,6 +17,9 @@ pub struct TrainAgent {
     pub id: i32,
     pub current_node_id: Option<i64>,
     pub target_node_id: Option<i64>,
+    pub current_edge: Option<RailwayEdge>,
+    pub edge_progress: f64,
+    pub speed: f64, // Speed in meters per second
 }
 
 impl TrainAgent {
@@ -21,6 +28,9 @@ impl TrainAgent {
             id,
             current_node_id,
             target_node_id,
+            current_edge: None,
+            edge_progress: 0.0,
+            speed: 20.0,
         }
     }
     pub fn on_node(current_node_id: i64) -> Self {
@@ -89,23 +99,18 @@ pub fn create_train_agent_sprite_bundle() -> impl FnOnce(&mut ChildBuilder) {
         });
     }
 }
-
 pub fn train_agent_system(
     mut train_agent_query: Query<(&mut TrainAgent, &mut Transform)>,
     node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
     app_resource: Res<AppResource>,
+    projection: Res<super::Projection>,
+    time: Res<Time>,
 ) {
     if let Some(ref railway_graph) = app_resource.graph {
         for (mut train_agent, mut transform) in train_agent_query.iter_mut() {
             if let Some(current_node_id) = train_agent.current_node_id {
-                if train_agent.target_node_id.is_none() {
-                    let reachable_nodes = railway_graph.reachable_nodes(current_node_id);
-                    if !reachable_nodes.is_empty() {
-                        let mut rng = rand::thread_rng();
-                        train_agent.target_node_id =
-                            Some(*reachable_nodes.choose(&mut rng).unwrap());
-                    }
-                } else if let Some(target_node_id) = train_agent.target_node_id {
+                update_train_target(&mut train_agent, &railway_graph);
+                if let Some(target_node_id) = train_agent.target_node_id {
                     if current_node_id == target_node_id {
                         train_agent.target_node_id = None;
                     } else {
@@ -129,7 +134,98 @@ pub fn train_agent_system(
                         }
                     }
                 }
+                let current_edge = train_agent.current_edge.clone();
+                if let Some(edge) = current_edge {
+                    let edge_progress =
+                        train_agent.edge_progress + train_agent.speed * time.delta_seconds() as f64;
+                    update_train_position(
+                        &mut train_agent,
+                        &mut transform,
+                        &edge,
+                        edge_progress,
+                        &projection,
+                    );
+                    train_agent.edge_progress = edge_progress;
+                } else if let Some(target_node_id) = train_agent.target_node_id {
+                    if let Some(edge) = railway_graph.railway_edge(current_node_id, target_node_id)
+                    {
+                        train_agent.current_edge = Some(edge.clone());
+                        train_agent.edge_progress = 0.0;
+                    }
+                }
             }
         }
+    }
+}
+
+/// Updates the target node of a train agent, if necessary.
+///
+/// # Arguments
+///
+/// * `train_agent` - A reference to the train agent to update.
+/// * `railway_graph` - A reference to the `RailwayGraph` resource containing information about the railway network.
+///
+fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGraph) {
+    if train_agent.target_node_id.is_none() {
+        let reachable_nodes = railway_graph.reachable_nodes(train_agent.current_node_id.unwrap());
+        if !reachable_nodes.is_empty() {
+            let mut rng = rand::thread_rng();
+            train_agent.target_node_id = Some(*reachable_nodes.choose(&mut rng).unwrap());
+        }
+    } else if let Some(target_node_id) = train_agent.target_node_id {
+        if train_agent.current_node_id.unwrap() == target_node_id {
+            train_agent.target_node_id = None;
+        } else {
+            if let Some(path) = railway_graph
+                .shortest_path_nodes(train_agent.current_node_id.unwrap(), target_node_id)
+            {
+                if !path.is_empty() {
+                    train_agent.current_node_id = Some(path[1]);
+                    if path.len() == 2 {
+                        train_agent.target_node_id = None;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Updates the position of a train agent along its current railway edge.
+///
+/// # Arguments
+///
+/// * `train_agent` - A reference to the train agent to update.
+/// * `transform` - A mutable reference to the `Transform` component of the train agent entity.
+/// * `edge` - The current railway edge of the train agent.
+/// * `edge_progress` - The current progress of the train agent along its current railway edge, in meters.
+/// * `projection` - A reference to the `Projection` resource used to convert geographical coordinates to view coordinates.
+///
+fn update_train_position(
+    train_agent: &mut TrainAgent,
+    transform: &mut Transform,
+    edge: &RailwayEdge,
+    edge_progress: f64,
+    projection: &super::Projection,
+) {
+    let start_coord = edge.path.coords().next().unwrap();
+    let end_coord = edge.path.coords().last().unwrap();
+    let progress_ratio = edge_progress / edge.length;
+
+    let new_coord = coord! {
+        x: start_coord.x + (end_coord.x - start_coord.x) * progress_ratio,
+        y: start_coord.y + (end_coord.y - start_coord.y) * progress_ratio,
+    };
+
+    if let Some(view_coord) = projection.project(new_coord) {
+        transform.translation.x = view_coord.x;
+        transform.translation.y = view_coord.y;
+    }
+
+    // Check if the train has reached the end of the current edge
+    if edge_progress >= edge.length {
+        train_agent.current_node_id = Some(train_agent.target_node_id.unwrap());
+        train_agent.target_node_id = None;
+        train_agent.current_edge = None;
+        train_agent.edge_progress = 0.0;
     }
 }

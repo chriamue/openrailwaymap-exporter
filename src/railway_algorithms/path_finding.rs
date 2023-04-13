@@ -93,10 +93,8 @@ impl PathFinding for RailwayGraph {
         node_path
             .windows(2)
             .filter_map(|pair| {
-                let start_node_index = *self.node_indices.get(&pair[0])?;
-                let end_node_index = *self.node_indices.get(&pair[1])?;
-                let edge_index = self.graph.find_edge(start_node_index, end_node_index)?;
-                Some(self.graph[edge_index].id)
+                let edge = self.railway_edge(pair[0], pair[1])?;
+                Some(edge.id)
             })
             .collect::<Vec<i64>>()
             .into()
