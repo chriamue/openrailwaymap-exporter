@@ -9,6 +9,7 @@ use crate::prelude::OverpassImporter;
 use crate::prelude::RailwayApiClient;
 use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
+use crate::railway_algorithms::PathFinding;
 use bevy::input::Input;
 use bevy::prelude::shape::Circle;
 use bevy::prelude::*;
@@ -27,7 +28,9 @@ use projection::Projection;
 
 // Components
 #[derive(Component)]
-struct Edge;
+struct Edge {
+    id: i64,
+}
 // Components
 #[derive(Component)]
 struct Node {
@@ -101,6 +104,7 @@ pub fn init() {
         .add_system(ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
+        .add_system(show_path)
         .run()
 }
 
@@ -203,6 +207,17 @@ fn display_path_info(
         ui.label(format!("Start: {}", start_node.id));
         let end_node = &graph.graph[*end_node_index];
         ui.label(format!("End: {}", end_node.id));
+
+        if graph
+            .shortest_path_nodes(start_node_id, end_node_id)
+            .is_some()
+        {
+            let distance = graph
+                .shortest_path_distance(start_node_id, end_node_id)
+                .map(|d| format!("{:.2} meters", d))
+                .unwrap_or_else(|| "unknown".to_string());
+            ui.label(format!("Distance: {}", distance));
+        }
     }
 }
 
@@ -247,6 +262,34 @@ fn update_look_at_position_system(
                 for mut transform in camera_query.iter_mut() {
                     *transform = Transform::from_translation(transform.translation)
                         .looking_at(look_at_position, Vec3::Z);
+                }
+            }
+        }
+    }
+}
+
+fn show_path(
+    app_resource: Res<AppResource>,
+    mut edge_query: Query<(&Edge, &mut Sprite)>,
+    selected_node: Res<SelectedNode>,
+) {
+    if let Some(graph) = &app_resource.graph {
+        if let (Some(start_node_id), Some(end_node_id)) =
+            (selected_node.start_node_id, selected_node.end_node_id)
+        {
+            // Use graph.shortest_path_edges to get the Vec of edge IDs
+            if let Some(path_edge_ids) = graph.shortest_path_edges(start_node_id, end_node_id) {
+                // Iterate through the edges and set their color
+                for (edge, mut sprite) in edge_query.iter_mut() {
+                    let edge_data = edge;
+                    sprite.color = if path_edge_ids
+                        .iter()
+                        .any(|railway_edge| *railway_edge == edge_data.id)
+                    {
+                        Color::RED
+                    } else {
+                        Color::BLUE
+                    };
                 }
             }
         }
@@ -299,7 +342,7 @@ fn display_graph(
                             .mul_transform(Transform::from_rotation(Quat::from_rotation_z(angle))),
                         ..Default::default()
                     })
-                    .insert(Edge);
+                    .insert(Edge { id: edge_data.id });
             }
         }
 
