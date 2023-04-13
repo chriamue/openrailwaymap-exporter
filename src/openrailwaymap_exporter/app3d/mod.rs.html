@@ -275,29 +275,102 @@
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
 <a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
 //! and provides systems for displaying the graph, interacting with the user interface, and updating the camera.
 //!
 </span><span class="attr">#![cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, allow(dead_code, unused_imports))]
-</span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassApiClient;
-<span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassImporter;
-<span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayApiClient;
+</span><span class="kw">use </span><span class="kw">crate</span>::app3d::train_agent::TrainAgent;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
-<span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraphImporter;
+<span class="kw">use </span><span class="kw">crate</span>::railway_algorithms::PathFinding;
+<span class="kw">use </span>bevy::input::Input;
 <span class="kw">use </span>bevy::prelude::shape::Circle;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy::sprite::MaterialMesh2dBundle;
-<span class="kw">use </span>bevy_egui::{egui, EguiContexts, EguiPlugin};
-
+<span class="kw">use </span>bevy_egui::EguiPlugin;
 <span class="kw">use </span>bevy_pancam::{PanCam, PanCamPlugin};
-
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::visit::NodeRef;
+
+<span class="kw">mod </span>train_agent;
+<span class="kw">mod </span>ui;
 
 <span class="attr">#[cfg(target_arch = <span class="string">&quot;wasm32&quot;</span>)]
 </span><span class="kw">use </span>wasm_bindgen::prelude::<span class="kw-2">*</span>;
@@ -305,19 +378,47 @@
 <span class="kw">mod </span>projection;
 <span class="kw">use </span>projection::Projection;
 
-<span class="comment">// Components
+<span class="doccomment">/// Represents an edge in the railway graph.
 </span><span class="attr">#[derive(Component)]
-</span><span class="kw">struct </span>Edge;
-<span class="comment">// Components
-</span><span class="attr">#[derive(Component)]
-</span><span class="kw">struct </span>Node;
+</span><span class="kw">pub struct </span>Edge {
+    id: i64,
+}
 
-<span class="comment">// Resources
+<span class="doccomment">/// Represents a node in the railway graph.
+</span><span class="attr">#[derive(Component)]
+</span><span class="kw">pub struct </span>Node {
+    id: i64,
+}
+
+<span class="doccomment">/// Holds application state, including the area name, railway graph, and camera look-at position.
 </span><span class="attr">#[derive(Default, Resource)]
-</span><span class="kw">struct </span>AppResource {
+</span><span class="kw">pub struct </span>AppResource {
     area_name: String,
     graph: <span class="prelude-ty">Option</span>&lt;RailwayGraph&gt;,
     look_at_position: <span class="prelude-ty">Option</span>&lt;Vec3&gt;,
+}
+
+<span class="doccomment">/// Keeps track of the currently selected start and end nodes.
+</span><span class="attr">#[derive(Default, Resource)]
+</span><span class="kw">pub struct </span>SelectedNode {
+    start_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    end_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+}
+
+<span class="doccomment">/// Defines the different interaction modes for the application.
+</span><span class="attr">#[derive(Debug, PartialEq, Clone, Default)]
+</span><span class="kw">pub enum </span>InteractionMode {
+    <span class="doccomment">/// Default mode: selecting nodes to display information or find the shortest path.
+    </span><span class="attr">#[default]
+    </span>SelectNode,
+    <span class="doccomment">/// Mode for placing trains on the railway network.
+    </span>PlaceTrain,
+}
+
+<span class="doccomment">/// Stores the current interaction mode.
+</span><span class="attr">#[derive(Default, Resource)]
+</span><span class="kw">pub struct </span>InteractionModeResource {
+    mode: InteractionMode,
 }
 
 <span class="doccomment">/// Initializes the Bevy application with a given `RailwayGraph`.
@@ -347,9 +448,14 @@
         .add_plugin(PanCamPlugin::default())
         .insert_resource(app_resource)
         .insert_resource(projection)
+        .insert_resource(SelectedNode::default())
+        .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
         .add_startup_system(display_graph)
+        .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
+        .add_system(select_node_system)
+        .add_system(show_path)
         .run()
 }
 
@@ -368,9 +474,13 @@
         .add_plugin(PanCamPlugin::default())
         .insert_resource(AppResource::default())
         .insert_resource(projection)
+        .insert_resource(SelectedNode::default())
+        .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
-        .add_system(ui_system)
+        .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
+        .add_system(select_node_system)
+        .add_system(show_path)
         .run()
 }
 
@@ -378,60 +488,6 @@
     commands
         .spawn(Camera2dBundle::default())
         .insert(PanCam::default());
-}
-
-<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
-#[allow(clippy::too_many_arguments)]
-</span><span class="kw">fn </span>ui_system(
-    <span class="kw-2">mut </span>contexts: EguiContexts,
-    commands: Commands,
-    <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
-    edge_query: Query&lt;Entity, With&lt;Edge&gt;&gt;,
-    node_query: Query&lt;Entity, With&lt;Node&gt;&gt;,
-    <span class="kw-2">mut </span>projection: ResMut&lt;Projection&gt;,
-    meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
-    materials: ResMut&lt;Assets&lt;ColorMaterial&gt;&gt;,
-) {
-    egui::Window::new(<span class="string">&quot;&quot;</span>).show(contexts.ctx_mut(), |ui| {
-        ui.label(<span class="string">&quot;Enter an Area:&quot;</span>);
-        ui.text_edit_singleline(<span class="kw-2">&amp;mut </span>app_resource.area_name);
-
-        <span class="kw">if </span>ui.button(<span class="string">&quot;Load Railway Graph&quot;</span>).clicked() {
-            <span class="kw">let </span>area_name = app_resource.area_name.clone();
-            <span class="comment">// Process input and update Bevy resources or systems
-            </span><span class="macro">println!</span>(<span class="string">&quot;Loading railway graph data: {}&quot;</span>, area_name);
-
-            <span class="kw">let </span>rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(<span class="kw">async move </span>{
-                <span class="kw">let </span>client = OverpassApiClient::new();
-
-                <span class="kw">let </span>api_json_value = {
-                    <span class="kw">if </span>area_name.contains(<span class="string">&#39;,&#39;</span>) {
-                        client
-                            .fetch_by_bbox(<span class="kw-2">&amp;</span>area_name)
-                            .<span class="kw">await
-                            </span>.unwrap_or(client.fetch_by_area_name(<span class="kw-2">&amp;</span>area_name).<span class="kw">await</span>.unwrap())
-                    } <span class="kw">else </span>{
-                        client.fetch_by_area_name(<span class="kw-2">&amp;</span>area_name).<span class="kw">await</span>.unwrap()
-                    }
-                };
-
-                <span class="kw">let </span>graph = OverpassImporter::import(<span class="kw-2">&amp;</span>api_json_value).unwrap();
-                <span class="kw">let </span>(min_coord, max_coord) = graph.bounding_box();
-                projection.set_bounding_box(min_coord, max_coord);
-                app_resource.graph = <span class="prelude-val">Some</span>(graph);
-                display_graph(
-                    commands,
-                    app_resource.into(),
-                    edge_query,
-                    node_query,
-                    projection.into(),
-                    meshes,
-                    materials,
-                );
-            });
-        }
-    });
 }
 
 <span class="kw">fn </span>update_look_at_position_system(
@@ -475,6 +531,34 @@
                 <span class="kw">for </span><span class="kw-2">mut </span>transform <span class="kw">in </span>camera_query.iter_mut() {
                     <span class="kw-2">*</span>transform = Transform::from_translation(transform.translation)
                         .looking_at(look_at_position, Vec3::Z);
+                }
+            }
+        }
+    }
+}
+
+<span class="kw">fn </span>show_path(
+    app_resource: Res&lt;AppResource&gt;,
+    <span class="kw-2">mut </span>edge_query: Query&lt;(<span class="kw-2">&amp;</span>Edge, <span class="kw-2">&amp;mut </span>Sprite)&gt;,
+    selected_node: Res&lt;SelectedNode&gt;,
+) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
+        <span class="kw">if let </span>(<span class="prelude-val">Some</span>(start_node_id), <span class="prelude-val">Some</span>(end_node_id)) =
+            (selected_node.start_node_id, selected_node.end_node_id)
+        {
+            <span class="comment">// Use graph.shortest_path_edges to get the Vec of edge IDs
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(path_edge_ids) = graph.shortest_path_edges(start_node_id, end_node_id) {
+                <span class="comment">// Iterate through the edges and set their color
+                </span><span class="kw">for </span>(edge, <span class="kw-2">mut </span>sprite) <span class="kw">in </span>edge_query.iter_mut() {
+                    <span class="kw">let </span>edge_data = edge;
+                    sprite.color = <span class="kw">if </span>path_edge_ids
+                        .iter()
+                        .any(|railway_edge| <span class="kw-2">*</span>railway_edge == edge_data.id)
+                    {
+                        Color::RED
+                    } <span class="kw">else </span>{
+                        Color::BLUE
+                    };
                 }
             }
         }
@@ -527,7 +611,7 @@
                             .mul_transform(Transform::from_rotation(Quat::from_rotation_z(angle))),
                         ..Default::default()
                     })
-                    .insert(Edge);
+                    .insert(Edge { id: edge_data.id });
             }
         }
 
@@ -547,8 +631,72 @@
                         transform: Transform::from_translation(position),
                         ..default()
                     })
-                    .insert(Node);
+                    .insert(Node { id: node_data.id });
             }
+        }
+    }
+}
+
+<span class="kw">fn </span>select_node_system(
+    <span class="kw-2">mut </span>selected_node: ResMut&lt;SelectedNode&gt;,
+    mouse_button_inputs: Res&lt;Input&lt;MouseButton&gt;&gt;,
+    <span class="kw-2">mut </span>windows: Query&lt;<span class="kw-2">&amp;mut </span>Window&gt;,
+    q_node: Query&lt;(Entity, <span class="kw-2">&amp;</span>Node, <span class="kw-2">&amp;</span>Transform)&gt;,
+    camera_q: Query&lt;(<span class="kw-2">&amp;</span>Camera, <span class="kw-2">&amp;</span>GlobalTransform)&gt;,
+    interaction_mode: Res&lt;InteractionModeResource&gt;,
+    <span class="kw-2">mut </span>commands: Commands,
+) {
+    <span class="kw">if </span>mouse_button_inputs.just_pressed(MouseButton::Left) {
+        <span class="kw">let </span>window = windows.single_mut();
+        <span class="kw">let </span>(camera, camera_transform) = camera_q.single();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>closest = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>min_distance = f32::MAX;
+
+        <span class="kw">for </span>(entity, node, transform) <span class="kw">in </span>q_node.iter() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(world_position) = window
+                .cursor_position()
+                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+                .map(|ray| ray.origin)
+            {
+                <span class="kw">let </span>world_position_2d = Vec2::new(world_position.x, world_position.y);
+                <span class="kw">let </span>transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
+                <span class="kw">let </span>distance = world_position_2d.distance(transform_2d);
+
+                <span class="kw">if </span>distance &lt; <span class="number">15.0 </span>&amp;&amp; distance &lt; min_distance {
+                    min_distance = distance;
+                    closest = <span class="prelude-val">Some</span>((entity, node.id, transform.clone()));
+                }
+            }
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((entity, id, transform)) = closest {
+            <span class="comment">// Check the current interaction mode
+            </span><span class="kw">match </span>interaction_mode.mode {
+                InteractionMode::SelectNode =&gt; {
+                    <span class="macro">println!</span>(<span class="string">&quot;Selected node: {:?}&quot;</span>, entity);
+                    selected_node.end_node_id = selected_node.start_node_id;
+                    selected_node.start_node_id = <span class="prelude-val">Some</span>(id);
+                }
+                InteractionMode::PlaceTrain =&gt; {
+                    <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, id);
+                    commands
+                        .spawn((
+                            Transform::from_xyz(
+                                transform.translation.x,
+                                transform.translation.y,
+                                transform.translation.z + <span class="number">1.0</span>,
+                            ),
+                            GlobalTransform::default(),
+                            ComputedVisibility::default(),
+                            Visibility::Inherited,
+                            TrainAgent::on_node(id),
+                        ))
+                        .with_children(train_agent::create_train_agent_sprite_bundle());
+                }
+            }
+        } <span class="kw">else </span>{
+            selected_node.start_node_id = <span class="prelude-val">None</span>;
         }
     }
 }
