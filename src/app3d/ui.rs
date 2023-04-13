@@ -1,3 +1,8 @@
+#![cfg_attr(
+    target_arch = "wasm32",
+    allow(dead_code, unused_imports, unused_variables, unused_mut)
+)]
+
 use super::display_graph;
 use super::{AppResource, Edge, Node, Projection, SelectedNode};
 use super::{InteractionMode, InteractionModeResource};
@@ -7,11 +12,11 @@ use crate::prelude::RailwayApiClient;
 use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
+use bevy::app::AppExit;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
 
-#[cfg(not(target_arch = "wasm32"))]
 #[allow(clippy::too_many_arguments)]
 pub fn ui_system(
     mut contexts: EguiContexts,
@@ -41,44 +46,48 @@ pub fn ui_system(
             }
         }
 
-        ui.label("Enter an Area:");
-        ui.text_edit_singleline(&mut app_resource.area_name);
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            ui.label("Enter an Area:");
+            ui.text_edit_singleline(&mut app_resource.area_name);
 
-        if ui.button("Load Railway Graph").clicked() {
-            let area_name = app_resource.area_name.clone();
-            // Process input and update Bevy resources or systems
-            println!("Loading railway graph data: {}", area_name);
+            if ui.button("Load Railway Graph").clicked() {
+                let area_name = app_resource.area_name.clone();
+                // Process input and update Bevy resources or systems
+                println!("Loading railway graph data: {}", area_name);
 
-            let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.block_on(async move {
-                let client = OverpassApiClient::new();
+                let rt = tokio::runtime::Runtime::new().unwrap();
+                rt.block_on(async move {
+                    let client = OverpassApiClient::new();
 
-                let api_json_value = {
-                    if area_name.contains(',') {
-                        client
-                            .fetch_by_bbox(&area_name)
-                            .await
-                            .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
-                    } else {
-                        client.fetch_by_area_name(&area_name).await.unwrap()
-                    }
-                };
+                    let api_json_value = {
+                        if area_name.contains(',') {
+                            client
+                                .fetch_by_bbox(&area_name)
+                                .await
+                                .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
+                        } else {
+                            client.fetch_by_area_name(&area_name).await.unwrap()
+                        }
+                    };
 
-                let graph = OverpassImporter::import(&api_json_value).unwrap();
-                let (min_coord, max_coord) = graph.bounding_box();
-                projection.set_bounding_box(min_coord, max_coord);
-                app_resource.graph = Some(graph);
-                display_graph(
-                    commands,
-                    app_resource.into(),
-                    edge_query,
-                    node_query,
-                    projection.into(),
-                    meshes,
-                    materials,
-                );
-            });
+                    let graph = OverpassImporter::import(&api_json_value).unwrap();
+                    let (min_coord, max_coord) = graph.bounding_box();
+                    projection.set_bounding_box(min_coord, max_coord);
+                    app_resource.graph = Some(graph);
+                    display_graph(
+                        commands,
+                        app_resource.into(),
+                        edge_query,
+                        node_query,
+                        projection.into(),
+                        meshes,
+                        materials,
+                    );
+                });
+            }
         }
+
         // Add radio buttons for click action modes
         ui.label("Click action mode:");
         ui.radio_value(
