@@ -249,13 +249,73 @@
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
-</pre><pre class="rust"><code><span class="comment">// train_agent.rs
-</span><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+</pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>rand::seq::SliceRandom;
 
 <span class="kw">use super</span>::{AppResource, Node};
 <span class="kw">use crate</span>::{
+    ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
 };
@@ -271,7 +331,8 @@
     <span class="kw">pub </span>current_edge: <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt;,
     <span class="kw">pub </span>edge_progress: f64,
     <span class="kw">pub </span>speed: f64, <span class="comment">// Speed in meters per second
-</span>}
+    </span><span class="kw">pub </span>ai_agent: <span class="prelude-ty">Option</span>&lt;TrainAgentAI&gt;,
+}
 
 <span class="kw">impl </span>TrainAgent {
     <span class="kw">pub fn </span>new(id: i32, current_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;, target_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;) -&gt; <span class="self">Self </span>{
@@ -282,11 +343,25 @@
             current_edge: <span class="prelude-val">None</span>,
             edge_progress: <span class="number">0.0</span>,
             speed: <span class="number">20.0</span>,
+            ai_agent: <span class="prelude-val">None</span>,
         }
     }
     <span class="kw">pub fn </span>on_node(current_node_id: i64) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>id = TRAIN_AGENT_ID.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
         <span class="self">Self</span>::new(id, <span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">None</span>)
+    }
+
+    <span class="kw">pub fn </span>train(<span class="kw-2">&amp;mut </span><span class="self">self</span>, railway_graph: <span class="kw-2">&amp;</span>RailwayGraph, iterations: usize) {
+        <span class="kw">let </span>initial_state = TrainAgentState {
+            delta_distance_mm: <span class="number">0</span>,
+            current_speed_mm_s: <span class="number">0</span>,
+            max_speed_percentage: <span class="number">0</span>,
+        };
+        <span class="kw">let </span>ai_agent = TrainAgentAI::new(railway_graph.clone(), initial_state);
+        <span class="self">self</span>.ai_agent = <span class="prelude-val">Some</span>(ai_agent);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(ai_agent) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.ai_agent {
+            ai_agent.train(iterations);
+        }
     }
 }
 
@@ -360,28 +435,37 @@
 ) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>railway_graph) = app_resource.graph {
         <span class="kw">for </span>(<span class="kw-2">mut </span>train_agent, <span class="kw-2">mut </span>transform) <span class="kw">in </span>train_agent_query.iter_mut() {
+            <span class="kw">let </span>(current_node_id, target_node_id, current_speed) = (
+                train_agent.current_node_id,
+                train_agent.target_node_id,
+                train_agent.speed,
+            );
+            make_train_observation(
+                <span class="kw-2">&amp;mut </span>train_agent.ai_agent,
+                current_node_id,
+                target_node_id,
+                current_speed,
+                <span class="kw-2">&amp;</span>time,
+            );
+            update_train_speed(<span class="kw-2">&amp;mut </span>train_agent, <span class="kw-2">&amp;</span>time);
+
             <span class="kw">if let </span><span class="prelude-val">Some</span>(current_node_id) = train_agent.current_node_id {
-                update_train_target(<span class="kw-2">&amp;mut </span>train_agent, <span class="kw-2">&amp;</span>railway_graph);
+                update_train_target(<span class="kw-2">&amp;mut </span>train_agent, railway_graph);
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.target_node_id {
                     <span class="kw">if </span>current_node_id == target_node_id {
                         train_agent.target_node_id = <span class="prelude-val">None</span>;
-                    } <span class="kw">else </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(path) =
-                            railway_graph.shortest_path_nodes(current_node_id, target_node_id)
-                        {
-                            <span class="kw">if </span>!path.is_empty() {
-                                train_agent.current_node_id = <span class="prelude-val">Some</span>(path[<span class="number">1</span>]);
-                                <span class="kw">if </span>path.len() == <span class="number">2 </span>{
-                                    train_agent.target_node_id = <span class="prelude-val">None</span>;
-                                } <span class="kw">else </span>{
-                                    <span class="kw">if let </span><span class="prelude-val">Some</span>((<span class="kw">_</span>, target_node_transform)) =
-                                        node_query.iter().find(|(node, <span class="kw">_</span>)| {
-                                            node.id == train_agent.target_node_id.unwrap()
-                                        })
-                                    {
-                                        transform.translation = target_node_transform.translation;
-                                    }
-                                }
+                    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(path) =
+                        railway_graph.shortest_path_nodes(current_node_id, target_node_id)
+                    {
+                        <span class="kw">if </span>!path.is_empty() {
+                            train_agent.current_node_id = <span class="prelude-val">Some</span>(path[<span class="number">1</span>]);
+                            <span class="kw">if </span>path.len() == <span class="number">2 </span>{
+                                train_agent.target_node_id = <span class="prelude-val">None</span>;
+                            } <span class="kw">else if let </span><span class="prelude-val">Some</span>((<span class="kw">_</span>, target_node_transform)) = node_query
+                                .iter()
+                                .find(|(node, <span class="kw">_</span>)| node.id == train_agent.target_node_id.unwrap())
+                            {
+                                transform.translation = target_node_transform.translation;
                             }
                         }
                     }
@@ -448,6 +532,42 @@
                     train_agent.edge_progress = <span class="number">0.0</span>;
                 }
             }
+        }
+    }
+}
+
+<span class="kw">fn </span>make_train_observation(
+    ai_agent: <span class="kw-2">&amp;mut </span><span class="prelude-ty">Option</span>&lt;TrainAgentAI&gt;,
+    current_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    target_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    current_speed: f64,
+    time: <span class="kw-2">&amp;</span>Time,
+) {
+    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(ai_agent), <span class="prelude-val">Some</span>(current_node_id)) = (ai_agent, current_node_id) {
+        <span class="kw">let </span>delta_distance = current_speed * time.delta_seconds_f64() * <span class="number">1000.0</span>;
+        ai_agent.observe(
+            current_node_id,
+            target_node_id,
+            <span class="prelude-val">Some</span>((current_speed * <span class="number">1000.0</span>) <span class="kw">as </span>i32),
+            <span class="prelude-val">Some</span>(delta_distance <span class="kw">as </span>i32),
+        );
+    }
+}
+
+<span class="kw">fn </span>update_train_speed(train_agent: <span class="kw-2">&amp;mut </span>TrainAgent, time: <span class="kw-2">&amp;</span>Time) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(ai_agent) = <span class="kw-2">&amp;</span>train_agent.ai_agent {
+        <span class="kw">let </span>action = ai_agent.best_action(<span class="kw-2">&amp;</span>ai_agent.agent_rl.state);
+        <span class="kw">match </span>action {
+            <span class="prelude-val">Some</span>(TrainAgentAction::Stop) =&gt; {
+                <span class="comment">//train_agent.speed *= 0.9;
+            </span>}
+            <span class="prelude-val">Some</span>(TrainAgentAction::AccelerateForward { acceleration }) =&gt; {
+                train_agent.speed += acceleration <span class="kw">as </span>f64 * time.raw_delta_seconds_f64() / <span class="number">1000.0</span>;
+            }
+            <span class="prelude-val">Some</span>(TrainAgentAction::AccelerateBackward { acceleration }) =&gt; {
+                train_agent.speed -= acceleration <span class="kw">as </span>f64 * time.delta_seconds_f64() / <span class="number">1000.0</span>;
+            }
+            <span class="kw">_ </span>=&gt; (),
         }
     }
 }

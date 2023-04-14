@@ -351,6 +351,12 @@
 <a href="#351" id="351">351</a>
 <a href="#352" id="352">352</a>
 <a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -641,7 +647,9 @@
     }
 }
 
-<span class="kw">fn </span>select_node_system(
+<span class="attr">#[allow(clippy::too_many_arguments)]
+</span><span class="kw">fn </span>select_node_system(
+    app_resource: Res&lt;AppResource&gt;,
     <span class="kw-2">mut </span>selected_node: ResMut&lt;SelectedNode&gt;,
     mouse_button_inputs: Res&lt;Input&lt;MouseButton&gt;&gt;,
     <span class="kw-2">mut </span>windows: Query&lt;<span class="kw-2">&amp;mut </span>Window&gt;,
@@ -669,7 +677,7 @@
 
                 <span class="kw">if </span>distance &lt; <span class="number">15.0 </span>&amp;&amp; distance &lt; min_distance {
                     min_distance = distance;
-                    closest = <span class="prelude-val">Some</span>((entity, node.id, transform.clone()));
+                    closest = <span class="prelude-val">Some</span>((entity, node.id, <span class="kw-2">*</span>transform));
                 }
             }
         }
@@ -684,6 +692,10 @@
                 }
                 InteractionMode::PlaceTrain =&gt; {
                     <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, id);
+                    <span class="kw">let </span><span class="kw-2">mut </span>train_agent = TrainAgent::on_node(id);
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
+                        train_agent.train(graph, <span class="number">100000</span>);
+                    }
                     commands
                         .spawn((
                             Transform::from_xyz(
@@ -694,7 +706,7 @@
                             GlobalTransform::default(),
                             ComputedVisibility::default(),
                             Visibility::Inherited,
-                            TrainAgent::on_node(id),
+                            train_agent,
                         ))
                         .with_children(train_agent::create_train_agent_sprite_bundle());
                 }
