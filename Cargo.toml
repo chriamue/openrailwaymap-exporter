@@ -14,7 +14,7 @@ crate-type = ["cdylib", "rlib"]
 [features]
 default = ["app3d", "ai"]
 ai = ["rurel"]
-app3d = ["bevy", "bevy_egui", "bevy_pancam"]
+app3d = ["ai", "bevy", "bevy_egui", "bevy_pancam"]
 
 [dependencies]
 anyhow = "1.0"

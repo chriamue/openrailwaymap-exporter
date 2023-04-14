@@ -4,6 +4,7 @@ use rand::seq::SliceRandom;
 
 use super::{AppResource, Node};
 use crate::{
+    ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
 };
@@ -19,6 +20,7 @@ pub struct TrainAgent {
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
     pub speed: f64, // Speed in meters per second
+    pub ai_agent: Option<TrainAgentAI>,
 }
 
 impl TrainAgent {
@@ -30,11 +32,25 @@ impl TrainAgent {
             current_edge: None,
             edge_progress: 0.0,
             speed: 20.0,
+            ai_agent: None,
         }
     }
     pub fn on_node(current_node_id: i64) -> Self {
         let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
         Self::new(id, Some(current_node_id), None)
+    }
+
+    pub fn train(&mut self, railway_graph: &RailwayGraph, iterations: usize) {
+        let initial_state = TrainAgentState {
+            delta_distance_mm: 0,
+            current_speed_mm_s: 0,
+            max_speed_percentage: 0,
+        };
+        let ai_agent = TrainAgentAI::new(railway_graph.clone(), initial_state);
+        self.ai_agent = Some(ai_agent);
+        if let Some(ai_agent) = &mut self.ai_agent {
+            ai_agent.train(iterations);
+        }
     }
 }
 
@@ -108,6 +124,20 @@ pub fn train_agent_system(
 ) {
     if let Some(ref railway_graph) = app_resource.graph {
         for (mut train_agent, mut transform) in train_agent_query.iter_mut() {
+            let (current_node_id, target_node_id, current_speed) = (
+                train_agent.current_node_id,
+                train_agent.target_node_id,
+                train_agent.speed,
+            );
+            make_train_observation(
+                &mut train_agent.ai_agent,
+                current_node_id,
+                target_node_id,
+                current_speed,
+                &time,
+            );
+            update_train_speed(&mut train_agent, &time);
+
             if let Some(current_node_id) = train_agent.current_node_id {
                 update_train_target(&mut train_agent, railway_graph);
                 if let Some(target_node_id) = train_agent.target_node_id {
@@ -191,6 +221,42 @@ fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGrap
                     train_agent.edge_progress = 0.0;
                 }
             }
+        }
+    }
+}
+
+fn make_train_observation(
+    ai_agent: &mut Option<TrainAgentAI>,
+    current_node_id: Option<i64>,
+    target_node_id: Option<i64>,
+    current_speed: f64,
+    time: &Time,
+) {
+    if let (Some(ai_agent), Some(current_node_id)) = (ai_agent, current_node_id) {
+        let delta_distance = current_speed * time.delta_seconds_f64() * 1000.0;
+        ai_agent.observe(
+            current_node_id,
+            target_node_id,
+            Some((current_speed * 1000.0) as i32),
+            Some(delta_distance as i32),
+        );
+    }
+}
+
+fn update_train_speed(train_agent: &mut TrainAgent, time: &Time) {
+    if let Some(ai_agent) = &train_agent.ai_agent {
+        let action = ai_agent.best_action(&ai_agent.agent_rl.state);
+        match action {
+            Some(TrainAgentAction::Stop) => {
+                //train_agent.speed *= 0.9;
+            }
+            Some(TrainAgentAction::AccelerateForward { acceleration }) => {
+                train_agent.speed += acceleration as f64 * time.raw_delta_seconds_f64() / 1000.0;
+            }
+            Some(TrainAgentAction::AccelerateBackward { acceleration }) => {
+                train_agent.speed -= acceleration as f64 * time.delta_seconds_f64() / 1000.0;
+            }
+            _ => (),
         }
     }
 }

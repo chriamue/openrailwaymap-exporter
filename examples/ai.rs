@@ -35,10 +35,9 @@ fn main() {
     let graph = from_railway_elements(&railway_elements);
 
     let initial_state = TrainAgentState {
-        remaining_distance_mm: 1000 * 1000,
+        delta_distance_mm: 0,
         current_speed_mm_s: 0,
-        max_speed_mm_s: ((160.0 / 3.6) as i32) * 1000,
-        time_delta_ms: 1000,
+        max_speed_percentage: 0,
     };
 
     let mut agent = TrainAgentAI::new(graph, initial_state.clone());

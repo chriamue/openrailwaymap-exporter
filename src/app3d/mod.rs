@@ -288,7 +288,9 @@ fn display_graph(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn select_node_system(
+    app_resource: Res<AppResource>,
     mut selected_node: ResMut<SelectedNode>,
     mouse_button_inputs: Res<Input<MouseButton>>,
     mut windows: Query<&mut Window>,
@@ -331,6 +333,10 @@ fn select_node_system(
                 }
                 InteractionMode::PlaceTrain => {
                     println!("Placing train on node: {:?}", id);
+                    let mut train_agent = TrainAgent::on_node(id);
+                    if let Some(graph) = &app_resource.graph {
+                        train_agent.train(graph, 100000);
+                    }
                     commands
                         .spawn((
                             Transform::from_xyz(
@@ -341,7 +347,7 @@ fn select_node_system(
                             GlobalTransform::default(),
                             ComputedVisibility::default(),
                             Visibility::Inherited,
-                            TrainAgent::on_node(id),
+                            train_agent,
                         ))
                         .with_children(train_agent::create_train_agent_sprite_bundle());
                 }
