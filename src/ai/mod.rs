@@ -32,7 +32,7 @@ pub enum TrainAgentAction {
 }
 
 /// Represents the state of a train agent in the simulation.
-#[derive(PartialEq, Eq, Hash, Clone, Debug)]
+#[derive(Default, PartialEq, Eq, Hash, Clone, Debug)]
 pub struct TrainAgentState {
     /// The remaining distance in meters the train agent needs to travel.
     pub remaining_distance_mm: i64,
@@ -45,6 +45,9 @@ pub struct TrainAgentState {
 }
 
 impl TrainAgentState {
+    const MAX_ACCELERATION: i32 = 1000; // 1000 mm/s², approximately 1 m/s²
+    const ACCELERATION_STEP: i32 = 20;
+
     fn speed_reward(&self) -> f64 {
         self.max_speed_mm_s as f64 / self.current_speed_mm_s.abs() as f64
     }
@@ -62,25 +65,22 @@ impl State for TrainAgentState {
     }
 
     fn actions(&self) -> Vec<TrainAgentAction> {
-        let max_acceleration = 1000; // 1000 mm/s², approximately 1 m/s²
-        let acceleraton_step = 20;
         let mut actions = vec![TrainAgentAction::Stop];
-        for acceleration in 1..=max_acceleration / acceleraton_step {
+        for acceleration in 1..=(Self::MAX_ACCELERATION / Self::ACCELERATION_STEP) {
             actions.push(TrainAgentAction::AccelerateForward {
-                acceleration: acceleration * acceleraton_step,
+                acceleration: acceleration * Self::ACCELERATION_STEP,
             });
             actions.push(TrainAgentAction::AccelerateBackward {
-                acceleration: acceleration * acceleraton_step,
+                acceleration: acceleration * Self::ACCELERATION_STEP,
             });
         }
         actions
     }
 }
 
-/// A reinforcement learning agent that controls a train in the simulation.
+/// Reinforcement Learning Agent
+#[derive(Default, Clone, Debug)]
 pub struct TrainAgentRL {
-    /// The railway graph representing the train network.
-    pub railway_graph: Option<RailwayGraph>,
     /// The current state of the train agent.
     pub state: TrainAgentState,
 }
@@ -115,25 +115,66 @@ impl Agent<TrainAgentState> for TrainAgentRL {
     }
 }
 
-/// Trains a reinforcement learning agent to control a train in the simulation.
-pub fn train(railway_graph: RailwayGraph) {
-    let initial_state = TrainAgentState {
-        remaining_distance_mm: 1000 * 1000,
-        current_speed_mm_s: 0,
-        max_speed_mm_s: ((160.0 / 3.6) as i32) * 1000,
-        time_delta_ms: 1000,
-    };
-    let mut trainer = AgentTrainer::new();
-    let mut agent = TrainAgentRL {
-        railway_graph: Some(railway_graph),
-        state: initial_state,
-    };
-    trainer.train(
-        &mut agent,
-        &QLearning::new(0.2, 0.01, 2.),
-        &mut FixedIterations::new(10000),
-        &RandomExploration::new(),
-    );
+/// A reinforcement learning agent that controls a train in the simulation.
+pub struct TrainAgentAI {
+    /// The railway graph representing the train network.
+    pub railway_graph: Option<RailwayGraph>,
+    /// The reinforcement learning agent responsible for controlling the train.
+    pub agent_rl: TrainAgentRL,
+    /// The trainer responsible for training the reinforcement learning agent.
+    pub trainer: AgentTrainer<TrainAgentState>,
+}
+
+impl TrainAgentAI {
+    /// Creates a new `TrainAgentAI` with the given railway graph and initial state.
+    ///
+    /// # Arguments
+    ///
+    /// * `railway_graph` - The railway graph representing the train network.
+    /// * `initial_state` - The initial state of the train agent in the simulation.
+    ///
+    /// # Returns
+    ///
+    /// A new `TrainAgentAI` instance.
+    pub fn new(railway_graph: RailwayGraph, initial_state: TrainAgentState) -> Self {
+        let agent_rl = TrainAgentRL {
+            state: initial_state,
+        };
+        let trainer = AgentTrainer::new();
+        Self {
+            railway_graph: Some(railway_graph),
+            agent_rl,
+            trainer,
+        }
+    }
+
+    /// Trains the reinforcement learning agent for the specified number of iterations.
+    ///
+    /// # Arguments
+    ///
+    /// * `iterations` - The number of iterations to train the agent.
+    pub fn train(&mut self, iterations: usize) {
+        let mut agent = self.agent_rl.clone();
+        self.trainer.train(
+            &mut agent,
+            &QLearning::new(0.2, 0.01, 2.),
+            &mut FixedIterations::new(iterations as u32),
+            &RandomExploration::new(),
+        );
+    }
+
+    /// Returns the best action for the given state according to the trained reinforcement learning agent.
+    ///
+    /// # Arguments
+    ///
+    /// * `state` - The current state of the train agent in the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The best action for the given state or `None` if no action can be selected.
+    pub fn best_action(&self, state: &TrainAgentState) -> Option<TrainAgentAction> {
+        self.trainer.best_action(state)
+    }
 }
 
 #[cfg(test)]
@@ -185,7 +226,6 @@ mod tests {
     #[test]
     fn test_take_action() {
         let mut agent = TrainAgentRL {
-            railway_graph: None,
             state: TrainAgentState {
                 remaining_distance_mm: 1000 * 1000,
                 current_speed_mm_s: 0,
