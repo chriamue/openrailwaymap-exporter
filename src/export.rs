@@ -164,7 +164,7 @@ mod tests {
         assert!(dot_string.contains("0 [ label = \"RailwayNode { id: 2, lat: 50.0, lon: 8.0 }\" ]"));
         assert!(dot_string.contains("1 [ label = \"RailwayNode { id: 3, lat: 51.0, lon: 9.0 }\" ]"));
         assert!(dot_string.contains("0 -- 1 [ ]"));
-        assert!(dot_string.contains("}"));
+        assert!(dot_string.contains('}'));
     }
 
     #[test]

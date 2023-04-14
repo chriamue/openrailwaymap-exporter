@@ -113,23 +113,18 @@ pub fn train_agent_system(
                 if let Some(target_node_id) = train_agent.target_node_id {
                     if current_node_id == target_node_id {
                         train_agent.target_node_id = None;
-                    } else {
-                        if let Some(path) =
-                            railway_graph.shortest_path_nodes(current_node_id, target_node_id)
-                        {
-                            if !path.is_empty() {
-                                train_agent.current_node_id = Some(path[1]);
-                                if path.len() == 2 {
-                                    train_agent.target_node_id = None;
-                                } else {
-                                    if let Some((_, target_node_transform)) =
-                                        node_query.iter().find(|(node, _)| {
-                                            node.id == train_agent.target_node_id.unwrap()
-                                        })
-                                    {
-                                        transform.translation = target_node_transform.translation;
-                                    }
-                                }
+                    } else if let Some(path) =
+                        railway_graph.shortest_path_nodes(current_node_id, target_node_id)
+                    {
+                        if !path.is_empty() {
+                            train_agent.current_node_id = Some(path[1]);
+                            if path.len() == 2 {
+                                train_agent.target_node_id = None;
+                            } else if let Some((_, target_node_transform)) = node_query
+                                .iter()
+                                .find(|(node, _)| node.id == train_agent.target_node_id.unwrap())
+                            {
+                                transform.translation = target_node_transform.translation;
                             }
                         }
                     }

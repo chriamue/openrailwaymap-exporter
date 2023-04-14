@@ -46,7 +46,10 @@ fn shortest_path_edges_benchmark(c: &mut Criterion) {
         b.iter(|| {
             let start = black_box(6204567489);
             let end = black_box(6204567501);
-            assert!(railway_graph.shortest_path_edges(start, end).unwrap().len() > 0);
+            assert!(!railway_graph
+                .shortest_path_edges(start, end)
+                .unwrap()
+                .is_empty());
         })
     });
 }

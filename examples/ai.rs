@@ -22,7 +22,7 @@ fn simulate(
     railway_graph: &RailwayGraph,
 ) {
     let mut agent = openrailwaymap_exporter::ai::TrainAgentRL {
-        railway_graph: railway_graph.clone(),
+        railway_graph: Some(railway_graph.clone()),
         state: initial_state.clone(),
     };
 
@@ -31,7 +31,7 @@ fn simulate(
         initial_state
     );
     let mut step = 0;
-    while step < 1000 {
+    while step < 100 {
         let best_action = trainer.best_action(agent.current_state()).unwrap();
         agent.take_action(&best_action);
         println!(
@@ -49,14 +49,15 @@ fn main() {
     let graph = from_railway_elements(&railway_elements);
 
     let initial_state = TrainAgentState {
-        remaining_distance_m: 10000,
-        current_speed_in_kmh: 0,
-        max_speed_in_kmh: 160,
+        remaining_distance_mm: 1000 * 1000,
+        current_speed_mm_s: 0,
+        max_speed_mm_s: ((160.0 / 3.6) as i32) * 1000,
+        time_delta_ms: 1000,
     };
 
     let mut trainer = AgentTrainer::new();
     let mut agent = openrailwaymap_exporter::ai::TrainAgentRL {
-        railway_graph: graph.clone(),
+        railway_graph: Some(graph.clone()),
         state: initial_state.clone(),
     };
 
