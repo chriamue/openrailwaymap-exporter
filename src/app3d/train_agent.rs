@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_mod_picking::PickableBundle;
 use geo_types::coord;
 use rand::seq::SliceRandom;
 
@@ -54,64 +55,63 @@ impl TrainAgent {
     }
 }
 
-pub fn create_train_agent_sprite_bundle() -> impl FnOnce(&mut ChildBuilder) {
-    let main_body = SpriteBundle {
-        sprite: Sprite {
-            custom_size: Some(Vec2::new(20.0, 10.0)),
-            color: Color::rgb(0.0, 0.6, 0.0),
-            ..Default::default()
-        },
-        transform: Transform::from_scale(Vec3::new(2.0, 2.0, 1.0)),
+pub fn create_train_agent_bundle(
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) -> impl FnOnce(&mut ChildBuilder) {
+    let main_body = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(20.0, 10.0, 4.0))),
+        material: materials.add(Color::rgb(0.0, 0.6, 0.0).into()),
         ..Default::default()
     };
 
-    let top_part = SpriteBundle {
-        sprite: Sprite {
-            custom_size: Some(Vec2::new(6.0, 4.0)),
-            color: Color::rgb(0.0, 0.4, 0.0),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(10.0, 0.0, 0.0),
+    let top_part = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(6.0, 4.0, 2.0))),
+        material: materials.add(Color::rgb(0.0, 0.4, 0.0).into()),
+        transform: Transform::from_xyz(10.0, 0.0, 1.0),
         ..Default::default()
     };
 
-    let bottom_part = SpriteBundle {
-        sprite: Sprite {
-            custom_size: Some(Vec2::new(6.0, 4.0)),
-            color: Color::rgb(0.0, 0.4, 0.0),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(-10.0, 0.0, 0.0),
+    let bottom_part = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(6.0, 4.0, 2.0))),
+        material: materials.add(Color::rgb(0.0, 0.4, 0.0).into()),
+        transform: Transform::from_xyz(-10.0, 0.0, 1.0),
         ..Default::default()
     };
 
-    let left_wheel = SpriteBundle {
-        sprite: Sprite {
-            custom_size: Some(Vec2::new(4.0, 4.0)),
-            color: Color::rgb(0.2, 0.2, 0.2),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(-8.0, -5.0, 0.0),
+    let left_wheel = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cylinder {
+            radius: 2.0,
+            height: 4.0,
+            resolution: 20,
+            segments: 1,
+        })),
+        material: materials.add(Color::rgb(0.2, 0.2, 0.2).into()),
+        transform: Transform::from_xyz(-8.0, -5.0, 1.0),
         ..Default::default()
     };
 
-    let right_wheel = SpriteBundle {
-        sprite: Sprite {
-            custom_size: Some(Vec2::new(4.0, 4.0)),
-            color: Color::rgb(0.2, 0.2, 0.2),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(8.0, -5.0, 0.0),
+    let right_wheel = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cylinder {
+            radius: 2.0,
+            height: 4.0,
+            resolution: 20,
+            segments: 1,
+        })),
+        material: materials.add(Color::rgb(0.2, 0.2, 0.2).into()),
+        transform: Transform::from_xyz(8.0, -5.0, 1.0),
         ..Default::default()
     };
 
     move |builder: &mut ChildBuilder| {
-        builder.spawn(main_body).with_children(|parent| {
-            parent.spawn(top_part);
-            parent.spawn(bottom_part);
-            parent.spawn(left_wheel);
-            parent.spawn(right_wheel);
-        });
+        builder
+            .spawn((main_body, PickableBundle::default()))
+            .with_children(|parent| {
+                parent.spawn(top_part);
+                parent.spawn(bottom_part);
+                parent.spawn(left_wheel);
+                parent.spawn(right_wheel);
+            });
     }
 }
 

@@ -9,11 +9,10 @@ use crate::app3d::train_agent::TrainAgent;
 use crate::prelude::RailwayGraph;
 use crate::railway_algorithms::PathFinding;
 use bevy::input::Input;
-use bevy::prelude::shape::Circle;
 use bevy::prelude::*;
-use bevy::sprite::MaterialMesh2dBundle;
 use bevy_egui::EguiPlugin;
-use bevy_pancam::{PanCam, PanCamPlugin};
+use bevy_mod_picking::PickingEvent;
+use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle, PickingCameraBundle};
 use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
@@ -100,7 +99,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
-        .add_plugin(PanCamPlugin::default())
+        .add_plugins(DefaultPickingPlugins)
         .insert_resource(app_resource)
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
@@ -127,9 +126,18 @@ pub fn init_with_graph(graph: RailwayGraph) {
 pub fn init() {
     let projection = Projection::new(1000.0, 1000.0);
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "Railwaymap".into(),
+                resolution: (1000., 1000.).into(),
+                fit_canvas_to_parent: true,
+                prevent_default_event_handling: false,
+                ..default()
+            }),
+            ..default()
+        }))
         .add_plugin(EguiPlugin)
-        .add_plugin(PanCamPlugin::default())
+        .add_plugins(DefaultPickingPlugins)
         .insert_resource(AppResource::default())
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
@@ -146,9 +154,30 @@ pub fn init() {
 }
 
 fn setup(mut commands: Commands) {
-    commands
-        .spawn(Camera2dBundle::default())
-        .insert(PanCam::default());
+    //commands
+    //    .spawn(Camera2dBundle::default())
+    //    .insert(PanCam::default());
+    // camera
+    commands.spawn((
+        Camera3dBundle {
+            transform: Transform::from_xyz(0.0, 0.0, 1000.0).looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        },
+        PickingCameraBundle::default(),
+    ));
+    commands.insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: 0.7,
+    });
+    commands.spawn(PointLightBundle {
+        transform: Transform::from_xyz(0.0, 500.0, 0.0),
+        point_light: PointLight {
+            intensity: 10000.0,
+            range: 1000.0,
+            ..Default::default()
+        },
+        ..Default::default()
+    });
 }
 
 fn update_look_at_position_system(
@@ -200,8 +229,9 @@ fn update_look_at_position_system(
 
 fn show_path(
     app_resource: Res<AppResource>,
-    mut edge_query: Query<(&Edge, &mut Sprite)>,
+    mut edge_query: Query<(&Edge, &mut Handle<StandardMaterial>)>,
     selected_node: Res<SelectedNode>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     if let Some(graph) = &app_resource.graph {
         if let (Some(start_node_id), Some(end_node_id)) =
@@ -210,16 +240,25 @@ fn show_path(
             // Use graph.shortest_path_edges to get the Vec of edge IDs
             if let Some(path_edge_ids) = graph.shortest_path_edges(start_node_id, end_node_id) {
                 // Iterate through the edges and set their color
-                for (edge, mut sprite) in edge_query.iter_mut() {
+                for (edge, mut material_handle) in edge_query.iter_mut() {
                     let edge_data = edge;
-                    sprite.color = if path_edge_ids
+                    let is_path_edge = path_edge_ids
                         .iter()
-                        .any(|railway_edge| *railway_edge == edge_data.id)
-                    {
-                        Color::RED
-                    } else {
-                        Color::BLUE
-                    };
+                        .any(|railway_edge| *railway_edge == edge_data.id);
+                    if let Some(material) = materials.get_mut(&material_handle) {
+                        material.base_color = if is_path_edge {
+                            Color::RED
+                        } else {
+                            Color::BLUE
+                        };
+                    } else if is_path_edge {
+                        let new_material = StandardMaterial {
+                            base_color: Color::RED,
+                            ..Default::default()
+                        };
+                        let new_material_handle = materials.add(new_material);
+                        *material_handle = new_material_handle;
+                    }
                 }
             }
         }
@@ -233,7 +272,7 @@ fn display_graph(
     node_query: Query<Entity, With<Node>>,
     projection: Res<Projection>,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
     if let Some(graph) = &app_resource.graph {
         // Clear previous edges and nodes
@@ -258,16 +297,19 @@ fn display_graph(
                 let angle = diff.y.atan2(diff.x);
 
                 commands
-                    .spawn(SpriteBundle {
-                        sprite: {
-                            let sprite_size = Vec2::new(distance, 1.0);
-                            Sprite {
-                                custom_size: Some(sprite_size),
-                                color: Color::BLUE,
-                                ..Default::default()
-                            }
-                        },
-
+                    .spawn(PbrBundle {
+                        mesh: meshes.add(Mesh::from(shape::Box {
+                            min_x: 0.0,
+                            max_x: distance,
+                            min_y: -0.5,
+                            max_y: 0.5,
+                            min_z: -0.5,
+                            max_z: 0.5,
+                        })),
+                        material: materials.add(StandardMaterial {
+                            base_color: Color::BLUE,
+                            ..Default::default()
+                        }),
                         transform: Transform::from_translation(start)
                             .mul_transform(Transform::from_rotation(Quat::from_rotation_z(angle))),
                         ..Default::default()
@@ -286,12 +328,24 @@ fn display_graph(
 
             if let Some(position) = position {
                 commands
-                    .spawn(MaterialMesh2dBundle {
-                        mesh: meshes.add(Circle::new(5.).into()).into(),
-                        material: materials.add(ColorMaterial::from(Color::RED)),
-                        transform: Transform::from_translation(position),
-                        ..default()
-                    })
+                    .spawn((
+                        PbrBundle {
+                            mesh: meshes.add(
+                                Mesh::try_from(shape::Icosphere {
+                                    radius: 5.0,
+                                    subdivisions: 2,
+                                })
+                                .unwrap(),
+                            ),
+                            material: materials.add(StandardMaterial {
+                                base_color: Color::RED,
+                                ..Default::default()
+                            }),
+                            transform: Transform::from_translation(position),
+                            ..Default::default()
+                        },
+                        PickableBundle::default(),
+                    ))
                     .insert(Node { id: node_data.id });
             }
         }
@@ -300,111 +354,100 @@ fn display_graph(
 
 #[allow(clippy::too_many_arguments)]
 fn select_node_system(
+    mut events: EventReader<PickingEvent>,
     app_resource: Res<AppResource>,
+    mut camera_query: Query<&mut Transform, With<Camera>>,
     mut selected_node: ResMut<SelectedNode>,
-    mouse_button_inputs: Res<Input<MouseButton>>,
-    mut windows: Query<&mut Window>,
-    q_node: Query<(Entity, &Node, &Transform)>,
-    camera_q: Query<(&Camera, &GlobalTransform)>,
+    q_node: Query<(Entity, &Node, &Transform), Without<Camera>>,
     interaction_mode: Res<InteractionModeResource>,
     mut commands: Commands,
+    meshes: ResMut<Assets<Mesh>>,
+    materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    if mouse_button_inputs.just_pressed(MouseButton::Left) {
-        let window = windows.single_mut();
-        let (camera, camera_transform) = camera_q.single();
-
-        let mut closest = None;
-        let mut min_distance = f32::MAX;
-
-        for (entity, node, transform) in q_node.iter() {
-            if let Some(world_position) = window
-                .cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin)
-            {
-                let world_position_2d = Vec2::new(world_position.x, world_position.y);
-                let transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
-                let distance = world_position_2d.distance(transform_2d);
-
-                if distance < 15.0 && distance < min_distance {
-                    min_distance = distance;
-                    closest = Some((entity, node.id, *transform));
+    let mut selection = None;
+    for event in events.iter() {
+        match event {
+            PickingEvent::Selection(_e) => (),
+            PickingEvent::Hover(_e) => (),
+            PickingEvent::Clicked(e) => {
+                for (entity, node, transform) in q_node.iter() {
+                    if e == &entity {
+                        selection = Some((entity, node.id, *transform));
+                    }
                 }
             }
         }
+    }
 
-        if let Some((entity, id, transform)) = closest {
-            // Check the current interaction mode
-            match interaction_mode.mode {
-                InteractionMode::SelectMode => {
-                    println!("Selected node: {:?}", entity);
-                    selected_node.end_node_id = selected_node.start_node_id;
-                    selected_node.start_node_id = Some(id);
-                }
-                InteractionMode::PlaceTrain => {
-                    println!("Placing train on node: {:?}", id);
-                    let mut train_agent = TrainAgent::on_node(id);
-                    if let Some(graph) = &app_resource.graph {
-                        train_agent.train(graph, 100000);
-                    }
-                    commands
-                        .spawn((
-                            Transform::from_xyz(
-                                transform.translation.x,
-                                transform.translation.y,
-                                transform.translation.z + 1.0,
-                            ),
-                            GlobalTransform::default(),
-                            ComputedVisibility::default(),
-                            Visibility::Inherited,
-                            train_agent,
-                        ))
-                        .with_children(train_agent::create_train_agent_sprite_bundle());
+    if let Some((entity, id, transform)) = selection {
+        // Check the current interaction mode
+        match interaction_mode.mode {
+            InteractionMode::SelectMode => {
+                println!("Selected node: {:?}", entity);
+                selected_node.end_node_id = selected_node.start_node_id;
+                selected_node.start_node_id = Some(id);
+
+                for mut camera_transform in camera_query.iter_mut() {
+                    camera_transform.translation.x = transform.translation.x;
+                    camera_transform.translation.y = transform.translation.y;
                 }
             }
-        } else {
-            selected_node.start_node_id = None;
+            InteractionMode::PlaceTrain => {
+                println!("Placing train on node: {:?}", id);
+                let mut train_agent = TrainAgent::on_node(id);
+                if let Some(graph) = &app_resource.graph {
+                    train_agent.train(graph, 100000);
+                }
+                commands
+                    .spawn((
+                        Transform::from_xyz(
+                            transform.translation.x,
+                            transform.translation.y,
+                            transform.translation.z + 1.0,
+                        ),
+                        GlobalTransform::default(),
+                        ComputedVisibility::default(),
+                        Visibility::Inherited,
+                        train_agent,
+                        //PickableBundle::default()
+                    ))
+                    .insert(PickableBundle::default())
+                    .with_children(train_agent::create_train_agent_bundle(meshes, materials));
+            }
         }
     }
 }
 
 #[allow(clippy::too_many_arguments)]
 fn select_train_system(
-    mouse_button_inputs: Res<Input<MouseButton>>,
-    mut windows: Query<&mut Window>,
-    camera_q: Query<(&Camera, &GlobalTransform)>,
-    interaction_mode: Res<InteractionModeResource>,
-    q_train: Query<(&TrainAgent, &Transform)>,
+    mut events: EventReader<PickingEvent>,
+    q_train: Query<(Entity, &TrainAgent, &Children)>,
     mut selected_train: ResMut<SelectedTrain>,
 ) {
-    if mouse_button_inputs.just_pressed(MouseButton::Left)
-        && interaction_mode.mode == InteractionMode::SelectMode
-    {
-        let window = windows.single_mut();
-        let (camera, camera_transform) = camera_q.single();
-
-        let mut closest = None;
-        let mut min_distance = f32::MAX;
-
-        for (train_agent, transform) in q_train.iter() {
-            if let Some(world_position) = window
-                .cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin)
-            {
-                let world_position_2d = Vec2::new(world_position.x, world_position.y);
-                let transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
-                let distance = world_position_2d.distance(transform_2d);
-
-                if distance < 15.0 && distance < min_distance {
-                    min_distance = distance;
-                    closest = Some(train_agent.id);
+    let mut selection = None;
+    for event in events.iter() {
+        match event {
+            PickingEvent::Selection(e) => info!("A selection event happened: {:?}", e),
+            PickingEvent::Hover(e) => info!("Egads! A hover event!? {:?}", e),
+            PickingEvent::Clicked(e) => {
+                println!("Clicked: {:?}", e);
+                for (entity, train, children) in q_train.iter() {
+                    if e == &entity {
+                        selection = Some(train.id);
+                    } else {
+                        for entity in children.iter() {
+                            println!("{:?}, {:?}", entity, train.id);
+                            if e == entity {
+                                selection = Some(train.id);
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
 
-        if let Some(id) = closest {
-            selected_train.train_agent_id = Some(id);
-        }
+    if let Some(id) = selection {
+        selected_train.train_agent_id = Some(id);
     }
 }

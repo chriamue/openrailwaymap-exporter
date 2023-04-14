@@ -26,7 +26,7 @@ pub fn ui_system(
     node_query: Query<Entity, With<Node>>,
     mut projection: ResMut<Projection>,
     meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<ColorMaterial>>,
+    materials: ResMut<Assets<StandardMaterial>>,
     selected_node: Res<SelectedNode>,
     selected_train: Res<SelectedTrain>,
     q_train: Query<&TrainAgent>,
