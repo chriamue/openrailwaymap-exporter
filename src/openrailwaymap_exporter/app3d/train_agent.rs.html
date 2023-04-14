@@ -310,6 +310,7 @@
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>rand::seq::SliceRandom;
 
@@ -365,64 +366,63 @@
     }
 }
 
-<span class="kw">pub fn </span>create_train_agent_sprite_bundle() -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>ChildBuilder) {
-    <span class="kw">let </span>main_body = SpriteBundle {
-        sprite: Sprite {
-            custom_size: <span class="prelude-val">Some</span>(Vec2::new(<span class="number">20.0</span>, <span class="number">10.0</span>)),
-            color: Color::rgb(<span class="number">0.0</span>, <span class="number">0.6</span>, <span class="number">0.0</span>),
-            ..Default::default()
-        },
-        transform: Transform::from_scale(Vec3::new(<span class="number">2.0</span>, <span class="number">2.0</span>, <span class="number">1.0</span>)),
+<span class="kw">pub fn </span>create_train_agent_bundle(
+    <span class="kw-2">mut </span>meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
+    <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>ChildBuilder) {
+    <span class="kw">let </span>main_body = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">20.0</span>, <span class="number">10.0</span>, <span class="number">4.0</span>))),
+        material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.6</span>, <span class="number">0.0</span>).into()),
         ..Default::default()
     };
 
-    <span class="kw">let </span>top_part = SpriteBundle {
-        sprite: Sprite {
-            custom_size: <span class="prelude-val">Some</span>(Vec2::new(<span class="number">6.0</span>, <span class="number">4.0</span>)),
-            color: Color::rgb(<span class="number">0.0</span>, <span class="number">0.4</span>, <span class="number">0.0</span>),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(<span class="number">10.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+    <span class="kw">let </span>top_part = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">6.0</span>, <span class="number">4.0</span>, <span class="number">2.0</span>))),
+        material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.4</span>, <span class="number">0.0</span>).into()),
+        transform: Transform::from_xyz(<span class="number">10.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
         ..Default::default()
     };
 
-    <span class="kw">let </span>bottom_part = SpriteBundle {
-        sprite: Sprite {
-            custom_size: <span class="prelude-val">Some</span>(Vec2::new(<span class="number">6.0</span>, <span class="number">4.0</span>)),
-            color: Color::rgb(<span class="number">0.0</span>, <span class="number">0.4</span>, <span class="number">0.0</span>),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(-<span class="number">10.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>),
+    <span class="kw">let </span>bottom_part = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">6.0</span>, <span class="number">4.0</span>, <span class="number">2.0</span>))),
+        material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.4</span>, <span class="number">0.0</span>).into()),
+        transform: Transform::from_xyz(-<span class="number">10.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
         ..Default::default()
     };
 
-    <span class="kw">let </span>left_wheel = SpriteBundle {
-        sprite: Sprite {
-            custom_size: <span class="prelude-val">Some</span>(Vec2::new(<span class="number">4.0</span>, <span class="number">4.0</span>)),
-            color: Color::rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(-<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">0.0</span>),
+    <span class="kw">let </span>left_wheel = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cylinder {
+            radius: <span class="number">2.0</span>,
+            height: <span class="number">4.0</span>,
+            resolution: <span class="number">20</span>,
+            segments: <span class="number">1</span>,
+        })),
+        material: materials.add(Color::rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>).into()),
+        transform: Transform::from_xyz(-<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">1.0</span>),
         ..Default::default()
     };
 
-    <span class="kw">let </span>right_wheel = SpriteBundle {
-        sprite: Sprite {
-            custom_size: <span class="prelude-val">Some</span>(Vec2::new(<span class="number">4.0</span>, <span class="number">4.0</span>)),
-            color: Color::rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>),
-            ..Default::default()
-        },
-        transform: Transform::from_xyz(<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">0.0</span>),
+    <span class="kw">let </span>right_wheel = PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cylinder {
+            radius: <span class="number">2.0</span>,
+            height: <span class="number">4.0</span>,
+            resolution: <span class="number">20</span>,
+            segments: <span class="number">1</span>,
+        })),
+        material: materials.add(Color::rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>).into()),
+        transform: Transform::from_xyz(<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">1.0</span>),
         ..Default::default()
     };
 
     <span class="kw">move </span>|builder: <span class="kw-2">&amp;mut </span>ChildBuilder| {
-        builder.spawn(main_body).with_children(|parent| {
-            parent.spawn(top_part);
-            parent.spawn(bottom_part);
-            parent.spawn(left_wheel);
-            parent.spawn(right_wheel);
-        });
+        builder
+            .spawn((main_body, PickableBundle::default()))
+            .with_children(|parent| {
+                parent.spawn(top_part);
+                parent.spawn(bottom_part);
+                parent.spawn(left_wheel);
+                parent.spawn(right_wheel);
+            });
     }
 }
 

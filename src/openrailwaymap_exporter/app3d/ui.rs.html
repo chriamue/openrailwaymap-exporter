@@ -181,7 +181,7 @@
     node_query: Query&lt;Entity, With&lt;Node&gt;&gt;,
     <span class="kw-2">mut </span>projection: ResMut&lt;Projection&gt;,
     meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
-    materials: ResMut&lt;Assets&lt;ColorMaterial&gt;&gt;,
+    materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
     selected_node: Res&lt;SelectedNode&gt;,
     selected_train: Res&lt;SelectedTrain&gt;,
     q_train: Query&lt;<span class="kw-2">&amp;</span>TrainAgent&gt;,

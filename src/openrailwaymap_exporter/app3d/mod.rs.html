@@ -408,6 +408,49 @@
 <a href="#408" id="408">408</a>
 <a href="#409" id="409">409</a>
 <a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -419,11 +462,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
 <span class="kw">use </span><span class="kw">crate</span>::railway_algorithms::PathFinding;
 <span class="kw">use </span>bevy::input::Input;
-<span class="kw">use </span>bevy::prelude::shape::Circle;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span>bevy::sprite::MaterialMesh2dBundle;
 <span class="kw">use </span>bevy_egui::EguiPlugin;
-<span class="kw">use </span>bevy_pancam::{PanCam, PanCamPlugin};
+<span class="kw">use </span>bevy_mod_picking::PickingEvent;
+<span class="kw">use </span>bevy_mod_picking::{DefaultPickingPlugins, PickableBundle, PickingCameraBundle};
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::visit::NodeRef;
@@ -510,7 +552,7 @@
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(EguiPlugin)
-        .add_plugin(PanCamPlugin::default())
+        .add_plugins(DefaultPickingPlugins)
         .insert_resource(app_resource)
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
@@ -537,9 +579,18 @@
 </span><span class="kw">pub fn </span>init() {
     <span class="kw">let </span>projection = Projection::new(<span class="number">1000.0</span>, <span class="number">1000.0</span>);
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: <span class="prelude-val">Some</span>(Window {
+                title: <span class="string">&quot;Railwaymap&quot;</span>.into(),
+                resolution: (<span class="number">1000.</span>, <span class="number">1000.</span>).into(),
+                fit_canvas_to_parent: <span class="bool-val">true</span>,
+                prevent_default_event_handling: <span class="bool-val">false</span>,
+                ..default()
+            }),
+            ..default()
+        }))
         .add_plugin(EguiPlugin)
-        .add_plugin(PanCamPlugin::default())
+        .add_plugins(DefaultPickingPlugins)
         .insert_resource(AppResource::default())
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
@@ -556,9 +607,30 @@
 }
 
 <span class="kw">fn </span>setup(<span class="kw-2">mut </span>commands: Commands) {
-    commands
-        .spawn(Camera2dBundle::default())
-        .insert(PanCam::default());
+    <span class="comment">//commands
+    //    .spawn(Camera2dBundle::default())
+    //    .insert(PanCam::default());
+    // camera
+    </span>commands.spawn((
+        Camera3dBundle {
+            transform: Transform::from_xyz(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1000.0</span>).looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        },
+        PickingCameraBundle::default(),
+    ));
+    commands.insert_resource(AmbientLight {
+        color: Color::WHITE,
+        brightness: <span class="number">0.7</span>,
+    });
+    commands.spawn(PointLightBundle {
+        transform: Transform::from_xyz(<span class="number">0.0</span>, <span class="number">500.0</span>, <span class="number">0.0</span>),
+        point_light: PointLight {
+            intensity: <span class="number">10000.0</span>,
+            range: <span class="number">1000.0</span>,
+            ..Default::default()
+        },
+        ..Default::default()
+    });
 }
 
 <span class="kw">fn </span>update_look_at_position_system(
@@ -610,8 +682,9 @@
 
 <span class="kw">fn </span>show_path(
     app_resource: Res&lt;AppResource&gt;,
-    <span class="kw-2">mut </span>edge_query: Query&lt;(<span class="kw-2">&amp;</span>Edge, <span class="kw-2">&amp;mut </span>Sprite)&gt;,
+    <span class="kw-2">mut </span>edge_query: Query&lt;(<span class="kw-2">&amp;</span>Edge, <span class="kw-2">&amp;mut </span>Handle&lt;StandardMaterial&gt;)&gt;,
     selected_node: Res&lt;SelectedNode&gt;,
+    <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
 ) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
         <span class="kw">if let </span>(<span class="prelude-val">Some</span>(start_node_id), <span class="prelude-val">Some</span>(end_node_id)) =
@@ -620,16 +693,25 @@
             <span class="comment">// Use graph.shortest_path_edges to get the Vec of edge IDs
             </span><span class="kw">if let </span><span class="prelude-val">Some</span>(path_edge_ids) = graph.shortest_path_edges(start_node_id, end_node_id) {
                 <span class="comment">// Iterate through the edges and set their color
-                </span><span class="kw">for </span>(edge, <span class="kw-2">mut </span>sprite) <span class="kw">in </span>edge_query.iter_mut() {
+                </span><span class="kw">for </span>(edge, <span class="kw-2">mut </span>material_handle) <span class="kw">in </span>edge_query.iter_mut() {
                     <span class="kw">let </span>edge_data = edge;
-                    sprite.color = <span class="kw">if </span>path_edge_ids
+                    <span class="kw">let </span>is_path_edge = path_edge_ids
                         .iter()
-                        .any(|railway_edge| <span class="kw-2">*</span>railway_edge == edge_data.id)
-                    {
-                        Color::RED
-                    } <span class="kw">else </span>{
-                        Color::BLUE
-                    };
+                        .any(|railway_edge| <span class="kw-2">*</span>railway_edge == edge_data.id);
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(material) = materials.get_mut(<span class="kw-2">&amp;</span>material_handle) {
+                        material.base_color = <span class="kw">if </span>is_path_edge {
+                            Color::RED
+                        } <span class="kw">else </span>{
+                            Color::BLUE
+                        };
+                    } <span class="kw">else if </span>is_path_edge {
+                        <span class="kw">let </span>new_material = StandardMaterial {
+                            base_color: Color::RED,
+                            ..Default::default()
+                        };
+                        <span class="kw">let </span>new_material_handle = materials.add(new_material);
+                        <span class="kw-2">*</span>material_handle = new_material_handle;
+                    }
                 }
             }
         }
@@ -643,7 +725,7 @@
     node_query: Query&lt;Entity, With&lt;Node&gt;&gt;,
     projection: Res&lt;Projection&gt;,
     <span class="kw-2">mut </span>meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
-    <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;ColorMaterial&gt;&gt;,
+    <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
 ) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
         <span class="comment">// Clear previous edges and nodes
@@ -668,16 +750,19 @@
                 <span class="kw">let </span>angle = diff.y.atan2(diff.x);
 
                 commands
-                    .spawn(SpriteBundle {
-                        sprite: {
-                            <span class="kw">let </span>sprite_size = Vec2::new(distance, <span class="number">1.0</span>);
-                            Sprite {
-                                custom_size: <span class="prelude-val">Some</span>(sprite_size),
-                                color: Color::BLUE,
-                                ..Default::default()
-                            }
-                        },
-
+                    .spawn(PbrBundle {
+                        mesh: meshes.add(Mesh::from(shape::Box {
+                            min_x: <span class="number">0.0</span>,
+                            max_x: distance,
+                            min_y: -<span class="number">0.5</span>,
+                            max_y: <span class="number">0.5</span>,
+                            min_z: -<span class="number">0.5</span>,
+                            max_z: <span class="number">0.5</span>,
+                        })),
+                        material: materials.add(StandardMaterial {
+                            base_color: Color::BLUE,
+                            ..Default::default()
+                        }),
                         transform: Transform::from_translation(start)
                             .mul_transform(Transform::from_rotation(Quat::from_rotation_z(angle))),
                         ..Default::default()
@@ -696,12 +781,24 @@
 
             <span class="kw">if let </span><span class="prelude-val">Some</span>(position) = position {
                 commands
-                    .spawn(MaterialMesh2dBundle {
-                        mesh: meshes.add(Circle::new(<span class="number">5.</span>).into()).into(),
-                        material: materials.add(ColorMaterial::from(Color::RED)),
-                        transform: Transform::from_translation(position),
-                        ..default()
-                    })
+                    .spawn((
+                        PbrBundle {
+                            mesh: meshes.add(
+                                Mesh::try_from(shape::Icosphere {
+                                    radius: <span class="number">5.0</span>,
+                                    subdivisions: <span class="number">2</span>,
+                                })
+                                .unwrap(),
+                            ),
+                            material: materials.add(StandardMaterial {
+                                base_color: Color::RED,
+                                ..Default::default()
+                            }),
+                            transform: Transform::from_translation(position),
+                            ..Default::default()
+                        },
+                        PickableBundle::default(),
+                    ))
                     .insert(Node { id: node_data.id });
             }
         }
@@ -710,112 +807,101 @@
 
 <span class="attr">#[allow(clippy::too_many_arguments)]
 </span><span class="kw">fn </span>select_node_system(
+    <span class="kw-2">mut </span>events: EventReader&lt;PickingEvent&gt;,
     app_resource: Res&lt;AppResource&gt;,
+    <span class="kw-2">mut </span>camera_query: Query&lt;<span class="kw-2">&amp;mut </span>Transform, With&lt;Camera&gt;&gt;,
     <span class="kw-2">mut </span>selected_node: ResMut&lt;SelectedNode&gt;,
-    mouse_button_inputs: Res&lt;Input&lt;MouseButton&gt;&gt;,
-    <span class="kw-2">mut </span>windows: Query&lt;<span class="kw-2">&amp;mut </span>Window&gt;,
-    q_node: Query&lt;(Entity, <span class="kw-2">&amp;</span>Node, <span class="kw-2">&amp;</span>Transform)&gt;,
-    camera_q: Query&lt;(<span class="kw-2">&amp;</span>Camera, <span class="kw-2">&amp;</span>GlobalTransform)&gt;,
+    q_node: Query&lt;(Entity, <span class="kw-2">&amp;</span>Node, <span class="kw-2">&amp;</span>Transform), Without&lt;Camera&gt;&gt;,
     interaction_mode: Res&lt;InteractionModeResource&gt;,
     <span class="kw-2">mut </span>commands: Commands,
+    meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
+    materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
 ) {
-    <span class="kw">if </span>mouse_button_inputs.just_pressed(MouseButton::Left) {
-        <span class="kw">let </span>window = windows.single_mut();
-        <span class="kw">let </span>(camera, camera_transform) = camera_q.single();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>closest = <span class="prelude-val">None</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>min_distance = f32::MAX;
-
-        <span class="kw">for </span>(entity, node, transform) <span class="kw">in </span>q_node.iter() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(world_position) = window
-                .cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin)
-            {
-                <span class="kw">let </span>world_position_2d = Vec2::new(world_position.x, world_position.y);
-                <span class="kw">let </span>transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
-                <span class="kw">let </span>distance = world_position_2d.distance(transform_2d);
-
-                <span class="kw">if </span>distance &lt; <span class="number">15.0 </span>&amp;&amp; distance &lt; min_distance {
-                    min_distance = distance;
-                    closest = <span class="prelude-val">Some</span>((entity, node.id, <span class="kw-2">*</span>transform));
+    <span class="kw">let </span><span class="kw-2">mut </span>selection = <span class="prelude-val">None</span>;
+    <span class="kw">for </span>event <span class="kw">in </span>events.iter() {
+        <span class="kw">match </span>event {
+            PickingEvent::Selection(_e) =&gt; (),
+            PickingEvent::Hover(_e) =&gt; (),
+            PickingEvent::Clicked(e) =&gt; {
+                <span class="kw">for </span>(entity, node, transform) <span class="kw">in </span>q_node.iter() {
+                    <span class="kw">if </span>e == <span class="kw-2">&amp;</span>entity {
+                        selection = <span class="prelude-val">Some</span>((entity, node.id, <span class="kw-2">*</span>transform));
+                    }
                 }
             }
         }
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>((entity, id, transform)) = closest {
-            <span class="comment">// Check the current interaction mode
-            </span><span class="kw">match </span>interaction_mode.mode {
-                InteractionMode::SelectMode =&gt; {
-                    <span class="macro">println!</span>(<span class="string">&quot;Selected node: {:?}&quot;</span>, entity);
-                    selected_node.end_node_id = selected_node.start_node_id;
-                    selected_node.start_node_id = <span class="prelude-val">Some</span>(id);
-                }
-                InteractionMode::PlaceTrain =&gt; {
-                    <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, id);
-                    <span class="kw">let </span><span class="kw-2">mut </span>train_agent = TrainAgent::on_node(id);
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
-                        train_agent.train(graph, <span class="number">100000</span>);
-                    }
-                    commands
-                        .spawn((
-                            Transform::from_xyz(
-                                transform.translation.x,
-                                transform.translation.y,
-                                transform.translation.z + <span class="number">1.0</span>,
-                            ),
-                            GlobalTransform::default(),
-                            ComputedVisibility::default(),
-                            Visibility::Inherited,
-                            train_agent,
-                        ))
-                        .with_children(train_agent::create_train_agent_sprite_bundle());
+    <span class="kw">if let </span><span class="prelude-val">Some</span>((entity, id, transform)) = selection {
+        <span class="comment">// Check the current interaction mode
+        </span><span class="kw">match </span>interaction_mode.mode {
+            InteractionMode::SelectMode =&gt; {
+                <span class="macro">println!</span>(<span class="string">&quot;Selected node: {:?}&quot;</span>, entity);
+                selected_node.end_node_id = selected_node.start_node_id;
+                selected_node.start_node_id = <span class="prelude-val">Some</span>(id);
+
+                <span class="kw">for </span><span class="kw-2">mut </span>camera_transform <span class="kw">in </span>camera_query.iter_mut() {
+                    camera_transform.translation.x = transform.translation.x;
+                    camera_transform.translation.y = transform.translation.y;
                 }
             }
-        } <span class="kw">else </span>{
-            selected_node.start_node_id = <span class="prelude-val">None</span>;
+            InteractionMode::PlaceTrain =&gt; {
+                <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, id);
+                <span class="kw">let </span><span class="kw-2">mut </span>train_agent = TrainAgent::on_node(id);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
+                    train_agent.train(graph, <span class="number">100000</span>);
+                }
+                commands
+                    .spawn((
+                        Transform::from_xyz(
+                            transform.translation.x,
+                            transform.translation.y,
+                            transform.translation.z + <span class="number">1.0</span>,
+                        ),
+                        GlobalTransform::default(),
+                        ComputedVisibility::default(),
+                        Visibility::Inherited,
+                        train_agent,
+                        <span class="comment">//PickableBundle::default()
+                    </span>))
+                    .insert(PickableBundle::default())
+                    .with_children(train_agent::create_train_agent_bundle(meshes, materials));
+            }
         }
     }
 }
 
 <span class="attr">#[allow(clippy::too_many_arguments)]
 </span><span class="kw">fn </span>select_train_system(
-    mouse_button_inputs: Res&lt;Input&lt;MouseButton&gt;&gt;,
-    <span class="kw-2">mut </span>windows: Query&lt;<span class="kw-2">&amp;mut </span>Window&gt;,
-    camera_q: Query&lt;(<span class="kw-2">&amp;</span>Camera, <span class="kw-2">&amp;</span>GlobalTransform)&gt;,
-    interaction_mode: Res&lt;InteractionModeResource&gt;,
-    q_train: Query&lt;(<span class="kw-2">&amp;</span>TrainAgent, <span class="kw-2">&amp;</span>Transform)&gt;,
+    <span class="kw-2">mut </span>events: EventReader&lt;PickingEvent&gt;,
+    q_train: Query&lt;(Entity, <span class="kw-2">&amp;</span>TrainAgent, <span class="kw-2">&amp;</span>Children)&gt;,
     <span class="kw-2">mut </span>selected_train: ResMut&lt;SelectedTrain&gt;,
 ) {
-    <span class="kw">if </span>mouse_button_inputs.just_pressed(MouseButton::Left)
-        &amp;&amp; interaction_mode.mode == InteractionMode::SelectMode
-    {
-        <span class="kw">let </span>window = windows.single_mut();
-        <span class="kw">let </span>(camera, camera_transform) = camera_q.single();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>closest = <span class="prelude-val">None</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>min_distance = f32::MAX;
-
-        <span class="kw">for </span>(train_agent, transform) <span class="kw">in </span>q_train.iter() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(world_position) = window
-                .cursor_position()
-                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
-                .map(|ray| ray.origin)
-            {
-                <span class="kw">let </span>world_position_2d = Vec2::new(world_position.x, world_position.y);
-                <span class="kw">let </span>transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
-                <span class="kw">let </span>distance = world_position_2d.distance(transform_2d);
-
-                <span class="kw">if </span>distance &lt; <span class="number">15.0 </span>&amp;&amp; distance &lt; min_distance {
-                    min_distance = distance;
-                    closest = <span class="prelude-val">Some</span>(train_agent.id);
+    <span class="kw">let </span><span class="kw-2">mut </span>selection = <span class="prelude-val">None</span>;
+    <span class="kw">for </span>event <span class="kw">in </span>events.iter() {
+        <span class="kw">match </span>event {
+            PickingEvent::Selection(e) =&gt; <span class="macro">info!</span>(<span class="string">&quot;A selection event happened: {:?}&quot;</span>, e),
+            PickingEvent::Hover(e) =&gt; <span class="macro">info!</span>(<span class="string">&quot;Egads! A hover event!? {:?}&quot;</span>, e),
+            PickingEvent::Clicked(e) =&gt; {
+                <span class="macro">println!</span>(<span class="string">&quot;Clicked: {:?}&quot;</span>, e);
+                <span class="kw">for </span>(entity, train, children) <span class="kw">in </span>q_train.iter() {
+                    <span class="kw">if </span>e == <span class="kw-2">&amp;</span>entity {
+                        selection = <span class="prelude-val">Some</span>(train.id);
+                    } <span class="kw">else </span>{
+                        <span class="kw">for </span>entity <span class="kw">in </span>children.iter() {
+                            <span class="macro">println!</span>(<span class="string">&quot;{:?}, {:?}&quot;</span>, entity, train.id);
+                            <span class="kw">if </span>e == entity {
+                                selection = <span class="prelude-val">Some</span>(train.id);
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = closest {
-            selected_train.train_agent_id = <span class="prelude-val">Some</span>(id);
-        }
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = selection {
+        selected_train.train_agent_id = <span class="prelude-val">Some</span>(id);
     }
 }
 </code></pre></div>
