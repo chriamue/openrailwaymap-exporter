@@ -138,12 +138,28 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
 
-</span><span class="kw">use </span><span class="kw">super</span>::display_graph;
+</span><span class="kw">use </span><span class="kw">super</span>::train_agent::TrainAgent;
+<span class="kw">use super</span>::{display_graph, SelectedTrain};
 <span class="kw">use super</span>::{AppResource, Edge, Node, Projection, SelectedNode};
 <span class="kw">use super</span>::{InteractionMode, InteractionModeResource};
 <span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassApiClient;
@@ -167,6 +183,8 @@
     meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     materials: ResMut&lt;Assets&lt;ColorMaterial&gt;&gt;,
     selected_node: Res&lt;SelectedNode&gt;,
+    selected_train: Res&lt;SelectedTrain&gt;,
+    q_train: Query&lt;<span class="kw-2">&amp;</span>TrainAgent&gt;,
     <span class="kw-2">mut </span>interaction_mode: ResMut&lt;InteractionModeResource&gt;,
 ) {
     egui::Window::new(<span class="string">&quot;&quot;</span>).show(contexts.ctx_mut(), |ui| {
@@ -182,6 +200,13 @@
         {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
                 display_path_info(ui, graph, start_node_id, end_node_id);
+            }
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
+            <span class="kw">for </span>train_agent <span class="kw">in </span>q_train.iter() {
+                <span class="kw">if </span>train_agent_id == train_agent.id {
+                    display_selected_train_agent_info(ui, train_agent);
+                }
             }
         }
 
@@ -231,8 +256,8 @@
         </span>ui.label(<span class="string">&quot;Click action mode:&quot;</span>);
         ui.radio_value(
             <span class="kw-2">&amp;mut </span>interaction_mode.mode,
-            InteractionMode::SelectNode,
-            <span class="string">&quot;Select Node&quot;</span>,
+            InteractionMode::SelectMode,
+            <span class="string">&quot;Select Mode&quot;</span>,
         );
         ui.radio_value(
             <span class="kw-2">&amp;mut </span>interaction_mode.mode,
@@ -249,6 +274,11 @@
         ui.label(<span class="macro">format!</span>(<span class="string">&quot;Latitude: {}&quot;</span>, node.lat));
         ui.label(<span class="macro">format!</span>(<span class="string">&quot;Longitude: {}&quot;</span>, node.lon));
     }
+}
+
+<span class="kw">pub fn </span>display_selected_train_agent_info(ui: <span class="kw-2">&amp;mut </span>egui::Ui, train_agent: <span class="kw-2">&amp;</span>TrainAgent) {
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;ID: {}&quot;</span>, train_agent.id));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {}km/h&quot;</span>, train_agent.speed * <span class="number">3.6</span>));
 }
 
 <span class="kw">pub fn </span>display_path_info(

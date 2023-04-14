@@ -357,6 +357,57 @@
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -413,12 +464,18 @@
     end_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
 }
 
+<span class="doccomment">/// Keeps track of the currently selected start and end nodes.
+</span><span class="attr">#[derive(Default, Resource)]
+</span><span class="kw">pub struct </span>SelectedTrain {
+    train_agent_id: <span class="prelude-ty">Option</span>&lt;i32&gt;,
+}
+
 <span class="doccomment">/// Defines the different interaction modes for the application.
 </span><span class="attr">#[derive(Debug, PartialEq, Clone, Default)]
 </span><span class="kw">pub enum </span>InteractionMode {
     <span class="doccomment">/// Default mode: selecting nodes to display information or find the shortest path.
     </span><span class="attr">#[default]
-    </span>SelectNode,
+    </span>SelectMode,
     <span class="doccomment">/// Mode for placing trains on the railway network.
     </span>PlaceTrain,
 }
@@ -457,12 +514,14 @@
         .insert_resource(app_resource)
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
+        .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
         .add_startup_system(display_graph)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
+        .add_system(select_train_system)
         .add_system(show_path)
         .add_system(train_agent::train_agent_system)
         .run()
@@ -484,11 +543,13 @@
         .insert_resource(AppResource::default())
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
+        .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
+        .add_system(select_train_system)
         .add_system(show_path)
         .add_system(train_agent::train_agent_system)
         .run()
@@ -685,7 +746,7 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>((entity, id, transform)) = closest {
             <span class="comment">// Check the current interaction mode
             </span><span class="kw">match </span>interaction_mode.mode {
-                InteractionMode::SelectNode =&gt; {
+                InteractionMode::SelectMode =&gt; {
                     <span class="macro">println!</span>(<span class="string">&quot;Selected node: {:?}&quot;</span>, entity);
                     selected_node.end_node_id = selected_node.start_node_id;
                     selected_node.start_node_id = <span class="prelude-val">Some</span>(id);
@@ -713,6 +774,47 @@
             }
         } <span class="kw">else </span>{
             selected_node.start_node_id = <span class="prelude-val">None</span>;
+        }
+    }
+}
+
+<span class="attr">#[allow(clippy::too_many_arguments)]
+</span><span class="kw">fn </span>select_train_system(
+    mouse_button_inputs: Res&lt;Input&lt;MouseButton&gt;&gt;,
+    <span class="kw-2">mut </span>windows: Query&lt;<span class="kw-2">&amp;mut </span>Window&gt;,
+    camera_q: Query&lt;(<span class="kw-2">&amp;</span>Camera, <span class="kw-2">&amp;</span>GlobalTransform)&gt;,
+    interaction_mode: Res&lt;InteractionModeResource&gt;,
+    q_train: Query&lt;(<span class="kw-2">&amp;</span>TrainAgent, <span class="kw-2">&amp;</span>Transform)&gt;,
+    <span class="kw-2">mut </span>selected_train: ResMut&lt;SelectedTrain&gt;,
+) {
+    <span class="kw">if </span>mouse_button_inputs.just_pressed(MouseButton::Left)
+        &amp;&amp; interaction_mode.mode == InteractionMode::SelectMode
+    {
+        <span class="kw">let </span>window = windows.single_mut();
+        <span class="kw">let </span>(camera, camera_transform) = camera_q.single();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>closest = <span class="prelude-val">None</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>min_distance = f32::MAX;
+
+        <span class="kw">for </span>(train_agent, transform) <span class="kw">in </span>q_train.iter() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(world_position) = window
+                .cursor_position()
+                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+                .map(|ray| ray.origin)
+            {
+                <span class="kw">let </span>world_position_2d = Vec2::new(world_position.x, world_position.y);
+                <span class="kw">let </span>transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
+                <span class="kw">let </span>distance = world_position_2d.distance(transform_2d);
+
+                <span class="kw">if </span>distance &lt; <span class="number">15.0 </span>&amp;&amp; distance &lt; min_distance {
+                    min_distance = distance;
+                    closest = <span class="prelude-val">Some</span>(train_agent.id);
+                }
+            }
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = closest {
+            selected_train.train_agent_id = <span class="prelude-val">Some</span>(id);
         }
     }
 }
