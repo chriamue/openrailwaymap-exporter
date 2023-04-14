@@ -3,7 +3,8 @@
     allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
 
-use super::display_graph;
+use super::train_agent::TrainAgent;
+use super::{display_graph, SelectedTrain};
 use super::{AppResource, Edge, Node, Projection, SelectedNode};
 use super::{InteractionMode, InteractionModeResource};
 use crate::prelude::OverpassApiClient;
@@ -27,6 +28,8 @@ pub fn ui_system(
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<ColorMaterial>>,
     selected_node: Res<SelectedNode>,
+    selected_train: Res<SelectedTrain>,
+    q_train: Query<&TrainAgent>,
     mut interaction_mode: ResMut<InteractionModeResource>,
 ) {
     egui::Window::new("").show(contexts.ctx_mut(), |ui| {
@@ -42,6 +45,13 @@ pub fn ui_system(
         {
             if let Some(graph) = &app_resource.graph {
                 display_path_info(ui, graph, start_node_id, end_node_id);
+            }
+        }
+        if let Some(train_agent_id) = selected_train.train_agent_id {
+            for train_agent in q_train.iter() {
+                if train_agent_id == train_agent.id {
+                    display_selected_train_agent_info(ui, train_agent);
+                }
             }
         }
 
@@ -91,8 +101,8 @@ pub fn ui_system(
         ui.label("Click action mode:");
         ui.radio_value(
             &mut interaction_mode.mode,
-            InteractionMode::SelectNode,
-            "Select Node",
+            InteractionMode::SelectMode,
+            "Select Mode",
         );
         ui.radio_value(
             &mut interaction_mode.mode,
@@ -109,6 +119,11 @@ pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_
         ui.label(format!("Latitude: {}", node.lat));
         ui.label(format!("Longitude: {}", node.lon));
     }
+}
+
+pub fn display_selected_train_agent_info(ui: &mut egui::Ui, train_agent: &TrainAgent) {
+    ui.label(format!("ID: {}", train_agent.id));
+    ui.label(format!("Speed: {}km/h", train_agent.speed * 3.6));
 }
 
 pub fn display_path_info(

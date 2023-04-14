@@ -54,12 +54,18 @@ pub struct SelectedNode {
     end_node_id: Option<i64>,
 }
 
+/// Keeps track of the currently selected start and end nodes.
+#[derive(Default, Resource)]
+pub struct SelectedTrain {
+    train_agent_id: Option<i32>,
+}
+
 /// Defines the different interaction modes for the application.
 #[derive(Debug, PartialEq, Clone, Default)]
 pub enum InteractionMode {
     /// Default mode: selecting nodes to display information or find the shortest path.
     #[default]
-    SelectNode,
+    SelectMode,
     /// Mode for placing trains on the railway network.
     PlaceTrain,
 }
@@ -98,12 +104,14 @@ pub fn init_with_graph(graph: RailwayGraph) {
         .insert_resource(app_resource)
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
+        .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
         .add_startup_system(display_graph)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
+        .add_system(select_train_system)
         .add_system(show_path)
         .add_system(train_agent::train_agent_system)
         .run()
@@ -125,11 +133,13 @@ pub fn init() {
         .insert_resource(AppResource::default())
         .insert_resource(projection)
         .insert_resource(SelectedNode::default())
+        .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
+        .add_system(select_train_system)
         .add_system(show_path)
         .add_system(train_agent::train_agent_system)
         .run()
@@ -326,7 +336,7 @@ fn select_node_system(
         if let Some((entity, id, transform)) = closest {
             // Check the current interaction mode
             match interaction_mode.mode {
-                InteractionMode::SelectNode => {
+                InteractionMode::SelectMode => {
                     println!("Selected node: {:?}", entity);
                     selected_node.end_node_id = selected_node.start_node_id;
                     selected_node.start_node_id = Some(id);
@@ -354,6 +364,47 @@ fn select_node_system(
             }
         } else {
             selected_node.start_node_id = None;
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn select_train_system(
+    mouse_button_inputs: Res<Input<MouseButton>>,
+    mut windows: Query<&mut Window>,
+    camera_q: Query<(&Camera, &GlobalTransform)>,
+    interaction_mode: Res<InteractionModeResource>,
+    q_train: Query<(&TrainAgent, &Transform)>,
+    mut selected_train: ResMut<SelectedTrain>,
+) {
+    if mouse_button_inputs.just_pressed(MouseButton::Left)
+        && interaction_mode.mode == InteractionMode::SelectMode
+    {
+        let window = windows.single_mut();
+        let (camera, camera_transform) = camera_q.single();
+
+        let mut closest = None;
+        let mut min_distance = f32::MAX;
+
+        for (train_agent, transform) in q_train.iter() {
+            if let Some(world_position) = window
+                .cursor_position()
+                .and_then(|cursor| camera.viewport_to_world(camera_transform, cursor))
+                .map(|ray| ray.origin)
+            {
+                let world_position_2d = Vec2::new(world_position.x, world_position.y);
+                let transform_2d = Vec2::new(transform.translation.x, transform.translation.y);
+                let distance = world_position_2d.distance(transform_2d);
+
+                if distance < 15.0 && distance < min_distance {
+                    min_distance = distance;
+                    closest = Some(train_agent.id);
+                }
+            }
+        }
+
+        if let Some(id) = closest {
+            selected_train.train_agent_id = Some(id);
         }
     }
 }
