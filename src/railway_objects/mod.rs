@@ -8,7 +8,7 @@ pub use train::Train;
 
 /// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model.
-pub trait RailwayObject {
+pub trait RailwayObject: PartialEq {
     /// Node identifiers
     type Node;
 
@@ -20,10 +20,7 @@ pub trait RailwayObject {
 }
 
 /// The `NextTarget` trait provides methods for managing a single target for a railway object.
-pub trait NextTarget {
-    /// Node identifiers
-    type Node;
-
+pub trait NextTarget: RailwayObject {
     /// Returns the next target of the railway object, if any.
     fn next_target(&self) -> Option<Self::Node>;
 
@@ -32,10 +29,7 @@ pub trait NextTarget {
 }
 
 /// The `MultipleTargets` trait provides methods for managing a list of targets for a railway object.
-pub trait MultipleTargets {
-    /// Node identifiers
-    type Node;
-
+pub trait MultipleTargets: RailwayObject {
     /// Returns the list of targets for the railway object.
     fn targets(&self) -> &VecDeque<Self::Node>;
 
@@ -52,8 +46,8 @@ pub trait GeoLocation {
     fn geo_location(&self) -> Option<Coord<f64>>;
 }
 
-/// The Moveable trait
-pub trait Moveable {
+/// The Movable trait
+pub trait Movable {
     /// Returns the current speed of the object in km/h.
     fn speed(&self) -> f64;
 

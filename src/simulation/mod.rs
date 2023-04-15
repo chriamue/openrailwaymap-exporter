@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use crate::{
     prelude::RailwayGraph,
-    railway_objects::{Moveable, RailwayObject},
+    railway_objects::{Movable, RailwayObject},
 };
 
 pub mod agents;
@@ -17,7 +17,7 @@ pub mod agents;
 #[derive(Debug, Clone)]
 pub struct Simulation<T>
 where
-    T: RailwayObject + Moveable,
+    T: RailwayObject + Movable,
 {
     /// The railway graph representing the railway infrastructure.
     pub graph: RailwayGraph,
@@ -28,7 +28,7 @@ where
 
 impl<T> Simulation<T>
 where
-    T: RailwayObject + Moveable,
+    T: RailwayObject + Movable,
 {
     /// Creates a new simulation with the given railway graph.
     ///
@@ -58,11 +58,11 @@ where
     /// A boolean indicating if the object was successfully added.
     ///
     pub fn add_object(&mut self, object: T) -> bool {
-        if self.objects.contains_key(&object.id()) {
-            false
-        } else {
-            self.objects.insert(object.id(), object);
+        if let std::collections::hash_map::Entry::Vacant(e) = self.objects.entry(object.id()) {
+            e.insert(object);
             true
+        } else {
+            false
         }
     }
 

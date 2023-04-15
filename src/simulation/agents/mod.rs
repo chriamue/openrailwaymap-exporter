@@ -4,6 +4,9 @@
 //! state of the simulation. They interact with movable objects on rail tracks, such as trains,
 //! to control their movement.
 
+mod forward_until_target_agent;
+pub use forward_until_target_agent::ForwardUntilTargetAgent;
+
 /// Represents the possible actions a movable object on rail tracks can take in the simulation.
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
 pub enum RailMovableAction {

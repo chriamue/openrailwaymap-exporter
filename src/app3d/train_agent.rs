@@ -9,7 +9,7 @@ use crate::{
     ai::{TrainAgentAI, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
-    railway_objects::{Moveable, NextTarget, RailwayObject, Train},
+    railway_objects::{Movable, NextTarget, RailwayObject, Train},
     simulation::agents::RailMovableAction,
 };
 use std::{

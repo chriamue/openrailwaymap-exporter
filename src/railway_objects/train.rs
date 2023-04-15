@@ -2,10 +2,10 @@ use std::collections::VecDeque;
 
 use geo_types::Coord;
 
-use super::{GeoLocation, Moveable, MultipleTargets, NextTarget, RailwayObject};
+use super::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
 
 /// A Train struct representing a train in the railway system.
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, PartialEq)]
 pub struct Train {
     /// The unique identifier for the train.
     pub id: i64,
@@ -38,8 +38,6 @@ impl RailwayObject for Train {
 
 /// Implements the `NextTarget` trait for the `Train` struct.
 impl NextTarget for Train {
-    type Node = i64;
-
     fn next_target(&self) -> Option<Self::Node> {
         self.next_target
     }
@@ -51,8 +49,6 @@ impl NextTarget for Train {
 
 /// Implements the `MultipleTargets` trait for the `Train` struct.
 impl MultipleTargets for Train {
-    type Node = i64;
-
     fn targets(&self) -> &VecDeque<Self::Node> {
         &self.targets
     }
@@ -73,7 +69,7 @@ impl GeoLocation for Train {
     }
 }
 
-impl Moveable for Train {
+impl Movable for Train {
     fn speed(&self) -> f64 {
         self.speed
     }
