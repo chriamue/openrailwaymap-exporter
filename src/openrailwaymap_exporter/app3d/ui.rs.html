@@ -154,6 +154,22 @@
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -174,16 +190,15 @@
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
 
-<span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">pub fn </span>ui_system(
+<span class="kw">pub fn </span>add_ui_systems_to_app(app: <span class="kw-2">&amp;mut </span>App) {
+    <span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
+    </span>app.add_system(select_graph_ui_system);
+    app.add_system(selection_ui_system);
+}
+
+<span class="kw">pub fn </span>selection_ui_system(
     <span class="kw-2">mut </span>contexts: EguiContexts,
-    commands: Commands,
-    <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
-    edge_query: Query&lt;Entity, With&lt;Edge&gt;&gt;,
-    node_query: Query&lt;Entity, With&lt;Node&gt;&gt;,
-    <span class="kw-2">mut </span>projection: ResMut&lt;Projection&gt;,
-    meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
-    materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+    app_resource: ResMut&lt;AppResource&gt;,
     selected_node: Res&lt;SelectedNode&gt;,
     selected_train: Res&lt;SelectedTrain&gt;,
     q_train: Query&lt;<span class="kw-2">&amp;</span>TrainAgent&gt;,
@@ -197,14 +212,16 @@
         } <span class="kw">else </span>{
             ui.label(<span class="string">&quot;No node selected&quot;</span>);
         }
-        <span class="kw">if let </span>(<span class="prelude-val">Some</span>(start_node_id), <span class="prelude-val">Some</span>(end_node_id)) =
+        ui.add_space(<span class="number">15.0</span>); <span class="comment">// Add space
+        </span><span class="kw">if let </span>(<span class="prelude-val">Some</span>(start_node_id), <span class="prelude-val">Some</span>(end_node_id)) =
             (selected_node.start_node_id, selected_node.end_node_id)
         {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
                 display_path_info(ui, graph, start_node_id, end_node_id);
             }
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
+        ui.add_space(<span class="number">15.0</span>); <span class="comment">// Add space
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
             <span class="kw">for </span>train_agent <span class="kw">in </span>q_train.iter() {
                 <span class="kw">if </span>train_agent_id == train_agent.id {
                     display_selected_train_agent_info(ui, train_agent);
@@ -212,49 +229,8 @@
             }
         }
 
-        <span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
-        </span>{
-            ui.label(<span class="string">&quot;Enter an Area:&quot;</span>);
-            ui.text_edit_singleline(<span class="kw-2">&amp;mut </span>app_resource.area_name);
-
-            <span class="kw">if </span>ui.button(<span class="string">&quot;Load Railway Graph&quot;</span>).clicked() {
-                <span class="kw">let </span>area_name = app_resource.area_name.clone();
-                <span class="comment">// Process input and update Bevy resources or systems
-                </span><span class="macro">println!</span>(<span class="string">&quot;Loading railway graph data: {}&quot;</span>, area_name);
-
-                <span class="kw">let </span>rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(<span class="kw">async move </span>{
-                    <span class="kw">let </span>client = OverpassApiClient::new();
-
-                    <span class="kw">let </span>api_json_value = {
-                        <span class="kw">if </span>area_name.contains(<span class="string">&#39;,&#39;</span>) {
-                            client
-                                .fetch_by_bbox(<span class="kw-2">&amp;</span>area_name)
-                                .<span class="kw">await
-                                </span>.unwrap_or(client.fetch_by_area_name(<span class="kw-2">&amp;</span>area_name).<span class="kw">await</span>.unwrap())
-                        } <span class="kw">else </span>{
-                            client.fetch_by_area_name(<span class="kw-2">&amp;</span>area_name).<span class="kw">await</span>.unwrap()
-                        }
-                    };
-
-                    <span class="kw">let </span>graph = OverpassImporter::import(<span class="kw-2">&amp;</span>api_json_value).unwrap();
-                    <span class="kw">let </span>(min_coord, max_coord) = graph.bounding_box();
-                    projection.set_bounding_box(min_coord, max_coord);
-                    app_resource.graph = <span class="prelude-val">Some</span>(graph);
-                    display_graph(
-                        commands,
-                        app_resource.into(),
-                        edge_query,
-                        node_query,
-                        projection.into(),
-                        meshes,
-                        materials,
-                    );
-                });
-            }
-        }
-
         <span class="comment">// Add radio buttons for click action modes
+        </span>ui.add_space(<span class="number">15.0</span>); <span class="comment">// Add space
         </span>ui.label(<span class="string">&quot;Click action mode:&quot;</span>);
         ui.radio_value(
             <span class="kw-2">&amp;mut </span>interaction_mode.mode,
@@ -266,6 +242,62 @@
             InteractionMode::PlaceTrain,
             <span class="string">&quot;Place Train&quot;</span>,
         );
+    });
+}
+
+<span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
+#[allow(clippy::too_many_arguments)]
+</span><span class="kw">pub fn </span>select_graph_ui_system(
+    <span class="kw-2">mut </span>contexts: EguiContexts,
+    commands: Commands,
+    <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
+    edge_query: Query&lt;Entity, With&lt;Edge&gt;&gt;,
+    node_query: Query&lt;Entity, With&lt;Node&gt;&gt;,
+    <span class="kw-2">mut </span>projection: ResMut&lt;Projection&gt;,
+    meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
+    materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+) {
+    egui::Window::new(<span class="string">&quot;Railway Area&quot;</span>).show(contexts.ctx_mut(), |ui| {
+        ui.label(<span class="string">&quot;Enter an Area:&quot;</span>);
+        ui.text_edit_singleline(<span class="kw-2">&amp;mut </span>app_resource.area_name);
+        ui.add_space(<span class="number">15.0</span>);
+
+        <span class="kw">if </span>ui.button(<span class="string">&quot;Load Railway Graph&quot;</span>).clicked() {
+            <span class="kw">let </span>area_name = app_resource.area_name.clone();
+            <span class="comment">// Process input and update Bevy resources or systems
+            </span><span class="macro">println!</span>(<span class="string">&quot;Loading railway graph data: {}&quot;</span>, area_name);
+
+            <span class="kw">let </span>rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(<span class="kw">async move </span>{
+                <span class="kw">let </span>client = OverpassApiClient::new();
+
+                <span class="kw">let </span>api_json_value = {
+                    <span class="kw">if </span>area_name.contains(<span class="string">&#39;,&#39;</span>) {
+                        client
+                            .fetch_by_bbox(<span class="kw-2">&amp;</span>area_name)
+                            .<span class="kw">await
+                            </span>.unwrap_or(client.fetch_by_area_name(<span class="kw-2">&amp;</span>area_name).<span class="kw">await</span>.unwrap())
+                    } <span class="kw">else </span>{
+                        client.fetch_by_area_name(<span class="kw-2">&amp;</span>area_name).<span class="kw">await</span>.unwrap()
+                    }
+                };
+
+                <span class="kw">let </span>graph = OverpassImporter::import(<span class="kw-2">&amp;</span>api_json_value).unwrap();
+                <span class="kw">let </span>(min_coord, max_coord) = graph.bounding_box();
+                projection.set_bounding_box(min_coord, max_coord);
+                app_resource.graph = <span class="prelude-val">Some</span>(graph);
+                ui.set_enabled(<span class="bool-val">false</span>);
+                display_graph(
+                    commands,
+                    app_resource.into(),
+                    edge_query,
+                    node_query,
+                    projection.into(),
+                    meshes,
+                    materials,
+                );
+            });
+        }
     });
 }
 
