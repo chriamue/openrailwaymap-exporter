@@ -326,6 +326,9 @@
 <a href="#326" id="326">326</a>
 <a href="#327" id="327">327</a>
 <a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -340,6 +343,7 @@
 <span class="kw">use </span>bevy_egui::EguiPlugin;
 <span class="kw">use </span>bevy_mod_picking::PickingEvent;
 <span class="kw">use </span>bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
+<span class="kw">use </span>bevy_polyline::PolylinePlugin;
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::visit::NodeRef;
@@ -400,6 +404,7 @@
     app.add_plugins(camera::CameraPlugins)
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
+        .add_plugin(PolylinePlugin)
         .insert_resource(app_resource)
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())
@@ -410,7 +415,8 @@
         .add_system(nodes::select_node_system)
         .add_system(select_train_system)
         .add_system(edges::show_edges_on_path)
-        .add_system(train_agent::train_agent_system);
+        .add_system(train_agent::train_agent_system)
+        .add_system(train_agent::train_agent_line_system);
     ui::add_ui_systems_to_app(app);
 }
 
