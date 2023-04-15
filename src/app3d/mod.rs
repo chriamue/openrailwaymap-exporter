@@ -12,11 +12,12 @@ use bevy::input::Input;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_mod_picking::PickingEvent;
-use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle, PickingCameraBundle};
+use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
 use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 
+mod camera;
 mod train_agent;
 mod ui;
 
@@ -98,6 +99,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
 
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugins(camera::CameraPlugins)
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
         .insert_resource(app_resource)
@@ -106,6 +108,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
         .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
+        .add_startup_system(camera::setup_camera)
         .add_startup_system(display_graph)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
@@ -136,6 +139,7 @@ pub fn init() {
             }),
             ..default()
         }))
+        .add_plugins(camera::CameraPlugins)
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
         .insert_resource(AppResource::default())
@@ -144,6 +148,7 @@ pub fn init() {
         .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
+        .add_startup_system(camera::setup_camera)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
@@ -154,17 +159,6 @@ pub fn init() {
 }
 
 fn setup(mut commands: Commands) {
-    //commands
-    //    .spawn(Camera2dBundle::default())
-    //    .insert(PanCam::default());
-    // camera
-    commands.spawn((
-        Camera3dBundle {
-            transform: Transform::from_xyz(0.0, 0.0, 1000.0).looking_at(Vec3::ZERO, Vec3::Y),
-            ..default()
-        },
-        PickingCameraBundle::default(),
-    ));
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: 0.7,
@@ -301,10 +295,10 @@ fn display_graph(
                         mesh: meshes.add(Mesh::from(shape::Box {
                             min_x: 0.0,
                             max_x: distance,
-                            min_y: -0.5,
-                            max_y: 0.5,
-                            min_z: -0.5,
-                            max_z: 0.5,
+                            min_y: -0.2,
+                            max_y: 0.2,
+                            min_z: -0.2,
+                            max_z: 0.2,
                         })),
                         material: materials.add(StandardMaterial {
                             base_color: Color::BLUE,
@@ -356,7 +350,6 @@ fn display_graph(
 fn select_node_system(
     mut events: EventReader<PickingEvent>,
     app_resource: Res<AppResource>,
-    mut camera_query: Query<&mut Transform, With<Camera>>,
     mut selected_node: ResMut<SelectedNode>,
     q_node: Query<(Entity, &Node, &Transform), Without<Camera>>,
     interaction_mode: Res<InteractionModeResource>,
@@ -386,11 +379,6 @@ fn select_node_system(
                 println!("Selected node: {:?}", entity);
                 selected_node.end_node_id = selected_node.start_node_id;
                 selected_node.start_node_id = Some(id);
-
-                for mut camera_transform in camera_query.iter_mut() {
-                    camera_transform.translation.x = transform.translation.x;
-                    camera_transform.translation.y = transform.translation.y;
-                }
             }
             InteractionMode::PlaceTrain => {
                 println!("Placing train on node: {:?}", id);
@@ -427,10 +415,9 @@ fn select_train_system(
     let mut selection = None;
     for event in events.iter() {
         match event {
-            PickingEvent::Selection(e) => info!("A selection event happened: {:?}", e),
-            PickingEvent::Hover(e) => info!("Egads! A hover event!? {:?}", e),
+            PickingEvent::Selection(_e) => (),
+            PickingEvent::Hover(_e) => (),
             PickingEvent::Clicked(e) => {
-                println!("Clicked: {:?}", e);
                 for (entity, train, children) in q_train.iter() {
                     if e == &entity {
                         selection = Some(train.id);
