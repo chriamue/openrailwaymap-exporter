@@ -18,12 +18,20 @@ use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
 
+#[derive(Default, Resource)]
+pub struct UiUpdateTimer {
+    pub time: f64,
+    pub last_displayed_remaining: f64,
+}
+
 pub fn add_ui_systems_to_app(app: &mut App) {
     #[cfg(not(target_arch = "wasm32"))]
     app.add_system(select_graph_ui_system);
     app.add_system(selection_ui_system);
+    app.insert_resource(UiUpdateTimer::default());
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn selection_ui_system(
     mut contexts: EguiContexts,
     app_resource: ResMut<AppResource>,
@@ -31,7 +39,14 @@ pub fn selection_ui_system(
     selected_train: Res<SelectedTrain>,
     q_train: Query<&TrainAgent>,
     mut interaction_mode: ResMut<InteractionModeResource>,
+    time: Res<Time>,
+    mut ui_update_timer: ResMut<UiUpdateTimer>,
 ) {
+    if ui_update_timer.time >= 1.0 {
+        ui_update_timer.time = 0.0;
+    } else {
+        ui_update_timer.time += time.delta_seconds_f64();
+    }
     egui::Window::new("").show(contexts.ctx_mut(), |ui| {
         if let Some(node_id) = selected_node.start_node_id {
             if let Some(graph) = &app_resource.graph {
@@ -52,7 +67,7 @@ pub fn selection_ui_system(
         if let Some(train_agent_id) = selected_train.train_agent_id {
             for train_agent in q_train.iter() {
                 if train_agent_id == train_agent.id {
-                    display_selected_train_agent_info(ui, train_agent);
+                    display_selected_train_agent_info(ui, train_agent, &mut ui_update_timer);
                 }
             }
         }
@@ -138,9 +153,21 @@ pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_
     }
 }
 
-pub fn display_selected_train_agent_info(ui: &mut egui::Ui, train_agent: &TrainAgent) {
+pub fn display_selected_train_agent_info(
+    ui: &mut egui::Ui,
+    train_agent: &TrainAgent,
+    ui_update_timer: &mut UiUpdateTimer,
+) {
     ui.label(format!("ID: {}", train_agent.id));
-    ui.label(format!("Speed: {}km/h", train_agent.speed * 3.6));
+    ui.label(format!("Speed: {} km/h", train_agent.speed * 3.6));
+    if ui_update_timer.time == 0.0 {
+        ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / 1000.0 as f64;
+    }
+
+    ui.label(format!(
+        "Remaining: {:.3} km",
+        ui_update_timer.last_displayed_remaining
+    ));
 }
 
 pub fn display_path_info(

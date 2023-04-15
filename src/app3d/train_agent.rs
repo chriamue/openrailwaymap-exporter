@@ -13,6 +13,12 @@ use std::sync::atomic::{AtomicI32, Ordering};
 
 static TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(0);
 
+/// Keeps track of the currently selected start and end nodes.
+#[derive(Default, Resource)]
+pub struct SelectedTrain {
+    pub train_agent_id: Option<i32>,
+}
+
 #[derive(Component, Debug)]
 pub struct TrainAgent {
     pub id: i32,
@@ -20,7 +26,8 @@ pub struct TrainAgent {
     pub target_node_id: Option<i64>,
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
-    pub speed: f64, // Speed in meters per second
+    pub remaining_distance: f64, // Distance in meters
+    pub speed: f64,              // Speed in meters per second
     pub ai_agent: Option<TrainAgentAI>,
 }
 
@@ -33,6 +40,7 @@ impl TrainAgent {
             current_edge: None,
             edge_progress: 0.0,
             speed: 20.0,
+            remaining_distance: 0.0,
             ai_agent: None,
         }
     }
@@ -51,6 +59,22 @@ impl TrainAgent {
         self.ai_agent = Some(ai_agent);
         if let Some(ai_agent) = &mut self.ai_agent {
             ai_agent.train(iterations);
+        }
+    }
+
+    pub fn remaining_distance(&self, railway_graph: &RailwayGraph) -> Option<f64> {
+        if let (Some(current_node_id), Some(target_node_id)) =
+            (self.current_node_id, self.target_node_id)
+        {
+            if current_node_id == target_node_id {
+                Some(0.0)
+            } else {
+                let remaining_path_distance =
+                    railway_graph.shortest_path_distance(current_node_id, target_node_id)?;
+                Some(remaining_path_distance)
+            }
+        } else {
+            None
         }
     }
 }
@@ -169,6 +193,7 @@ pub fn train_agent_system(
                         &edge,
                         time.delta_seconds() as f64,
                         &projection,
+                        &app_resource,
                     );
                     train_agent.edge_progress = edge_progress;
                 } else if let Some(target_node_id) = train_agent.target_node_id {
@@ -277,6 +302,7 @@ fn update_train_position(
     edge: &RailwayEdge,
     time_delta: f64,
     projection: &super::Projection,
+    app_resource: &Res<AppResource>,
 ) {
     if let (Some(start_coord), Some(end_coord)) =
         (edge.path.coords().next(), edge.path.coords().last())
@@ -306,6 +332,11 @@ fn update_train_position(
                 train_agent.current_edge = None;
                 train_agent.edge_progress = 0.0;
             }
+        }
+    }
+    if let Some(graph) = &app_resource.graph {
+        if let Some(distance) = train_agent.remaining_distance(graph) {
+            train_agent.remaining_distance = distance;
         }
     }
 }

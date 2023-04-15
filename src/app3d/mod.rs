@@ -31,18 +31,14 @@ use wasm_bindgen::prelude::*;
 mod projection;
 pub use projection::Projection;
 
+use self::train_agent::SelectedTrain;
+
 /// Holds application state, including the area name, railway graph, and camera look-at position.
 #[derive(Default, Resource)]
 pub struct AppResource {
     area_name: String,
     graph: Option<RailwayGraph>,
     look_at_position: Option<Vec3>,
-}
-
-/// Keeps track of the currently selected start and end nodes.
-#[derive(Default, Resource)]
-pub struct SelectedTrain {
-    train_agent_id: Option<i32>,
 }
 
 /// Defines the different interaction modes for the application.
