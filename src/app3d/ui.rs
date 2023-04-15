@@ -3,9 +3,10 @@
     allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
 
+use super::nodes::SelectedNode;
 use super::train_agent::TrainAgent;
 use super::{display_graph, SelectedTrain};
-use super::{AppResource, Edge, Node, Projection, SelectedNode};
+use super::{AppResource, Edge, Node, Projection};
 use super::{InteractionMode, InteractionModeResource};
 use crate::prelude::OverpassApiClient;
 use crate::prelude::OverpassImporter;

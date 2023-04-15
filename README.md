@@ -74,6 +74,12 @@ cargo run -- --area "Frankfurt am Main" --svg -o output.svg
 
 3. Open your browser on [Localhost](http://localhost:8000)
 
+### 3d App
+
+```
+cargo run --features app3d --example app3d
+```
+
 ## Running Tests
 
 To run tests, use the following command:

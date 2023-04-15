@@ -7,7 +7,6 @@
 
 use crate::app3d::train_agent::TrainAgent;
 use crate::prelude::RailwayGraph;
-use crate::railway_algorithms::PathFinding;
 use bevy::input::Input;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
@@ -18,8 +17,13 @@ use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 
 mod camera;
+mod edges;
+mod nodes;
 mod train_agent;
 mod ui;
+
+use edges::Edge;
+use nodes::Node;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -27,31 +31,12 @@ use wasm_bindgen::prelude::*;
 mod projection;
 pub use projection::Projection;
 
-/// Represents an edge in the railway graph.
-#[derive(Component)]
-pub struct Edge {
-    id: i64,
-}
-
-/// Represents a node in the railway graph.
-#[derive(Component)]
-pub struct Node {
-    id: i64,
-}
-
 /// Holds application state, including the area name, railway graph, and camera look-at position.
 #[derive(Default, Resource)]
 pub struct AppResource {
     area_name: String,
     graph: Option<RailwayGraph>,
     look_at_position: Option<Vec3>,
-}
-
-/// Keeps track of the currently selected start and end nodes.
-#[derive(Default, Resource)]
-pub struct SelectedNode {
-    start_node_id: Option<i64>,
-    end_node_id: Option<i64>,
 }
 
 /// Keeps track of the currently selected start and end nodes.
@@ -76,6 +61,35 @@ pub struct InteractionModeResource {
     mode: InteractionMode,
 }
 
+/// Configures a Bevy application with the necessary plugins, resources, and systems.
+///
+/// This function configures a Bevy application with the required plugins,
+/// resources, and systems based on the given `AppResource`. The caller is
+/// responsible for inserting any additional resources and running the application.
+///
+/// # Arguments
+///
+/// * `app` - A mutable reference to a `bevy::prelude::App` instance to configure.
+/// * `app_resource` - An `AppResource` to configure the application.
+///
+pub fn setup_app(app: &mut App, app_resource: AppResource) {
+    app.add_plugins(camera::CameraPlugins)
+        .add_plugin(EguiPlugin)
+        .add_plugins(DefaultPickingPlugins)
+        .insert_resource(app_resource)
+        .insert_resource(nodes::SelectedNode::default())
+        .insert_resource(SelectedTrain::default())
+        .insert_resource(InteractionModeResource::default())
+        .add_startup_system(setup)
+        .add_startup_system(camera::setup_camera)
+        .add_system(ui::ui_system)
+        .add_system(update_look_at_position_system)
+        .add_system(nodes::select_node_system)
+        .add_system(select_train_system)
+        .add_system(edges::show_edges_on_path)
+        .add_system(train_agent::train_agent_system);
+}
+
 /// Initializes the Bevy application with a given `RailwayGraph`.
 ///
 /// This function sets up the Bevy application with the required plugins,
@@ -96,26 +110,11 @@ pub fn init_with_graph(graph: RailwayGraph) {
         graph: Some(graph),
         look_at_position: None,
     };
-
-    App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(camera::CameraPlugins)
-        .add_plugin(EguiPlugin)
-        .add_plugins(DefaultPickingPlugins)
-        .insert_resource(app_resource)
-        .insert_resource(projection)
-        .insert_resource(SelectedNode::default())
-        .insert_resource(SelectedTrain::default())
-        .insert_resource(InteractionModeResource::default())
-        .add_startup_system(setup)
-        .add_startup_system(camera::setup_camera)
+    let mut app = App::new();
+    app.add_plugins(DefaultPlugins);
+    setup_app(&mut app, app_resource);
+    app.insert_resource(projection)
         .add_startup_system(display_graph)
-        .add_system(ui::ui_system)
-        .add_system(update_look_at_position_system)
-        .add_system(select_node_system)
-        .add_system(select_train_system)
-        .add_system(show_path)
-        .add_system(train_agent::train_agent_system)
         .run()
 }
 
@@ -125,37 +124,28 @@ pub fn init_with_graph(graph: RailwayGraph) {
 /// resources, and systems. It inserts a default `AppResource` and starts the
 /// Bevy application. The user can load a `RailwayGraph` through the UI.
 ///
+/// # Note
+///
+/// This function is not available when compiling for the `wasm32` target.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn init() {
     let projection = Projection::new(1000.0, 1000.0);
-    App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "Railwaymap".into(),
-                resolution: (1000., 1000.).into(),
-                fit_canvas_to_parent: true,
-                prevent_default_event_handling: false,
-                ..default()
-            }),
+    let app_resource = AppResource::default();
+
+    let mut app = App::new();
+
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            title: "Railwaymap".into(),
+            resolution: (1000., 1000.).into(),
+            fit_canvas_to_parent: true,
+            prevent_default_event_handling: false,
             ..default()
-        }))
-        .add_plugins(camera::CameraPlugins)
-        .add_plugin(EguiPlugin)
-        .add_plugins(DefaultPickingPlugins)
-        .insert_resource(AppResource::default())
-        .insert_resource(projection)
-        .insert_resource(SelectedNode::default())
-        .insert_resource(SelectedTrain::default())
-        .insert_resource(InteractionModeResource::default())
-        .add_startup_system(setup)
-        .add_startup_system(camera::setup_camera)
-        .add_system(ui::ui_system)
-        .add_system(update_look_at_position_system)
-        .add_system(select_node_system)
-        .add_system(select_train_system)
-        .add_system(show_path)
-        .add_system(train_agent::train_agent_system)
-        .run()
+        }),
+        ..default()
+    }));
+    setup_app(&mut app, app_resource);
+    app.insert_resource(projection).run()
 }
 
 fn setup(mut commands: Commands) {
@@ -221,49 +211,11 @@ fn update_look_at_position_system(
     }
 }
 
-fn show_path(
-    app_resource: Res<AppResource>,
-    mut edge_query: Query<(&Edge, &mut Handle<StandardMaterial>)>,
-    selected_node: Res<SelectedNode>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    if let Some(graph) = &app_resource.graph {
-        if let (Some(start_node_id), Some(end_node_id)) =
-            (selected_node.start_node_id, selected_node.end_node_id)
-        {
-            // Use graph.shortest_path_edges to get the Vec of edge IDs
-            if let Some(path_edge_ids) = graph.shortest_path_edges(start_node_id, end_node_id) {
-                // Iterate through the edges and set their color
-                for (edge, mut material_handle) in edge_query.iter_mut() {
-                    let edge_data = edge;
-                    let is_path_edge = path_edge_ids
-                        .iter()
-                        .any(|railway_edge| *railway_edge == edge_data.id);
-                    if let Some(material) = materials.get_mut(&material_handle) {
-                        material.base_color = if is_path_edge {
-                            Color::RED
-                        } else {
-                            Color::BLUE
-                        };
-                    } else if is_path_edge {
-                        let new_material = StandardMaterial {
-                            base_color: Color::RED,
-                            ..Default::default()
-                        };
-                        let new_material_handle = materials.add(new_material);
-                        *material_handle = new_material_handle;
-                    }
-                }
-            }
-        }
-    }
-}
-
 fn display_graph(
     mut commands: Commands,
     app_resource: Res<AppResource>,
-    edge_query: Query<Entity, With<Edge>>,
-    node_query: Query<Entity, With<Node>>,
+    edge_query: Query<Entity, With<edges::Edge>>,
+    node_query: Query<Entity, With<nodes::Node>>,
     projection: Res<Projection>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -340,67 +292,7 @@ fn display_graph(
                         },
                         PickableBundle::default(),
                     ))
-                    .insert(Node { id: node_data.id });
-            }
-        }
-    }
-}
-
-#[allow(clippy::too_many_arguments)]
-fn select_node_system(
-    mut events: EventReader<PickingEvent>,
-    app_resource: Res<AppResource>,
-    mut selected_node: ResMut<SelectedNode>,
-    q_node: Query<(Entity, &Node, &Transform), Without<Camera>>,
-    interaction_mode: Res<InteractionModeResource>,
-    mut commands: Commands,
-    meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<StandardMaterial>>,
-) {
-    let mut selection = None;
-    for event in events.iter() {
-        match event {
-            PickingEvent::Selection(_e) => (),
-            PickingEvent::Hover(_e) => (),
-            PickingEvent::Clicked(e) => {
-                for (entity, node, transform) in q_node.iter() {
-                    if e == &entity {
-                        selection = Some((entity, node.id, *transform));
-                    }
-                }
-            }
-        }
-    }
-
-    if let Some((entity, id, transform)) = selection {
-        // Check the current interaction mode
-        match interaction_mode.mode {
-            InteractionMode::SelectMode => {
-                println!("Selected node: {:?}", entity);
-                selected_node.end_node_id = selected_node.start_node_id;
-                selected_node.start_node_id = Some(id);
-            }
-            InteractionMode::PlaceTrain => {
-                println!("Placing train on node: {:?}", id);
-                let mut train_agent = TrainAgent::on_node(id);
-                if let Some(graph) = &app_resource.graph {
-                    train_agent.train(graph, 100000);
-                }
-                commands
-                    .spawn((
-                        Transform::from_xyz(
-                            transform.translation.x,
-                            transform.translation.y,
-                            transform.translation.z + 1.0,
-                        ),
-                        GlobalTransform::default(),
-                        ComputedVisibility::default(),
-                        Visibility::Inherited,
-                        train_agent,
-                        //PickableBundle::default()
-                    ))
-                    .insert(PickableBundle::default())
-                    .with_children(train_agent::create_train_agent_bundle(meshes, materials));
+                    .insert(nodes::Node { id: node_data.id });
             }
         }
     }
