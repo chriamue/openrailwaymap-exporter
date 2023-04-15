@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["RailMovableAction","Represents the possible actions a movable object on rail tracks can take in the simulation."]],"trait":[["DecisionAgent","A trait that represents a decision agent responsible for choosing the best action based on the current state of the simulation."]]};

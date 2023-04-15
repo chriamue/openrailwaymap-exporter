@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["agents","This module contains types and traits related to decision agents."]],"struct":[["Simulation","A `Simulation` struct holding a railway graph and a list of moveable railway objects."]]};

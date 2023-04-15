@@ -284,44 +284,6 @@
 <a href="#284" id="284">284</a>
 <a href="#285" id="285">285</a>
 <a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `ai` module provides a reinforcement learning agent that controls a train in a railway network simulation.
 //!
 //! The module defines the `TrainAgentState` struct, which represents the state of a train agent in the simulation,
@@ -335,29 +297,12 @@
 <span class="kw">use </span>std::sync::{Arc, Mutex};
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
+<span class="kw">use </span><span class="kw">crate</span>::simulation::agents::RailMovableAction;
 <span class="kw">use </span>rurel::mdp::{Agent, State};
 <span class="kw">use </span>rurel::strategy::explore::RandomExploration;
 <span class="kw">use </span>rurel::strategy::learn::QLearning;
 <span class="kw">use </span>rurel::strategy::terminate::FixedIterations;
 <span class="kw">use </span>rurel::AgentTrainer;
-
-<span class="doccomment">/// Represents the possible actions a train agent can take in the simulation.
-</span><span class="attr">#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
-</span><span class="kw">pub enum </span>TrainAgentAction {
-    <span class="doccomment">/// Stop the train agent.
-    </span><span class="attr">#[default]
-    </span>Stop,
-    <span class="doccomment">/// Accelerate the train agent forward in milli meters per second squared (mm/s²).
-    </span>AccelerateForward {
-        <span class="doccomment">/// acceleration in milli meters per second squared (mm/s²).
-        </span>acceleration: i32,
-    },
-    <span class="doccomment">/// Accelerate the train agent backward in milli meters per second squared (mm/s²).
-    </span>AccelerateBackward {
-        <span class="doccomment">/// acceleration in milli meters per second squared (mm/s²).
-        </span>acceleration: i32,
-    },
-}
 
 <span class="doccomment">/// Represents the state of a train agent in the simulation.
 </span><span class="attr">#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -384,23 +329,29 @@
 }
 
 <span class="kw">impl </span>State <span class="kw">for </span>TrainAgentState {
-    <span class="kw">type </span>A = TrainAgentAction;
+    <span class="kw">type </span>A = RailMovableAction;
 
     <span class="kw">fn </span>reward(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
         <span class="number">20.0 </span>* <span class="self">self</span>.speed_reward() + <span class="self">self</span>.distance_reward()
     }
 
-    <span class="kw">fn </span>actions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;TrainAgentAction&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>actions = <span class="macro">vec!</span>[TrainAgentAction::Stop];
+    <span class="kw">fn </span>actions(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="self">Self</span>::A&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>actions = <span class="macro">vec!</span>[<span class="self">Self</span>::A::Stop];
         <span class="kw">for </span>acceleration <span class="kw">in </span><span class="number">1</span>..=(<span class="self">Self</span>::MAX_ACCELERATION / <span class="self">Self</span>::ACCELERATION_STEP) {
-            actions.push(TrainAgentAction::AccelerateForward {
+            actions.push(<span class="self">Self</span>::A::AccelerateForward {
                 acceleration: acceleration * <span class="self">Self</span>::ACCELERATION_STEP,
             });
-            actions.push(TrainAgentAction::AccelerateBackward {
+            actions.push(<span class="self">Self</span>::A::AccelerateBackward {
                 acceleration: acceleration * <span class="self">Self</span>::ACCELERATION_STEP,
             });
         }
         actions
+    }
+
+    <span class="kw">fn </span>random_action(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::A {
+        <span class="kw">let </span>actions = <span class="self">self</span>.actions();
+        <span class="kw">let </span>a_t = rand::random::&lt;usize&gt;() % actions.len();
+        actions[a_t].clone()
     }
 }
 
@@ -422,17 +373,17 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.state
     }
 
-    <span class="kw">fn </span>take_action(<span class="kw-2">&amp;mut </span><span class="self">self</span>, action: <span class="kw-2">&amp;</span>TrainAgentAction) {
+    <span class="kw">fn </span>take_action(<span class="kw-2">&amp;mut </span><span class="self">self</span>, action: <span class="kw-2">&amp;</span>RailMovableAction) {
         <span class="kw">match </span>action {
-            TrainAgentAction::Stop =&gt; {
+            RailMovableAction::Stop =&gt; {
                 <span class="self">self</span>.state.current_speed_mm_s = <span class="number">0</span>;
             }
-            TrainAgentAction::AccelerateForward { acceleration } =&gt; {
+            RailMovableAction::AccelerateForward { acceleration } =&gt; {
                 <span class="self">self</span>.state.current_speed_mm_s += acceleration * <span class="self">Self</span>::TIME_DELTA_MS <span class="kw">as </span>i32 / <span class="number">1000</span>;
                 <span class="self">self</span>.state.delta_distance_mm =
                     <span class="self">self</span>.state.current_speed_mm_s * <span class="self">Self</span>::TIME_DELTA_MS <span class="kw">as </span>i32 / <span class="number">1000</span>;
             }
-            TrainAgentAction::AccelerateBackward { acceleration } =&gt; {
+            RailMovableAction::AccelerateBackward { acceleration } =&gt; {
                 <span class="self">self</span>.state.current_speed_mm_s -= acceleration * <span class="self">Self</span>::TIME_DELTA_MS <span class="kw">as </span>i32 / <span class="number">1000</span>;
                 <span class="self">self</span>.state.delta_distance_mm =
                     <span class="self">self</span>.state.current_speed_mm_s * <span class="self">Self</span>::TIME_DELTA_MS <span class="kw">as </span>i32 / <span class="number">1000</span>;
@@ -529,7 +480,7 @@
     /// # Returns
     ///
     /// The best action for the given state or `None` if no action can be selected.
-    </span><span class="kw">pub fn </span>best_action(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>TrainAgentState) -&gt; <span class="prelude-ty">Option</span>&lt;TrainAgentAction&gt; {
+    </span><span class="kw">pub fn </span>best_action(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>TrainAgentState) -&gt; <span class="prelude-ty">Option</span>&lt;RailMovableAction&gt; {
         <span class="prelude-val">Some</span>(
             <span class="self">self</span>.trainer
                 .lock()
@@ -589,33 +540,6 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_train_agent_actions() {
-        <span class="kw">let </span>actions = <span class="macro">vec!</span>[
-            TrainAgentAction::Stop,
-            TrainAgentAction::AccelerateForward { acceleration: <span class="number">50 </span>},
-            TrainAgentAction::AccelerateBackward { acceleration: <span class="number">20 </span>},
-        ];
-
-        <span class="kw">if let </span>TrainAgentAction::Stop = actions[<span class="number">0</span>] {
-            <span class="macro">assert!</span>(<span class="bool-val">true</span>);
-        } <span class="kw">else </span>{
-            <span class="macro">assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;Expected Stop action&quot;</span>);
-        }
-
-        <span class="kw">if let </span>TrainAgentAction::AccelerateForward { acceleration } = actions[<span class="number">1</span>] {
-            <span class="macro">assert_eq!</span>(acceleration, <span class="number">50</span>);
-        } <span class="kw">else </span>{
-            <span class="macro">assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;Expected AccelerateForward action&quot;</span>);
-        }
-
-        <span class="kw">if let </span>TrainAgentAction::AccelerateBackward { acceleration } = actions[<span class="number">2</span>] {
-            <span class="macro">assert_eq!</span>(acceleration, <span class="number">20</span>);
-        } <span class="kw">else </span>{
-            <span class="macro">assert!</span>(<span class="bool-val">false</span>, <span class="string">&quot;Expected AccelerateBackward action&quot;</span>);
-        }
-    }
-
-    <span class="attr">#[test]
     </span><span class="kw">fn </span>test_take_action() {
         <span class="kw">let </span><span class="kw-2">mut </span>agent = TrainAgentRL {
             state: TrainAgentState {
@@ -627,22 +551,22 @@
         };
 
         <span class="comment">// Test AccelerateForward action
-        </span>agent.take_action(<span class="kw-2">&amp;</span>TrainAgentAction::AccelerateForward { acceleration: <span class="number">1000 </span>});
+        </span>agent.take_action(<span class="kw-2">&amp;</span>RailMovableAction::AccelerateForward { acceleration: <span class="number">1000 </span>});
         <span class="macro">assert_eq!</span>(agent.state.current_speed_mm_s, <span class="number">1000</span>);
         <span class="macro">assert_eq!</span>(agent.state.delta_distance_mm, <span class="number">1000</span>);
 
         <span class="comment">// Test AccelerateForward action
-        </span>agent.take_action(<span class="kw-2">&amp;</span>TrainAgentAction::AccelerateForward { acceleration: <span class="number">500 </span>});
+        </span>agent.take_action(<span class="kw-2">&amp;</span>RailMovableAction::AccelerateForward { acceleration: <span class="number">500 </span>});
         <span class="macro">assert_eq!</span>(agent.state.current_speed_mm_s, <span class="number">1500</span>);
         <span class="macro">assert_eq!</span>(agent.state.delta_distance_mm, <span class="number">1500</span>);
 
         <span class="comment">// Test AccelerateBackward action
-        </span>agent.take_action(<span class="kw-2">&amp;</span>TrainAgentAction::AccelerateBackward { acceleration: <span class="number">500 </span>});
+        </span>agent.take_action(<span class="kw-2">&amp;</span>RailMovableAction::AccelerateBackward { acceleration: <span class="number">500 </span>});
         <span class="macro">assert_eq!</span>(agent.state.current_speed_mm_s, <span class="number">1000</span>);
         <span class="macro">assert_eq!</span>(agent.state.delta_distance_mm, <span class="number">1000</span>);
 
         <span class="comment">// Test Stop action
-        </span>agent.take_action(<span class="kw-2">&amp;</span>TrainAgentAction::Stop);
+        </span>agent.take_action(<span class="kw-2">&amp;</span>RailMovableAction::Stop);
         <span class="macro">assert_eq!</span>(agent.state.current_speed_mm_s, <span class="number">0</span>);
     }
 }
