@@ -170,6 +170,33 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -190,20 +217,35 @@
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
 
+<span class="attr">#[derive(Default, Resource)]
+</span><span class="kw">pub struct </span>UiUpdateTimer {
+    <span class="kw">pub </span>time: f64,
+    <span class="kw">pub </span>last_displayed_remaining: f64,
+}
+
 <span class="kw">pub fn </span>add_ui_systems_to_app(app: <span class="kw-2">&amp;mut </span>App) {
     <span class="attr">#[cfg(not(target_arch = <span class="string">&quot;wasm32&quot;</span>))]
     </span>app.add_system(select_graph_ui_system);
     app.add_system(selection_ui_system);
+    app.insert_resource(UiUpdateTimer::default());
 }
 
-<span class="kw">pub fn </span>selection_ui_system(
+<span class="attr">#[allow(clippy::too_many_arguments)]
+</span><span class="kw">pub fn </span>selection_ui_system(
     <span class="kw-2">mut </span>contexts: EguiContexts,
     app_resource: ResMut&lt;AppResource&gt;,
     selected_node: Res&lt;SelectedNode&gt;,
     selected_train: Res&lt;SelectedTrain&gt;,
     q_train: Query&lt;<span class="kw-2">&amp;</span>TrainAgent&gt;,
     <span class="kw-2">mut </span>interaction_mode: ResMut&lt;InteractionModeResource&gt;,
+    time: Res&lt;Time&gt;,
+    <span class="kw-2">mut </span>ui_update_timer: ResMut&lt;UiUpdateTimer&gt;,
 ) {
+    <span class="kw">if </span>ui_update_timer.time &gt;= <span class="number">1.0 </span>{
+        ui_update_timer.time = <span class="number">0.0</span>;
+    } <span class="kw">else </span>{
+        ui_update_timer.time += time.delta_seconds_f64();
+    }
     egui::Window::new(<span class="string">&quot;&quot;</span>).show(contexts.ctx_mut(), |ui| {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(node_id) = selected_node.start_node_id {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
@@ -224,7 +266,7 @@
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
             <span class="kw">for </span>train_agent <span class="kw">in </span>q_train.iter() {
                 <span class="kw">if </span>train_agent_id == train_agent.id {
-                    display_selected_train_agent_info(ui, train_agent);
+                    display_selected_train_agent_info(ui, train_agent, <span class="kw-2">&amp;mut </span>ui_update_timer);
                 }
             }
         }
@@ -310,9 +352,21 @@
     }
 }
 
-<span class="kw">pub fn </span>display_selected_train_agent_info(ui: <span class="kw-2">&amp;mut </span>egui::Ui, train_agent: <span class="kw-2">&amp;</span>TrainAgent) {
+<span class="kw">pub fn </span>display_selected_train_agent_info(
+    ui: <span class="kw-2">&amp;mut </span>egui::Ui,
+    train_agent: <span class="kw-2">&amp;</span>TrainAgent,
+    ui_update_timer: <span class="kw-2">&amp;mut </span>UiUpdateTimer,
+) {
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;ID: {}&quot;</span>, train_agent.id));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {}km/h&quot;</span>, train_agent.speed * <span class="number">3.6</span>));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {} km/h&quot;</span>, train_agent.speed * <span class="number">3.6</span>));
+    <span class="kw">if </span>ui_update_timer.time == <span class="number">0.0 </span>{
+        ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / <span class="number">1000.0 </span><span class="kw">as </span>f64;
+    }
+
+    ui.label(<span class="macro">format!</span>(
+        <span class="string">&quot;Remaining: {:.3} km&quot;</span>,
+        ui_update_timer.last_displayed_remaining
+    ));
 }
 
 <span class="kw">pub fn </span>display_path_info(
