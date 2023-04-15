@@ -30,6 +30,7 @@ pub mod railway_algorithms;
 pub mod railway_api_client;
 pub mod railway_model;
 pub mod railway_objects;
+pub mod simulation;
 
 #[cfg(test)]
 pub mod tests;

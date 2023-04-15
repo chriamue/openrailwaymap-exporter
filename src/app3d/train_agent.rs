@@ -6,10 +6,11 @@ use rand::seq::SliceRandom;
 
 use super::{AppResource, Node};
 use crate::{
-    ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
+    ai::{TrainAgentAI, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
     railway_objects::{Moveable, NextTarget, RailwayObject, Train},
+    simulation::agents::RailMovableAction,
 };
 use std::{
     collections::VecDeque,
@@ -268,16 +269,16 @@ fn update_train_speed(train_agent: &mut TrainAgent, time: &Time) {
     if let Some(ai_agent) = &train_agent.ai_agent {
         let action = ai_agent.best_action(&ai_agent.agent_rl.state);
         match action {
-            Some(TrainAgentAction::Stop) => {
+            Some(RailMovableAction::Stop) => {
                 //train_agent.speed *= 0.9;
             }
-            Some(TrainAgentAction::AccelerateForward { acceleration }) => {
+            Some(RailMovableAction::AccelerateForward { acceleration }) => {
                 train_agent.train.set_speed(
                     train_agent.train.speed()
                         + acceleration as f64 * time.raw_delta_seconds_f64() / 1000.0,
                 );
             }
-            Some(TrainAgentAction::AccelerateBackward { acceleration }) => {
+            Some(RailMovableAction::AccelerateBackward { acceleration }) => {
                 train_agent.train.set_speed(
                     train_agent.train.speed()
                         - acceleration as f64 * time.delta_seconds_f64() / 1000.0,

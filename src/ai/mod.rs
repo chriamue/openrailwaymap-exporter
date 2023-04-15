@@ -11,29 +11,12 @@ use std::fmt;
 use std::sync::{Arc, Mutex};
 
 use crate::prelude::RailwayGraph;
+use crate::simulation::agents::RailMovableAction;
 use rurel::mdp::{Agent, State};
 use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
 use rurel::strategy::terminate::FixedIterations;
 use rurel::AgentTrainer;
-
-/// Represents the possible actions a train agent can take in the simulation.
-#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
-pub enum TrainAgentAction {
-    /// Stop the train agent.
-    #[default]
-    Stop,
-    /// Accelerate the train agent forward in milli meters per second squared (mm/s²).
-    AccelerateForward {
-        /// acceleration in milli meters per second squared (mm/s²).
-        acceleration: i32,
-    },
-    /// Accelerate the train agent backward in milli meters per second squared (mm/s²).
-    AccelerateBackward {
-        /// acceleration in milli meters per second squared (mm/s²).
-        acceleration: i32,
-    },
-}
 
 /// Represents the state of a train agent in the simulation.
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -60,23 +43,29 @@ impl TrainAgentState {
 }
 
 impl State for TrainAgentState {
-    type A = TrainAgentAction;
+    type A = RailMovableAction;
 
     fn reward(&self) -> f64 {
         20.0 * self.speed_reward() + self.distance_reward()
     }
 
-    fn actions(&self) -> Vec<TrainAgentAction> {
-        let mut actions = vec![TrainAgentAction::Stop];
+    fn actions(&self) -> Vec<Self::A> {
+        let mut actions = vec![Self::A::Stop];
         for acceleration in 1..=(Self::MAX_ACCELERATION / Self::ACCELERATION_STEP) {
-            actions.push(TrainAgentAction::AccelerateForward {
+            actions.push(Self::A::AccelerateForward {
                 acceleration: acceleration * Self::ACCELERATION_STEP,
             });
-            actions.push(TrainAgentAction::AccelerateBackward {
+            actions.push(Self::A::AccelerateBackward {
                 acceleration: acceleration * Self::ACCELERATION_STEP,
             });
         }
         actions
+    }
+
+    fn random_action(&self) -> Self::A {
+        let actions = self.actions();
+        let a_t = rand::random::<usize>() % actions.len();
+        actions[a_t].clone()
     }
 }
 
@@ -98,17 +87,17 @@ impl Agent<TrainAgentState> for TrainAgentRL {
         &self.state
     }
 
-    fn take_action(&mut self, action: &TrainAgentAction) {
+    fn take_action(&mut self, action: &RailMovableAction) {
         match action {
-            TrainAgentAction::Stop => {
+            RailMovableAction::Stop => {
                 self.state.current_speed_mm_s = 0;
             }
-            TrainAgentAction::AccelerateForward { acceleration } => {
+            RailMovableAction::AccelerateForward { acceleration } => {
                 self.state.current_speed_mm_s += acceleration * Self::TIME_DELTA_MS as i32 / 1000;
                 self.state.delta_distance_mm =
                     self.state.current_speed_mm_s * Self::TIME_DELTA_MS as i32 / 1000;
             }
-            TrainAgentAction::AccelerateBackward { acceleration } => {
+            RailMovableAction::AccelerateBackward { acceleration } => {
                 self.state.current_speed_mm_s -= acceleration * Self::TIME_DELTA_MS as i32 / 1000;
                 self.state.delta_distance_mm =
                     self.state.current_speed_mm_s * Self::TIME_DELTA_MS as i32 / 1000;
@@ -205,7 +194,7 @@ impl TrainAgentAI {
     /// # Returns
     ///
     /// The best action for the given state or `None` if no action can be selected.
-    pub fn best_action(&self, state: &TrainAgentState) -> Option<TrainAgentAction> {
+    pub fn best_action(&self, state: &TrainAgentState) -> Option<RailMovableAction> {
         Some(
             self.trainer
                 .lock()
@@ -265,33 +254,6 @@ mod tests {
     }
 
     #[test]
-    fn test_train_agent_actions() {
-        let actions = vec![
-            TrainAgentAction::Stop,
-            TrainAgentAction::AccelerateForward { acceleration: 50 },
-            TrainAgentAction::AccelerateBackward { acceleration: 20 },
-        ];
-
-        if let TrainAgentAction::Stop = actions[0] {
-            assert!(true);
-        } else {
-            assert!(false, "Expected Stop action");
-        }
-
-        if let TrainAgentAction::AccelerateForward { acceleration } = actions[1] {
-            assert_eq!(acceleration, 50);
-        } else {
-            assert!(false, "Expected AccelerateForward action");
-        }
-
-        if let TrainAgentAction::AccelerateBackward { acceleration } = actions[2] {
-            assert_eq!(acceleration, 20);
-        } else {
-            assert!(false, "Expected AccelerateBackward action");
-        }
-    }
-
-    #[test]
     fn test_take_action() {
         let mut agent = TrainAgentRL {
             state: TrainAgentState {
@@ -303,22 +265,22 @@ mod tests {
         };
 
         // Test AccelerateForward action
-        agent.take_action(&TrainAgentAction::AccelerateForward { acceleration: 1000 });
+        agent.take_action(&RailMovableAction::AccelerateForward { acceleration: 1000 });
         assert_eq!(agent.state.current_speed_mm_s, 1000);
         assert_eq!(agent.state.delta_distance_mm, 1000);
 
         // Test AccelerateForward action
-        agent.take_action(&TrainAgentAction::AccelerateForward { acceleration: 500 });
+        agent.take_action(&RailMovableAction::AccelerateForward { acceleration: 500 });
         assert_eq!(agent.state.current_speed_mm_s, 1500);
         assert_eq!(agent.state.delta_distance_mm, 1500);
 
         // Test AccelerateBackward action
-        agent.take_action(&TrainAgentAction::AccelerateBackward { acceleration: 500 });
+        agent.take_action(&RailMovableAction::AccelerateBackward { acceleration: 500 });
         assert_eq!(agent.state.current_speed_mm_s, 1000);
         assert_eq!(agent.state.delta_distance_mm, 1000);
 
         // Test Stop action
-        agent.take_action(&TrainAgentAction::Stop);
+        agent.take_action(&RailMovableAction::Stop);
         assert_eq!(agent.state.current_speed_mm_s, 0);
     }
 }
