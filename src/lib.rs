@@ -29,6 +29,7 @@ pub mod importer;
 pub mod railway_algorithms;
 pub mod railway_api_client;
 pub mod railway_model;
+pub mod railway_objects;
 
 #[cfg(test)]
 pub mod tests;
