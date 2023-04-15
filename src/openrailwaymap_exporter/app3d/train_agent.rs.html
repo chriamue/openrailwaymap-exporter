@@ -388,6 +388,12 @@
 <a href="#388" id="388">388</a>
 <a href="#389" id="389">389</a>
 <a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
@@ -399,7 +405,7 @@
     ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
-    railway_objects::{NextTarget, RailwayObject, Train},
+    railway_objects::{Moveable, NextTarget, RailwayObject, Train},
 };
 <span class="kw">use </span>std::{
     collections::VecDeque,
@@ -424,7 +430,6 @@
     <span class="kw">pub </span>current_edge: <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt;,
     <span class="kw">pub </span>edge_progress: f64,
     <span class="kw">pub </span>remaining_distance: f64, <span class="comment">// Distance in meters
-    </span><span class="kw">pub </span>speed: f64,              <span class="comment">// Speed in meters per second
     </span><span class="kw">pub </span>ai_agent: <span class="prelude-ty">Option</span>&lt;TrainAgentAI&gt;,
 }
 
@@ -438,10 +443,11 @@
                 geo_location: <span class="prelude-val">None</span>,
                 next_target: target_node_id,
                 targets: VecDeque::new(),
+                speed: <span class="number">20.0</span>,
+                ..Default::default()
             },
             current_edge: <span class="prelude-val">None</span>,
             edge_progress: <span class="number">0.0</span>,
-            speed: <span class="number">20.0</span>,
             remaining_distance: <span class="number">0.0</span>,
             ai_agent: <span class="prelude-val">None</span>,
         }
@@ -553,7 +559,7 @@
             <span class="kw">let </span>(current_node_id, target_node_id, current_speed) = (
                 train_agent.train.position(),
                 train_agent.train.next_target(),
-                train_agent.speed,
+                train_agent.train.speed(),
             );
             make_train_observation(
                 <span class="kw-2">&amp;mut </span>train_agent.ai_agent,
@@ -570,7 +576,7 @@
                     <span class="kw">let </span>current_edge = train_agent.current_edge.clone();
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(edge) = current_edge {
                         <span class="kw">let </span>edge_progress = train_agent.edge_progress
-                            + train_agent.speed * time.delta_seconds() <span class="kw">as </span>f64;
+                            + train_agent.train.speed() * time.delta_seconds() <span class="kw">as </span>f64;
                         update_train_position(
                             <span class="kw-2">&amp;mut </span>train_agent,
                             <span class="kw-2">&amp;mut </span>transform,
@@ -662,10 +668,16 @@
                 <span class="comment">//train_agent.speed *= 0.9;
             </span>}
             <span class="prelude-val">Some</span>(TrainAgentAction::AccelerateForward { acceleration }) =&gt; {
-                train_agent.speed += acceleration <span class="kw">as </span>f64 * time.raw_delta_seconds_f64() / <span class="number">1000.0</span>;
+                train_agent.train.set_speed(
+                    train_agent.train.speed()
+                        + acceleration <span class="kw">as </span>f64 * time.raw_delta_seconds_f64() / <span class="number">1000.0</span>,
+                );
             }
             <span class="prelude-val">Some</span>(TrainAgentAction::AccelerateBackward { acceleration }) =&gt; {
-                train_agent.speed -= acceleration <span class="kw">as </span>f64 * time.delta_seconds_f64() / <span class="number">1000.0</span>;
+                train_agent.train.set_speed(
+                    train_agent.train.speed()
+                        - acceleration <span class="kw">as </span>f64 * time.delta_seconds_f64() / <span class="number">1000.0</span>,
+                );
             }
             <span class="kw">_ </span>=&gt; (),
         }
@@ -695,7 +707,7 @@
     {
         <span class="kw">let </span>edge_length = edge.length;
 
-        <span class="kw">let </span>distance = train_agent.speed * time_delta;
+        <span class="kw">let </span>distance = train_agent.train.speed() * time_delta;
         <span class="kw">let </span>edge_progress = train_agent.edge_progress + distance;
         <span class="kw">if </span>edge_progress &lt; edge_length {
             <span class="kw">let </span>progress_ratio = edge_progress / edge_length;
