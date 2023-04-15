@@ -69,7 +69,6 @@ pub fn select_node_system(
                         ComputedVisibility::default(),
                         Visibility::Inherited,
                         train_agent,
-                        //PickableBundle::default()
                     ))
                     .insert(PickableBundle::default())
                     .with_children(train_agent::create_train_agent_bundle(meshes, materials));

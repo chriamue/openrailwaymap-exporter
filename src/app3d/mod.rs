@@ -314,7 +314,6 @@ fn select_train_system(
                         selection = Some(train.id);
                     } else {
                         for entity in children.iter() {
-                            println!("{:?}, {:?}", entity, train.id);
                             if e == entity {
                                 selection = Some(train.id);
                             }

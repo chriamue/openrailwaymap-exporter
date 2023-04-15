@@ -159,6 +159,8 @@ pub fn display_selected_train_agent_info(
     ui_update_timer: &mut UiUpdateTimer,
 ) {
     ui.label(format!("ID: {}", train_agent.id));
+    ui.label(format!("Current: {:?}", train_agent.current_node_id));
+    ui.label(format!("Target: {:?}", train_agent.target_node_id));
     ui.label(format!("Speed: {} km/h", train_agent.speed * 3.6));
     if ui_update_timer.time == 0.0 {
         ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / 1000.0 as f64;

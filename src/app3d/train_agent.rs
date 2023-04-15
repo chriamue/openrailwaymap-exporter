@@ -145,7 +145,6 @@ pub fn create_train_agent_bundle(
 
 pub fn train_agent_system(
     mut train_agent_query: Query<(&mut TrainAgent, &mut Transform)>,
-    node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
     app_resource: Res<AppResource>,
     projection: Res<super::Projection>,
     time: Res<Time>,
@@ -169,42 +168,26 @@ pub fn train_agent_system(
             if let Some(current_node_id) = train_agent.current_node_id {
                 update_train_target(&mut train_agent, railway_graph);
                 if let Some(target_node_id) = train_agent.target_node_id {
-                    if current_node_id == target_node_id {
-                        train_agent.target_node_id = None;
-                    } else if let Some(path) =
-                        railway_graph.shortest_path_nodes(current_node_id, target_node_id)
-                    {
-                        if !path.is_empty() {
-                            train_agent.current_node_id = Some(path[1]);
-                            if path.len() == 2 {
-                                train_agent.target_node_id = None;
-                            } else if let Some((_, target_node_transform)) = node_query
-                                .iter()
-                                .find(|(node, _)| node.id == train_agent.target_node_id.unwrap())
-                            {
-                                transform.translation = target_node_transform.translation;
-                            }
+                    let current_edge = train_agent.current_edge.clone();
+                    if let Some(edge) = current_edge {
+                        let edge_progress = train_agent.edge_progress
+                            + train_agent.speed * time.delta_seconds() as f64;
+                        update_train_position(
+                            &mut train_agent,
+                            &mut transform,
+                            &edge,
+                            time.delta_seconds() as f64,
+                            &projection,
+                            &app_resource,
+                        );
+                        train_agent.edge_progress = edge_progress;
+                    } else {
+                        if let Some(edge) =
+                            railway_graph.railway_edge(current_node_id, target_node_id)
+                        {
+                            train_agent.current_edge = Some(edge.clone());
+                            train_agent.edge_progress = 0.0;
                         }
-                    }
-                }
-                let current_edge = train_agent.current_edge.clone();
-                if let Some(edge) = current_edge {
-                    let edge_progress =
-                        train_agent.edge_progress + train_agent.speed * time.delta_seconds() as f64;
-                    update_train_position(
-                        &mut train_agent,
-                        &mut transform,
-                        &edge,
-                        time.delta_seconds() as f64,
-                        &projection,
-                        &app_resource,
-                    );
-                    train_agent.edge_progress = edge_progress;
-                } else if let Some(target_node_id) = train_agent.target_node_id {
-                    if let Some(edge) = railway_graph.railway_edge(current_node_id, target_node_id)
-                    {
-                        train_agent.current_edge = Some(edge.clone());
-                        train_agent.edge_progress = 0.0;
                     }
                 }
             }
@@ -220,16 +203,10 @@ pub fn train_agent_system(
 /// * `railway_graph` - A reference to the `RailwayGraph` resource containing information about the railway network.
 ///
 fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGraph) {
-    if train_agent.target_node_id.is_none() {
-        let reachable_nodes = railway_graph.reachable_nodes(train_agent.current_node_id.unwrap());
-        if !reachable_nodes.is_empty() {
-            let mut rng = rand::thread_rng();
-            train_agent.target_node_id = Some(*reachable_nodes.choose(&mut rng).unwrap());
-        }
-    } else if let Some(target_node_id) = train_agent.target_node_id {
+    if let Some(target_node_id) = train_agent.target_node_id {
         if train_agent.current_node_id.unwrap() == target_node_id {
             train_agent.target_node_id = None;
-            train_agent.current_edge = None; // Reset the current edge when the target node is reached
+            train_agent.current_edge = None;
         } else {
             if let Some(path) = railway_graph
                 .shortest_path_nodes(train_agent.current_node_id.unwrap(), target_node_id)
@@ -250,6 +227,12 @@ fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGrap
                     train_agent.edge_progress = 0.0;
                 }
             }
+        }
+    } else {
+        let reachable_nodes = railway_graph.reachable_nodes(train_agent.current_node_id.unwrap());
+        if !reachable_nodes.is_empty() {
+            let mut rng = rand::thread_rng();
+            train_agent.target_node_id = Some(*reachable_nodes.choose(&mut rng).unwrap());
         }
     }
 }
@@ -378,6 +361,7 @@ pub fn train_agent_line_system(
                         polyline: polylines.add(Polyline {
                             vertices: vec![
                                 train_agent_transform.translation,
+                                //current_node_transform.translation,
                                 target_node_transform.translation,
                             ],
                         }),
