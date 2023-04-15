@@ -438,19 +438,6 @@
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
 <a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -465,11 +452,12 @@
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::EguiPlugin;
 <span class="kw">use </span>bevy_mod_picking::PickingEvent;
-<span class="kw">use </span>bevy_mod_picking::{DefaultPickingPlugins, PickableBundle, PickingCameraBundle};
+<span class="kw">use </span>bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
 <span class="kw">use </span>geo_types::coord;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::visit::NodeRef;
 
+<span class="kw">mod </span>camera;
 <span class="kw">mod </span>train_agent;
 <span class="kw">mod </span>ui;
 
@@ -551,6 +539,7 @@
 
     App::new()
         .add_plugins(DefaultPlugins)
+        .add_plugins(camera::CameraPlugins)
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
         .insert_resource(app_resource)
@@ -559,6 +548,7 @@
         .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
+        .add_startup_system(camera::setup_camera)
         .add_startup_system(display_graph)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
@@ -589,6 +579,7 @@
             }),
             ..default()
         }))
+        .add_plugins(camera::CameraPlugins)
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
         .insert_resource(AppResource::default())
@@ -597,6 +588,7 @@
         .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
+        .add_startup_system(camera::setup_camera)
         .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(select_node_system)
@@ -607,17 +599,6 @@
 }
 
 <span class="kw">fn </span>setup(<span class="kw-2">mut </span>commands: Commands) {
-    <span class="comment">//commands
-    //    .spawn(Camera2dBundle::default())
-    //    .insert(PanCam::default());
-    // camera
-    </span>commands.spawn((
-        Camera3dBundle {
-            transform: Transform::from_xyz(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1000.0</span>).looking_at(Vec3::ZERO, Vec3::Y),
-            ..default()
-        },
-        PickingCameraBundle::default(),
-    ));
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
         brightness: <span class="number">0.7</span>,
@@ -754,10 +735,10 @@
                         mesh: meshes.add(Mesh::from(shape::Box {
                             min_x: <span class="number">0.0</span>,
                             max_x: distance,
-                            min_y: -<span class="number">0.5</span>,
-                            max_y: <span class="number">0.5</span>,
-                            min_z: -<span class="number">0.5</span>,
-                            max_z: <span class="number">0.5</span>,
+                            min_y: -<span class="number">0.2</span>,
+                            max_y: <span class="number">0.2</span>,
+                            min_z: -<span class="number">0.2</span>,
+                            max_z: <span class="number">0.2</span>,
                         })),
                         material: materials.add(StandardMaterial {
                             base_color: Color::BLUE,
@@ -809,7 +790,6 @@
 </span><span class="kw">fn </span>select_node_system(
     <span class="kw-2">mut </span>events: EventReader&lt;PickingEvent&gt;,
     app_resource: Res&lt;AppResource&gt;,
-    <span class="kw-2">mut </span>camera_query: Query&lt;<span class="kw-2">&amp;mut </span>Transform, With&lt;Camera&gt;&gt;,
     <span class="kw-2">mut </span>selected_node: ResMut&lt;SelectedNode&gt;,
     q_node: Query&lt;(Entity, <span class="kw-2">&amp;</span>Node, <span class="kw-2">&amp;</span>Transform), Without&lt;Camera&gt;&gt;,
     interaction_mode: Res&lt;InteractionModeResource&gt;,
@@ -839,11 +819,6 @@
                 <span class="macro">println!</span>(<span class="string">&quot;Selected node: {:?}&quot;</span>, entity);
                 selected_node.end_node_id = selected_node.start_node_id;
                 selected_node.start_node_id = <span class="prelude-val">Some</span>(id);
-
-                <span class="kw">for </span><span class="kw-2">mut </span>camera_transform <span class="kw">in </span>camera_query.iter_mut() {
-                    camera_transform.translation.x = transform.translation.x;
-                    camera_transform.translation.y = transform.translation.y;
-                }
             }
             InteractionMode::PlaceTrain =&gt; {
                 <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, id);
@@ -880,10 +855,9 @@
     <span class="kw">let </span><span class="kw-2">mut </span>selection = <span class="prelude-val">None</span>;
     <span class="kw">for </span>event <span class="kw">in </span>events.iter() {
         <span class="kw">match </span>event {
-            PickingEvent::Selection(e) =&gt; <span class="macro">info!</span>(<span class="string">&quot;A selection event happened: {:?}&quot;</span>, e),
-            PickingEvent::Hover(e) =&gt; <span class="macro">info!</span>(<span class="string">&quot;Egads! A hover event!? {:?}&quot;</span>, e),
+            PickingEvent::Selection(_e) =&gt; (),
+            PickingEvent::Hover(_e) =&gt; (),
             PickingEvent::Clicked(e) =&gt; {
-                <span class="macro">println!</span>(<span class="string">&quot;Clicked: {:?}&quot;</span>, e);
                 <span class="kw">for </span>(entity, train, children) <span class="kw">in </span>q_train.iter() {
                     <span class="kw">if </span>e == <span class="kw-2">&amp;</span>entity {
                         selection = <span class="prelude-val">Some</span>(train.id);
