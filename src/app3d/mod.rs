@@ -82,12 +82,12 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .insert_resource(InteractionModeResource::default())
         .add_startup_system(setup)
         .add_startup_system(camera::setup_camera)
-        .add_system(ui::ui_system)
         .add_system(update_look_at_position_system)
         .add_system(nodes::select_node_system)
         .add_system(select_train_system)
         .add_system(edges::show_edges_on_path)
         .add_system(train_agent::train_agent_system);
+    ui::add_ui_systems_to_app(app);
 }
 
 /// Initializes the Bevy application with a given `RailwayGraph`.

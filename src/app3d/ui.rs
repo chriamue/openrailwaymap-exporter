@@ -18,16 +18,15 @@ use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
 
-#[allow(clippy::too_many_arguments)]
-pub fn ui_system(
+pub fn add_ui_systems_to_app(app: &mut App) {
+    #[cfg(not(target_arch = "wasm32"))]
+    app.add_system(select_graph_ui_system);
+    app.add_system(selection_ui_system);
+}
+
+pub fn selection_ui_system(
     mut contexts: EguiContexts,
-    commands: Commands,
-    mut app_resource: ResMut<AppResource>,
-    edge_query: Query<Entity, With<Edge>>,
-    node_query: Query<Entity, With<Node>>,
-    mut projection: ResMut<Projection>,
-    meshes: ResMut<Assets<Mesh>>,
-    materials: ResMut<Assets<StandardMaterial>>,
+    app_resource: ResMut<AppResource>,
     selected_node: Res<SelectedNode>,
     selected_train: Res<SelectedTrain>,
     q_train: Query<&TrainAgent>,
@@ -41,6 +40,7 @@ pub fn ui_system(
         } else {
             ui.label("No node selected");
         }
+        ui.add_space(15.0); // Add space
         if let (Some(start_node_id), Some(end_node_id)) =
             (selected_node.start_node_id, selected_node.end_node_id)
         {
@@ -48,6 +48,7 @@ pub fn ui_system(
                 display_path_info(ui, graph, start_node_id, end_node_id);
             }
         }
+        ui.add_space(15.0); // Add space
         if let Some(train_agent_id) = selected_train.train_agent_id {
             for train_agent in q_train.iter() {
                 if train_agent_id == train_agent.id {
@@ -56,49 +57,8 @@ pub fn ui_system(
             }
         }
 
-        #[cfg(not(target_arch = "wasm32"))]
-        {
-            ui.label("Enter an Area:");
-            ui.text_edit_singleline(&mut app_resource.area_name);
-
-            if ui.button("Load Railway Graph").clicked() {
-                let area_name = app_resource.area_name.clone();
-                // Process input and update Bevy resources or systems
-                println!("Loading railway graph data: {}", area_name);
-
-                let rt = tokio::runtime::Runtime::new().unwrap();
-                rt.block_on(async move {
-                    let client = OverpassApiClient::new();
-
-                    let api_json_value = {
-                        if area_name.contains(',') {
-                            client
-                                .fetch_by_bbox(&area_name)
-                                .await
-                                .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
-                        } else {
-                            client.fetch_by_area_name(&area_name).await.unwrap()
-                        }
-                    };
-
-                    let graph = OverpassImporter::import(&api_json_value).unwrap();
-                    let (min_coord, max_coord) = graph.bounding_box();
-                    projection.set_bounding_box(min_coord, max_coord);
-                    app_resource.graph = Some(graph);
-                    display_graph(
-                        commands,
-                        app_resource.into(),
-                        edge_query,
-                        node_query,
-                        projection.into(),
-                        meshes,
-                        materials,
-                    );
-                });
-            }
-        }
-
         // Add radio buttons for click action modes
+        ui.add_space(15.0); // Add space
         ui.label("Click action mode:");
         ui.radio_value(
             &mut interaction_mode.mode,
@@ -110,6 +70,62 @@ pub fn ui_system(
             InteractionMode::PlaceTrain,
             "Place Train",
         );
+    });
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[allow(clippy::too_many_arguments)]
+pub fn select_graph_ui_system(
+    mut contexts: EguiContexts,
+    commands: Commands,
+    mut app_resource: ResMut<AppResource>,
+    edge_query: Query<Entity, With<Edge>>,
+    node_query: Query<Entity, With<Node>>,
+    mut projection: ResMut<Projection>,
+    meshes: ResMut<Assets<Mesh>>,
+    materials: ResMut<Assets<StandardMaterial>>,
+) {
+    egui::Window::new("Railway Area").show(contexts.ctx_mut(), |ui| {
+        ui.label("Enter an Area:");
+        ui.text_edit_singleline(&mut app_resource.area_name);
+        ui.add_space(15.0);
+
+        if ui.button("Load Railway Graph").clicked() {
+            let area_name = app_resource.area_name.clone();
+            // Process input and update Bevy resources or systems
+            println!("Loading railway graph data: {}", area_name);
+
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            rt.block_on(async move {
+                let client = OverpassApiClient::new();
+
+                let api_json_value = {
+                    if area_name.contains(',') {
+                        client
+                            .fetch_by_bbox(&area_name)
+                            .await
+                            .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
+                    } else {
+                        client.fetch_by_area_name(&area_name).await.unwrap()
+                    }
+                };
+
+                let graph = OverpassImporter::import(&api_json_value).unwrap();
+                let (min_coord, max_coord) = graph.bounding_box();
+                projection.set_bounding_box(min_coord, max_coord);
+                app_resource.graph = Some(graph);
+                ui.set_enabled(false);
+                display_graph(
+                    commands,
+                    app_resource.into(),
+                    edge_query,
+                    node_query,
+                    projection.into(),
+                    meshes,
+                    materials,
+                );
+            });
+        }
     });
 }
 
