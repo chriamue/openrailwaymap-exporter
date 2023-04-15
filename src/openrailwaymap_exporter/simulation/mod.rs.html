@@ -90,7 +90,7 @@
 
 <span class="kw">use crate</span>::{
     prelude::RailwayGraph,
-    railway_objects::{Moveable, RailwayObject},
+    railway_objects::{Movable, RailwayObject},
 };
 
 <span class="kw">pub mod </span>agents;
@@ -99,7 +99,7 @@
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Simulation&lt;T&gt;
 <span class="kw">where
-    </span>T: RailwayObject + Moveable,
+    </span>T: RailwayObject + Movable,
 {
     <span class="doccomment">/// The railway graph representing the railway infrastructure.
     </span><span class="kw">pub </span>graph: RailwayGraph,
@@ -110,7 +110,7 @@
 
 <span class="kw">impl</span>&lt;T&gt; Simulation&lt;T&gt;
 <span class="kw">where
-    </span>T: RailwayObject + Moveable,
+    </span>T: RailwayObject + Movable,
 {
     <span class="doccomment">/// Creates a new simulation with the given railway graph.
     ///
@@ -140,11 +140,11 @@
     /// A boolean indicating if the object was successfully added.
     ///
     </span><span class="kw">pub fn </span>add_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, object: T) -&gt; bool {
-        <span class="kw">if </span><span class="self">self</span>.objects.contains_key(<span class="kw-2">&amp;</span>object.id()) {
-            <span class="bool-val">false
-        </span>} <span class="kw">else </span>{
-            <span class="self">self</span>.objects.insert(object.id(), object);
+        <span class="kw">if let </span>std::collections::hash_map::Entry::Vacant(e) = <span class="self">self</span>.objects.entry(object.id()) {
+            e.insert(object);
             <span class="bool-val">true
+        </span>} <span class="kw">else </span>{
+            <span class="bool-val">false
         </span>}
     }
 

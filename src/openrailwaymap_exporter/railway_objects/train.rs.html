@@ -157,18 +157,14 @@
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
-<a href="#162" id="162">162</a>
-<a href="#163" id="163">163</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::VecDeque;
 
 <span class="kw">use </span>geo_types::Coord;
 
-<span class="kw">use super</span>::{GeoLocation, Moveable, MultipleTargets, NextTarget, RailwayObject};
+<span class="kw">use super</span>::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
 
 <span class="doccomment">/// A Train struct representing a train in the railway system.
-</span><span class="attr">#[derive(Default, Debug, Clone)]
+</span><span class="attr">#[derive(Default, Debug, Clone, PartialEq)]
 </span><span class="kw">pub struct </span>Train {
     <span class="doccomment">/// The unique identifier for the train.
     </span><span class="kw">pub </span>id: i64,
@@ -201,8 +197,6 @@
 
 <span class="doccomment">/// Implements the `NextTarget` trait for the `Train` struct.
 </span><span class="kw">impl </span>NextTarget <span class="kw">for </span>Train {
-    <span class="kw">type </span>Node = i64;
-
     <span class="kw">fn </span>next_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt; {
         <span class="self">self</span>.next_target
     }
@@ -214,8 +208,6 @@
 
 <span class="doccomment">/// Implements the `MultipleTargets` trait for the `Train` struct.
 </span><span class="kw">impl </span>MultipleTargets <span class="kw">for </span>Train {
-    <span class="kw">type </span>Node = i64;
-
     <span class="kw">fn </span>targets(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;<span class="self">Self</span>::Node&gt; {
         <span class="kw-2">&amp;</span><span class="self">self</span>.targets
     }
@@ -236,7 +228,7 @@
     }
 }
 
-<span class="kw">impl </span>Moveable <span class="kw">for </span>Train {
+<span class="kw">impl </span>Movable <span class="kw">for </span>Train {
     <span class="kw">fn </span>speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
         <span class="self">self</span>.speed
     }
