@@ -9,7 +9,7 @@ use crate::{
     ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
-    railway_objects::{NextTarget, RailwayObject, Train},
+    railway_objects::{Moveable, NextTarget, RailwayObject, Train},
 };
 use std::{
     collections::VecDeque,
@@ -34,7 +34,6 @@ pub struct TrainAgent {
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
     pub remaining_distance: f64, // Distance in meters
-    pub speed: f64,              // Speed in meters per second
     pub ai_agent: Option<TrainAgentAI>,
 }
 
@@ -48,10 +47,11 @@ impl TrainAgent {
                 geo_location: None,
                 next_target: target_node_id,
                 targets: VecDeque::new(),
+                speed: 20.0,
+                ..Default::default()
             },
             current_edge: None,
             edge_progress: 0.0,
-            speed: 20.0,
             remaining_distance: 0.0,
             ai_agent: None,
         }
@@ -163,7 +163,7 @@ pub fn train_agent_system(
             let (current_node_id, target_node_id, current_speed) = (
                 train_agent.train.position(),
                 train_agent.train.next_target(),
-                train_agent.speed,
+                train_agent.train.speed(),
             );
             make_train_observation(
                 &mut train_agent.ai_agent,
@@ -180,7 +180,7 @@ pub fn train_agent_system(
                     let current_edge = train_agent.current_edge.clone();
                     if let Some(edge) = current_edge {
                         let edge_progress = train_agent.edge_progress
-                            + train_agent.speed * time.delta_seconds() as f64;
+                            + train_agent.train.speed() * time.delta_seconds() as f64;
                         update_train_position(
                             &mut train_agent,
                             &mut transform,
@@ -272,10 +272,16 @@ fn update_train_speed(train_agent: &mut TrainAgent, time: &Time) {
                 //train_agent.speed *= 0.9;
             }
             Some(TrainAgentAction::AccelerateForward { acceleration }) => {
-                train_agent.speed += acceleration as f64 * time.raw_delta_seconds_f64() / 1000.0;
+                train_agent.train.set_speed(
+                    train_agent.train.speed()
+                        + acceleration as f64 * time.raw_delta_seconds_f64() / 1000.0,
+                );
             }
             Some(TrainAgentAction::AccelerateBackward { acceleration }) => {
-                train_agent.speed -= acceleration as f64 * time.delta_seconds_f64() / 1000.0;
+                train_agent.train.set_speed(
+                    train_agent.train.speed()
+                        - acceleration as f64 * time.delta_seconds_f64() / 1000.0,
+                );
             }
             _ => (),
         }
@@ -305,7 +311,7 @@ fn update_train_position(
     {
         let edge_length = edge.length;
 
-        let distance = train_agent.speed * time_delta;
+        let distance = train_agent.train.speed() * time_delta;
         let edge_progress = train_agent.edge_progress + distance;
         if edge_progress < edge_length {
             let progress_ratio = edge_progress / edge_length;

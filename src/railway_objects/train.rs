@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use geo_types::Coord;
 
-use super::{GeoLocation, MultipleTargets, NextTarget, RailwayObject};
+use super::{GeoLocation, Moveable, MultipleTargets, NextTarget, RailwayObject};
 
 /// A Train struct representing a train in the railway system.
 #[derive(Default, Debug, Clone)]
@@ -17,6 +17,10 @@ pub struct Train {
     pub next_target: Option<i64>,
     /// A queue of target node IDs for the train to follow.
     pub targets: VecDeque<i64>,
+    /// The current speed of the train
+    pub speed: f64,
+    /// The current acceleration of the train
+    pub acceleration: f64,
 }
 
 /// Implements the `RailwayObject` trait for the `Train` struct.
@@ -69,6 +73,24 @@ impl GeoLocation for Train {
     }
 }
 
+impl Moveable for Train {
+    fn speed(&self) -> f64 {
+        self.speed
+    }
+
+    fn set_speed(&mut self, speed: f64) {
+        self.speed = speed;
+    }
+
+    fn acceleration(&self) -> f64 {
+        self.acceleration
+    }
+
+    fn set_acceleration(&mut self, acceleration: f64) {
+        self.acceleration = acceleration;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use geo_types::coord;
@@ -83,6 +105,7 @@ mod tests {
             geo_location: Some(coord! { x:1.0, y: 2.0}),
             next_target: Some(2),
             targets: VecDeque::from(vec![2, 3, 4]),
+            ..Default::default()
         };
 
         assert_eq!(train.id(), 1);
@@ -100,5 +123,41 @@ mod tests {
         let removed_target = train.remove_target();
         assert_eq!(removed_target, Some(2));
         assert_eq!(train.targets(), &VecDeque::from(vec![3, 4, 5]));
+    }
+
+    #[test]
+    fn test_train_speed() {
+        let mut train = Train {
+            id: 1,
+            position: Some(0),
+            geo_location: Some(coord! { x:1.0, y: 2.0}),
+            next_target: Some(2),
+            targets: VecDeque::from(vec![2, 3, 4]),
+            speed: 0.0,
+            acceleration: 0.0,
+        };
+
+        assert_eq!(train.speed(), 0.0);
+
+        train.set_speed(100.0);
+        assert_eq!(train.speed(), 100.0);
+    }
+
+    #[test]
+    fn test_train_acceleration() {
+        let mut train = Train {
+            id: 1,
+            position: Some(0),
+            geo_location: Some(coord! { x:1.0, y: 2.0}),
+            next_target: Some(2),
+            targets: VecDeque::from(vec![2, 3, 4]),
+            speed: 0.0,
+            acceleration: 0.0,
+        };
+
+        assert_eq!(train.acceleration(), 0.0);
+
+        train.set_acceleration(1.5);
+        assert_eq!(train.acceleration(), 1.5);
     }
 }

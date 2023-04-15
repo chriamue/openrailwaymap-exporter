@@ -14,7 +14,7 @@ use crate::prelude::RailwayApiClient;
 use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
-use crate::railway_objects::{NextTarget, RailwayObject};
+use crate::railway_objects::{NextTarget, RailwayObject, Moveable};
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
@@ -162,7 +162,7 @@ pub fn display_selected_train_agent_info(
     ui.label(format!("ID: {}", train_agent.id));
     ui.label(format!("Current: {:?}", train_agent.train.position()));
     ui.label(format!("Target: {:?}", train_agent.train.next_target()));
-    ui.label(format!("Speed: {} km/h", train_agent.speed * 3.6));
+    ui.label(format!("Speed: {} km/h", train_agent.train.speed() * 3.6));
     if ui_update_timer.time == 0.0 {
         ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / 1000.0_f64;
     }

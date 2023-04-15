@@ -51,3 +51,18 @@ pub trait GeoLocation {
     /// Returns the geographical location of the railway object as a coordinate.
     fn geo_location(&self) -> Option<Coord<f64>>;
 }
+
+/// The Moveable trait
+pub trait Moveable {
+    /// Returns the current speed of the object in km/h.
+    fn speed(&self) -> f64;
+
+    /// Sets the speed of the object in km/h.
+    fn set_speed(&mut self, speed: f64);
+
+    /// Returns the current acceleration of the object in m/s^2.
+    fn acceleration(&self) -> f64;
+
+    /// Sets the acceleration of the object in m/s^2.
+    fn set_acceleration(&mut self, acceleration: f64);
+}
