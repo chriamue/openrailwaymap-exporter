@@ -199,6 +199,7 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -215,6 +216,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraphImporter;
 <span class="kw">use </span><span class="kw">crate</span>::railway_algorithms::PathFinding;
+<span class="kw">use </span><span class="kw">crate</span>::railway_objects::{NextTarget, RailwayObject};
 <span class="kw">use </span>bevy::prelude::Commands;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
@@ -360,11 +362,11 @@
     ui_update_timer: <span class="kw-2">&amp;mut </span>UiUpdateTimer,
 ) {
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;ID: {}&quot;</span>, train_agent.id));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Current: {:?}&quot;</span>, train_agent.current_node_id));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Target: {:?}&quot;</span>, train_agent.target_node_id));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Current: {:?}&quot;</span>, train_agent.train.position()));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Target: {:?}&quot;</span>, train_agent.train.next_target()));
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {} km/h&quot;</span>, train_agent.speed * <span class="number">3.6</span>));
     <span class="kw">if </span>ui_update_timer.time == <span class="number">0.0 </span>{
-        ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / <span class="number">1000.0 </span><span class="kw">as </span>f64;
+        ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / <span class="number">1000.0_f64</span>;
     }
 
     ui.label(<span class="macro">format!</span>(

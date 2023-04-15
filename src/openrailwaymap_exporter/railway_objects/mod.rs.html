@@ -50,12 +50,14 @@
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
 </span><span class="kw">use </span>geo_types::Coord;
 <span class="kw">use </span>std::collections::VecDeque;
 
 <span class="kw">mod </span>train;
+<span class="kw">pub use </span>train::Train;
 
 <span class="doccomment">/// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model.

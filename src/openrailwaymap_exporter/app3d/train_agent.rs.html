@@ -378,6 +378,16 @@
 <a href="#378" id="378">378</a>
 <a href="#379" id="379">379</a>
 <a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
@@ -389,15 +399,19 @@
     ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
+    railway_objects::{NextTarget, RailwayObject, Train},
 };
-<span class="kw">use </span>std::sync::atomic::{AtomicI32, Ordering};
+<span class="kw">use </span>std::{
+    collections::VecDeque,
+    sync::atomic::{AtomicI64, Ordering},
+};
 
-<span class="kw">static </span>TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(<span class="number">0</span>);
+<span class="kw">static </span>TRAIN_AGENT_ID: AtomicI64 = AtomicI64::new(<span class="number">0</span>);
 
 <span class="doccomment">/// Keeps track of the currently selected start and end nodes.
 </span><span class="attr">#[derive(Default, Resource)]
 </span><span class="kw">pub struct </span>SelectedTrain {
-    <span class="kw">pub </span>train_agent_id: <span class="prelude-ty">Option</span>&lt;i32&gt;,
+    <span class="kw">pub </span>train_agent_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
 }
 
 <span class="attr">#[derive(Component)]
@@ -405,9 +419,8 @@
 
 <span class="attr">#[derive(Component, Debug)]
 </span><span class="kw">pub struct </span>TrainAgent {
-    <span class="kw">pub </span>id: i32,
-    <span class="kw">pub </span>current_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
-    <span class="kw">pub </span>target_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="kw">pub </span>id: i64,
+    <span class="kw">pub </span>train: Train,
     <span class="kw">pub </span>current_edge: <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt;,
     <span class="kw">pub </span>edge_progress: f64,
     <span class="kw">pub </span>remaining_distance: f64, <span class="comment">// Distance in meters
@@ -416,11 +429,16 @@
 }
 
 <span class="kw">impl </span>TrainAgent {
-    <span class="kw">pub fn </span>new(id: i32, current_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;, target_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(id: i64, current_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;, target_node_id: <span class="prelude-ty">Option</span>&lt;i64&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             id,
-            current_node_id,
-            target_node_id,
+            train: Train {
+                id,
+                position: current_node_id,
+                geo_location: <span class="prelude-val">None</span>,
+                next_target: target_node_id,
+                targets: VecDeque::new(),
+            },
             current_edge: <span class="prelude-val">None</span>,
             edge_progress: <span class="number">0.0</span>,
             speed: <span class="number">20.0</span>,
@@ -428,6 +446,7 @@
             ai_agent: <span class="prelude-val">None</span>,
         }
     }
+
     <span class="kw">pub fn </span>on_node(current_node_id: i64) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>id = TRAIN_AGENT_ID.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
         <span class="self">Self</span>::new(id, <span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">None</span>)
@@ -448,7 +467,7 @@
 
     <span class="kw">pub fn </span>remaining_distance(<span class="kw-2">&amp;</span><span class="self">self</span>, railway_graph: <span class="kw-2">&amp;</span>RailwayGraph) -&gt; <span class="prelude-ty">Option</span>&lt;f64&gt; {
         <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) =
-            (<span class="self">self</span>.current_node_id, <span class="self">self</span>.target_node_id)
+            (<span class="self">self</span>.train.position(), <span class="self">self</span>.train.next_target())
         {
             <span class="kw">if </span>current_node_id == target_node_id {
                 <span class="prelude-val">Some</span>(<span class="number">0.0</span>)
@@ -532,8 +551,8 @@
     <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>railway_graph) = app_resource.graph {
         <span class="kw">for </span>(<span class="kw-2">mut </span>train_agent, <span class="kw-2">mut </span>transform) <span class="kw">in </span>train_agent_query.iter_mut() {
             <span class="kw">let </span>(current_node_id, target_node_id, current_speed) = (
-                train_agent.current_node_id,
-                train_agent.target_node_id,
+                train_agent.train.position(),
+                train_agent.train.next_target(),
                 train_agent.speed,
             );
             make_train_observation(
@@ -545,9 +564,9 @@
             );
             update_train_speed(<span class="kw-2">&amp;mut </span>train_agent, <span class="kw-2">&amp;</span>time);
 
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(current_node_id) = train_agent.current_node_id {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(current_node_id) = train_agent.train.position() {
                 update_train_target(<span class="kw-2">&amp;mut </span>train_agent, railway_graph);
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.target_node_id {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.train.next_target() {
                     <span class="kw">let </span>current_edge = train_agent.current_edge.clone();
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(edge) = current_edge {
                         <span class="kw">let </span>edge_progress = train_agent.edge_progress
@@ -561,13 +580,11 @@
                             <span class="kw-2">&amp;</span>app_resource,
                         );
                         train_agent.edge_progress = edge_progress;
-                    } <span class="kw">else </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(edge) =
-                            railway_graph.railway_edge(current_node_id, target_node_id)
-                        {
-                            train_agent.current_edge = <span class="prelude-val">Some</span>(edge.clone());
-                            train_agent.edge_progress = <span class="number">0.0</span>;
-                        }
+                    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(edge) =
+                        railway_graph.railway_edge(current_node_id, target_node_id)
+                    {
+                        train_agent.current_edge = <span class="prelude-val">Some</span>(edge.clone());
+                        train_agent.edge_progress = <span class="number">0.0</span>;
                     }
                 }
             }
@@ -583,25 +600,25 @@
 /// * `railway_graph` - A reference to the `RailwayGraph` resource containing information about the railway network.
 ///
 </span><span class="kw">fn </span>update_train_target(train_agent: <span class="kw-2">&amp;mut </span>TrainAgent, railway_graph: <span class="kw-2">&amp;</span>RailwayGraph) {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.target_node_id {
-        <span class="kw">if </span>train_agent.current_node_id.unwrap() == target_node_id {
-            train_agent.target_node_id = <span class="prelude-val">None</span>;
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.train.next_target() {
+        <span class="kw">if </span>train_agent.train.position().unwrap() == target_node_id {
+            train_agent.train.set_next_target(<span class="prelude-val">None</span>);
             train_agent.current_edge = <span class="prelude-val">None</span>;
         } <span class="kw">else </span>{
             <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = railway_graph
-                .shortest_path_nodes(train_agent.current_node_id.unwrap(), target_node_id)
+                .shortest_path_nodes(train_agent.train.position.unwrap(), target_node_id)
             {
                 <span class="kw">if </span>!path.is_empty() {
-                    train_agent.current_node_id = <span class="prelude-val">Some</span>(path[<span class="number">1</span>]);
+                    train_agent.train.position = <span class="prelude-val">Some</span>(path[<span class="number">1</span>]);
                     <span class="kw">if </span>path.len() == <span class="number">2 </span>{
-                        train_agent.target_node_id = <span class="prelude-val">None</span>;
+                        train_agent.train.set_next_target(<span class="prelude-val">None</span>);
                     }
                 }
             }
             <span class="comment">// Set the current edge if it&#39;s not already set
             </span><span class="kw">if </span>train_agent.current_edge.is_none() {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(edge) =
-                    railway_graph.railway_edge(train_agent.current_node_id.unwrap(), target_node_id)
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(edge) = railway_graph
+                    .railway_edge(train_agent.train.position().unwrap(), target_node_id)
                 {
                     train_agent.current_edge = <span class="prelude-val">Some</span>(edge.clone());
                     train_agent.edge_progress = <span class="number">0.0</span>;
@@ -609,10 +626,12 @@
             }
         }
     } <span class="kw">else </span>{
-        <span class="kw">let </span>reachable_nodes = railway_graph.reachable_nodes(train_agent.current_node_id.unwrap());
+        <span class="kw">let </span>reachable_nodes = railway_graph.reachable_nodes(train_agent.train.position().unwrap());
         <span class="kw">if </span>!reachable_nodes.is_empty() {
             <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
-            train_agent.target_node_id = <span class="prelude-val">Some</span>(<span class="kw-2">*</span>reachable_nodes.choose(<span class="kw-2">&amp;mut </span>rng).unwrap());
+            train_agent
+                .train
+                .set_next_target(<span class="prelude-val">Some</span>(<span class="kw-2">*</span>reachable_nodes.choose(<span class="kw-2">&amp;mut </span>rng).unwrap()));
         }
     }
 }
@@ -693,9 +712,9 @@
             }
         } <span class="kw">else </span>{
             <span class="comment">// The train has reached the end of the edge
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.target_node_id {
-                train_agent.current_node_id = <span class="prelude-val">Some</span>(target_node_id);
-                train_agent.target_node_id = <span class="prelude-val">None</span>;
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.train.next_target() {
+                train_agent.train.position = <span class="prelude-val">Some</span>(target_node_id);
+                train_agent.train.set_next_target(<span class="prelude-val">None</span>);
                 train_agent.current_edge = <span class="prelude-val">None</span>;
                 train_agent.edge_progress = <span class="number">0.0</span>;
             }
@@ -720,9 +739,10 @@
         commands.entity(entity).despawn();
     }
     <span class="kw">for </span>(train_agent, train_agent_transform) <span class="kw">in </span>train_agent_query.iter() {
-        <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) =
-            (train_agent.current_node_id, train_agent.target_node_id)
-        {
+        <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) = (
+            train_agent.train.position(),
+            train_agent.train.next_target(),
+        ) {
             <span class="kw">let </span>current_node_transform = node_query
                 .iter()
                 .find(|(node, <span class="kw">_</span>)| node.id == current_node_id)
