@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_mod_picking::PickableBundle;
+use bevy_polyline::prelude::*;
 use geo_types::coord;
 use rand::seq::SliceRandom;
 
@@ -18,6 +19,9 @@ static TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(0);
 pub struct SelectedTrain {
     pub train_agent_id: Option<i32>,
 }
+
+#[derive(Component)]
+pub struct TrainAgentLine;
 
 #[derive(Component, Debug)]
 pub struct TrainAgent {
@@ -337,6 +341,56 @@ fn update_train_position(
     if let Some(graph) = &app_resource.graph {
         if let Some(distance) = train_agent.remaining_distance(graph) {
             train_agent.remaining_distance = distance;
+        }
+    }
+}
+
+pub fn train_agent_line_system(
+    mut commands: Commands,
+    train_agent_query: Query<(&TrainAgent, &Transform)>,
+    node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
+    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    mut polylines: ResMut<Assets<Polyline>>,
+    q_line: Query<Entity, With<TrainAgentLine>>,
+) {
+    for entity in q_line.iter() {
+        commands.entity(entity).despawn();
+    }
+    for (train_agent, train_agent_transform) in train_agent_query.iter() {
+        if let (Some(current_node_id), Some(target_node_id)) =
+            (train_agent.current_node_id, train_agent.target_node_id)
+        {
+            let current_node_transform = node_query
+                .iter()
+                .find(|(node, _)| node.id == current_node_id)
+                .map(|(_, transform)| transform);
+
+            let target_node_transform = node_query
+                .iter()
+                .find(|(node, _)| node.id == target_node_id)
+                .map(|(_, transform)| transform);
+
+            if let (Some(_current_node_transform), Some(target_node_transform)) =
+                (current_node_transform, target_node_transform)
+            {
+                commands
+                    .spawn(PolylineBundle {
+                        polyline: polylines.add(Polyline {
+                            vertices: vec![
+                                train_agent_transform.translation,
+                                target_node_transform.translation,
+                            ],
+                        }),
+                        material: polyline_materials.add(PolylineMaterial {
+                            width: 2.0,
+                            color: Color::RED,
+                            perspective: false,
+                            ..default()
+                        }),
+                        ..default()
+                    })
+                    .insert(TrainAgentLine);
+            }
         }
     }
 }

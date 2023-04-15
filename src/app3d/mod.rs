@@ -12,6 +12,7 @@ use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_mod_picking::PickingEvent;
 use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
+use bevy_polyline::PolylinePlugin;
 use geo_types::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
@@ -72,6 +73,7 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
     app.add_plugins(camera::CameraPlugins)
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
+        .add_plugin(PolylinePlugin)
         .insert_resource(app_resource)
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())
@@ -82,7 +84,8 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .add_system(nodes::select_node_system)
         .add_system(select_train_system)
         .add_system(edges::show_edges_on_path)
-        .add_system(train_agent::train_agent_system);
+        .add_system(train_agent::train_agent_system)
+        .add_system(train_agent::train_agent_line_system);
     ui::add_ui_systems_to_app(app);
 }
 
