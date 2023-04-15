@@ -4,6 +4,7 @@ use geo_types::Coord;
 use std::collections::VecDeque;
 
 mod train;
+pub use train::Train;
 
 /// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model.

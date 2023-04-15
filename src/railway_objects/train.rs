@@ -4,14 +4,19 @@ use geo_types::Coord;
 
 use super::{GeoLocation, MultipleTargets, NextTarget, RailwayObject};
 
-/// A `Train` struct representing a train in the railway system.
-#[derive(Debug, Clone)]
+/// A Train struct representing a train in the railway system.
+#[derive(Default, Debug, Clone)]
 pub struct Train {
-    id: i64,
-    position: Option<i64>,
-    geo_location: Option<Coord<f64>>,
-    next_target: Option<i64>,
-    targets: VecDeque<i64>,
+    /// The unique identifier for the train.
+    pub id: i64,
+    /// The current position of the train, represented by a node ID.
+    pub position: Option<i64>,
+    /// The geographical location of the train, represented by a coordinate.
+    pub geo_location: Option<Coord<f64>>,
+    /// The next target node ID for the train to move towards.
+    pub next_target: Option<i64>,
+    /// A queue of target node IDs for the train to follow.
+    pub targets: VecDeque<i64>,
 }
 
 /// Implements the `RailwayObject` trait for the `Train` struct.

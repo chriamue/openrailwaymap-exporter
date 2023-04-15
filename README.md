@@ -76,7 +76,7 @@ cargo run -- --area "Frankfurt am Main" --svg -o output.svg
 
 ### 3d App
 
-```
+```sh
 cargo run --features app3d --example app3d
 ```
 

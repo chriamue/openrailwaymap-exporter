@@ -9,15 +9,19 @@ use crate::{
     ai::{TrainAgentAI, TrainAgentAction, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
+    railway_objects::{NextTarget, RailwayObject, Train},
 };
-use std::sync::atomic::{AtomicI32, Ordering};
+use std::{
+    collections::VecDeque,
+    sync::atomic::{AtomicI64, Ordering},
+};
 
-static TRAIN_AGENT_ID: AtomicI32 = AtomicI32::new(0);
+static TRAIN_AGENT_ID: AtomicI64 = AtomicI64::new(0);
 
 /// Keeps track of the currently selected start and end nodes.
 #[derive(Default, Resource)]
 pub struct SelectedTrain {
-    pub train_agent_id: Option<i32>,
+    pub train_agent_id: Option<i64>,
 }
 
 #[derive(Component)]
@@ -25,9 +29,8 @@ pub struct TrainAgentLine;
 
 #[derive(Component, Debug)]
 pub struct TrainAgent {
-    pub id: i32,
-    pub current_node_id: Option<i64>,
-    pub target_node_id: Option<i64>,
+    pub id: i64,
+    pub train: Train,
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
     pub remaining_distance: f64, // Distance in meters
@@ -36,11 +39,16 @@ pub struct TrainAgent {
 }
 
 impl TrainAgent {
-    pub fn new(id: i32, current_node_id: Option<i64>, target_node_id: Option<i64>) -> Self {
+    pub fn new(id: i64, current_node_id: Option<i64>, target_node_id: Option<i64>) -> Self {
         Self {
             id,
-            current_node_id,
-            target_node_id,
+            train: Train {
+                id,
+                position: current_node_id,
+                geo_location: None,
+                next_target: target_node_id,
+                targets: VecDeque::new(),
+            },
             current_edge: None,
             edge_progress: 0.0,
             speed: 20.0,
@@ -48,6 +56,7 @@ impl TrainAgent {
             ai_agent: None,
         }
     }
+
     pub fn on_node(current_node_id: i64) -> Self {
         let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
         Self::new(id, Some(current_node_id), None)
@@ -68,7 +77,7 @@ impl TrainAgent {
 
     pub fn remaining_distance(&self, railway_graph: &RailwayGraph) -> Option<f64> {
         if let (Some(current_node_id), Some(target_node_id)) =
-            (self.current_node_id, self.target_node_id)
+            (self.train.position(), self.train.next_target())
         {
             if current_node_id == target_node_id {
                 Some(0.0)
@@ -152,8 +161,8 @@ pub fn train_agent_system(
     if let Some(ref railway_graph) = app_resource.graph {
         for (mut train_agent, mut transform) in train_agent_query.iter_mut() {
             let (current_node_id, target_node_id, current_speed) = (
-                train_agent.current_node_id,
-                train_agent.target_node_id,
+                train_agent.train.position(),
+                train_agent.train.next_target(),
                 train_agent.speed,
             );
             make_train_observation(
@@ -165,9 +174,9 @@ pub fn train_agent_system(
             );
             update_train_speed(&mut train_agent, &time);
 
-            if let Some(current_node_id) = train_agent.current_node_id {
+            if let Some(current_node_id) = train_agent.train.position() {
                 update_train_target(&mut train_agent, railway_graph);
-                if let Some(target_node_id) = train_agent.target_node_id {
+                if let Some(target_node_id) = train_agent.train.next_target() {
                     let current_edge = train_agent.current_edge.clone();
                     if let Some(edge) = current_edge {
                         let edge_progress = train_agent.edge_progress
@@ -181,13 +190,11 @@ pub fn train_agent_system(
                             &app_resource,
                         );
                         train_agent.edge_progress = edge_progress;
-                    } else {
-                        if let Some(edge) =
-                            railway_graph.railway_edge(current_node_id, target_node_id)
-                        {
-                            train_agent.current_edge = Some(edge.clone());
-                            train_agent.edge_progress = 0.0;
-                        }
+                    } else if let Some(edge) =
+                        railway_graph.railway_edge(current_node_id, target_node_id)
+                    {
+                        train_agent.current_edge = Some(edge.clone());
+                        train_agent.edge_progress = 0.0;
                     }
                 }
             }
@@ -203,25 +210,25 @@ pub fn train_agent_system(
 /// * `railway_graph` - A reference to the `RailwayGraph` resource containing information about the railway network.
 ///
 fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGraph) {
-    if let Some(target_node_id) = train_agent.target_node_id {
-        if train_agent.current_node_id.unwrap() == target_node_id {
-            train_agent.target_node_id = None;
+    if let Some(target_node_id) = train_agent.train.next_target() {
+        if train_agent.train.position().unwrap() == target_node_id {
+            train_agent.train.set_next_target(None);
             train_agent.current_edge = None;
         } else {
             if let Some(path) = railway_graph
-                .shortest_path_nodes(train_agent.current_node_id.unwrap(), target_node_id)
+                .shortest_path_nodes(train_agent.train.position.unwrap(), target_node_id)
             {
                 if !path.is_empty() {
-                    train_agent.current_node_id = Some(path[1]);
+                    train_agent.train.position = Some(path[1]);
                     if path.len() == 2 {
-                        train_agent.target_node_id = None;
+                        train_agent.train.set_next_target(None);
                     }
                 }
             }
             // Set the current edge if it's not already set
             if train_agent.current_edge.is_none() {
-                if let Some(edge) =
-                    railway_graph.railway_edge(train_agent.current_node_id.unwrap(), target_node_id)
+                if let Some(edge) = railway_graph
+                    .railway_edge(train_agent.train.position().unwrap(), target_node_id)
                 {
                     train_agent.current_edge = Some(edge.clone());
                     train_agent.edge_progress = 0.0;
@@ -229,10 +236,12 @@ fn update_train_target(train_agent: &mut TrainAgent, railway_graph: &RailwayGrap
             }
         }
     } else {
-        let reachable_nodes = railway_graph.reachable_nodes(train_agent.current_node_id.unwrap());
+        let reachable_nodes = railway_graph.reachable_nodes(train_agent.train.position().unwrap());
         if !reachable_nodes.is_empty() {
             let mut rng = rand::thread_rng();
-            train_agent.target_node_id = Some(*reachable_nodes.choose(&mut rng).unwrap());
+            train_agent
+                .train
+                .set_next_target(Some(*reachable_nodes.choose(&mut rng).unwrap()));
         }
     }
 }
@@ -313,9 +322,9 @@ fn update_train_position(
             }
         } else {
             // The train has reached the end of the edge
-            if let Some(target_node_id) = train_agent.target_node_id {
-                train_agent.current_node_id = Some(target_node_id);
-                train_agent.target_node_id = None;
+            if let Some(target_node_id) = train_agent.train.next_target() {
+                train_agent.train.position = Some(target_node_id);
+                train_agent.train.set_next_target(None);
                 train_agent.current_edge = None;
                 train_agent.edge_progress = 0.0;
             }
@@ -340,9 +349,10 @@ pub fn train_agent_line_system(
         commands.entity(entity).despawn();
     }
     for (train_agent, train_agent_transform) in train_agent_query.iter() {
-        if let (Some(current_node_id), Some(target_node_id)) =
-            (train_agent.current_node_id, train_agent.target_node_id)
-        {
+        if let (Some(current_node_id), Some(target_node_id)) = (
+            train_agent.train.position(),
+            train_agent.train.next_target(),
+        ) {
             let current_node_transform = node_query
                 .iter()
                 .find(|(node, _)| node.id == current_node_id)
