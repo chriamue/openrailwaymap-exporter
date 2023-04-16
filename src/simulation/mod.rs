@@ -23,8 +23,8 @@ pub use environment::SimulationEnvironment;
 mod tests;
 
 /// A trait that defines an object within the simulation that can move along a railway.
-pub trait SimulationObject: RailwayObject + Movable + NextTarget {}
-impl<T: RailwayObject + Movable + NextTarget> SimulationObject for T {}
+pub trait SimulationObject: RailwayObject + Movable + NextTarget + Send + Sync {}
+impl<T: RailwayObject + Movable + NextTarget + Send + Sync> SimulationObject for T {}
 
 /// A `Simulation` struct holding a railway graph and a list of moveable railway objects.
 pub struct Simulation {
@@ -150,6 +150,39 @@ impl Simulation {
 
                 // Update speed based on the acceleration
                 object.set_speed(object.speed() + delta_time.as_secs_f64() * object.acceleration());
+            }
+        }
+        self.update_object_position(id, delta_time);
+    }
+
+    fn update_object_position(&mut self, id: RailwayObjectId, delta_time: Duration) {
+        if let Some(object) = self.environment.objects.get_mut(&id) {
+            if let Some(current_position) = object.position() {
+                let current_speed = object.speed();
+                let target = object.next_target();
+
+                let mut distance_to_travel = current_speed * delta_time.as_secs_f64();
+
+                let graph = &self.environment.graph;
+                let next_node = graph.get_next_node(current_position, target.unwrap_or_default());
+
+                while let Some(next_node) = next_node {
+                    let edge = graph
+                        .railway_edge(current_position, next_node)
+                        .expect("Invalid edge");
+                    let distance_to_next_node = edge.length;
+
+                    if distance_to_travel < distance_to_next_node {
+                        let position_on_edge = distance_to_travel / distance_to_next_node;
+                        let new_position =
+                            graph.nearest_node(edge.id, position_on_edge, Some(current_position));
+                        object.set_position(new_position);
+                        break;
+                    } else {
+                        distance_to_travel -= distance_to_next_node;
+                        object.set_position(Some(next_node));
+                    }
+                }
             }
         }
     }

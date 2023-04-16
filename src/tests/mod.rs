@@ -21,6 +21,10 @@ pub fn test_json_vilbel() -> Value {
         .expect("Failed to deserialize the JSON data")
 }
 
+pub fn test_graph_1() -> RailwayGraph {
+    OverpassImporter::import(&test_json_1()).unwrap()
+}
+
 pub fn test_graph_vilbel() -> RailwayGraph {
     OverpassImporter::import(&test_json_vilbel()).unwrap()
 }

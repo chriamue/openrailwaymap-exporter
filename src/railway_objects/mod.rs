@@ -16,6 +16,8 @@ pub trait RailwayObject: std::fmt::Debug {
 
     /// Returns the position of the railway object within the internal model.
     fn position(&self) -> Option<NodeId>;
+    /// sets the position of the rail object
+    fn set_position(&mut self, position: Option<NodeId>);
 }
 
 /// The `NextTarget` trait provides methods for managing a single target for a railway object.

@@ -10,7 +10,11 @@ use crate::{
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
     railway_objects::{Movable, NextTarget, RailwayObject, Train},
-    simulation::agents::RailMovableAction,
+    simulation::{
+        agents::{ForwardUntilTargetAgent, RailMovableAction},
+        Simulation, SimulationObject,
+    },
+    types::RailwayObjectId,
 };
 use std::{
     collections::VecDeque,
@@ -30,7 +34,7 @@ pub struct TrainAgentLine;
 
 #[derive(Component, Debug)]
 pub struct TrainAgent {
-    pub id: i64,
+    pub id: RailwayObjectId,
     pub train: Train,
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
@@ -39,7 +43,11 @@ pub struct TrainAgent {
 }
 
 impl TrainAgent {
-    pub fn new(id: i64, current_node_id: Option<i64>, target_node_id: Option<i64>) -> Self {
+    pub fn new(
+        id: RailwayObjectId,
+        current_node_id: Option<i64>,
+        target_node_id: Option<i64>,
+    ) -> Self {
         Self {
             id,
             train: Train {
@@ -58,8 +66,7 @@ impl TrainAgent {
         }
     }
 
-    pub fn on_node(current_node_id: i64) -> Self {
-        let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
+    pub fn on_node(id: RailwayObjectId, current_node_id: i64) -> Self {
         Self::new(id, Some(current_node_id), None)
     }
 
@@ -91,6 +98,29 @@ impl TrainAgent {
             None
         }
     }
+}
+
+pub fn create_train(
+    position: Option<i64>,
+    target: Option<i64>,
+    simulation: &mut Simulation,
+) -> RailwayObjectId {
+    println!("create_train@");
+    let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
+    let agent = ForwardUntilTargetAgent::new(id);
+    let train = Train {
+        id,
+        position,
+        geo_location: None,
+        next_target: target,
+        targets: VecDeque::new(),
+        speed: 20.0,
+        ..Default::default()
+    };
+    let object: Box<dyn SimulationObject> = Box::new(train);
+
+    simulation.add_object(object, Some(Box::new(agent)));
+    id
 }
 
 pub fn create_train_agent_bundle(

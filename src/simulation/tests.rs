@@ -3,21 +3,22 @@ use std::collections::VecDeque;
 use geo_types::coord;
 
 use super::*;
+use crate::railway_objects::Train;
 use crate::simulation::agents::ForwardUntilTargetAgent;
-use crate::{railway_objects::Train, tests::test_graph_vilbel};
+use crate::tests::test_graph_1;
 
 #[test]
 fn test_simulation_with_agent() {
     // Create a railway graph
-    let graph = test_graph_vilbel();
+    let graph = test_graph_1();
 
     // Create a train
     let train = Train {
         id: 1,
-        position: Some(0),
+        position: Some(1),
         geo_location: Some(coord! { x: 0.0, y: 0.0 }),
-        next_target: Some(5),
-        targets: VecDeque::from(vec![5, 10, 15]),
+        next_target: Some(2),
+        targets: VecDeque::from(vec![2, 10, 15]),
         ..Default::default()
     };
 
@@ -39,4 +40,7 @@ fn test_simulation_with_agent() {
 
     // Test the expected outcome, e.g., check if the train's speed has increased
     assert_eq!(updated_train.speed(), 20.0); // Assuming the initial speed was 0
+
+    let expected_new_position = 1; // Calculate the expected new position based on the train's speed and delta_time
+    assert_eq!(updated_train.position().unwrap(), expected_new_position);
 }

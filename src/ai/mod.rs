@@ -11,7 +11,10 @@ use std::fmt;
 use std::sync::{Arc, Mutex};
 
 use crate::prelude::RailwayGraph;
-use crate::simulation::agents::RailMovableAction;
+use crate::simulation::agents::{DecisionAgent, RailMovableAction};
+use crate::simulation::environment::ObservableEnvironment;
+use crate::simulation::SimulationEnvironment;
+use crate::types::RailwayObjectId;
 use rurel::mdp::{Agent, State};
 use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
@@ -118,6 +121,8 @@ impl Agent<TrainAgentState> for TrainAgentRL {
 /// A reinforcement learning agent that controls a train in the simulation.
 #[derive(Default, Clone)]
 pub struct TrainAgentAI {
+    /// The id of the railway object
+    pub id: RailwayObjectId,
     /// The railway graph representing the train network.
     pub railway_graph: Option<RailwayGraph>,
     /// The current node
@@ -160,6 +165,7 @@ impl TrainAgentAI {
         };
         let trainer = Arc::new(Mutex::new(AgentTrainer::new()));
         Self {
+            id: 0,
             railway_graph: Some(railway_graph),
             current_node: None,
             target_node: None,
@@ -233,6 +239,30 @@ impl TrainAgentAI {
             agent_state.delta_distance_mm = delta_distance_mm;
         }
         self.agent_rl.state = agent_state;
+    }
+}
+
+impl DecisionAgent for TrainAgentAI {
+    type A = RailMovableAction;
+
+    fn next_action(&self, _delta_time: Option<std::time::Duration>) -> Self::A {
+        self.best_action(&self.agent_rl.state).unwrap_or_default()
+    }
+
+    fn observe(&mut self, environment: &SimulationEnvironment) {
+        if let Some(object) = environment.get_objects().iter().find(|o| o.id() == self.id) {
+            self.current_node = object.position();
+            self.target_node = object.next_target();
+            let mut agent_state = self.agent_rl.state.clone();
+
+            let speed = object.speed();
+
+            agent_state.current_speed_mm_s = (speed / 1000.0) as i32;
+            agent_state.max_speed_percentage =
+                (100.0 * speed / self.agent_rl.max_speed_mm_s as f64) as i32;
+
+            self.agent_rl.state = agent_state;
+        }
     }
 }
 

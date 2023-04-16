@@ -3,6 +3,8 @@ use petgraph::visit::IntoNodeReferences;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
 
+use crate::types::NodeId;
+
 use super::{RailwayEdge, RailwayNode};
 
 /// `RailwayGraph` represents a graph structure for railway networks.
@@ -116,6 +118,70 @@ impl RailwayGraph {
             .map(|edge| edge.weight().length)
             .sum()
     }
+
+    /// Returns the nearest node to the given position on the specified edge.
+    ///
+    /// # Arguments
+    ///
+    /// * `edge_id` - The ID of the edge.
+    /// * `position_on_edge` - The position on the edge, ranging from 0.0 to 1.0.
+    /// * `current_node_id` - An optional `NodeId` of the current node to determine the start node.
+    ///
+    /// # Returns
+    ///
+    /// An `Option<NodeId>` containing the ID of the nearest node if found, or `None` if the edge is not found.
+    pub fn nearest_node(
+        &self,
+        edge_id: i64,
+        position_on_edge: f64,
+        current_node_id: Option<NodeId>,
+    ) -> Option<NodeId> {
+        // Find the edge indices in the petgraph
+        let mut edge_indices = self.graph.edge_indices();
+        let edge_index = edge_indices.find(|idx| self.graph[*idx].id == edge_id)?;
+
+        // Get the start and end nodes of the edge
+        let (mut start_node_index, mut end_node_index) = self.graph.edge_endpoints(edge_index)?;
+
+        if let Some(current_node_id) = current_node_id {
+            if current_node_id == self.graph[end_node_index].id {
+                std::mem::swap(&mut start_node_index, &mut end_node_index);
+            }
+        }
+
+        let start_node = &self.graph[start_node_index];
+        let end_node = &self.graph[end_node_index];
+
+        // Clamp position_on_edge to the range [0.0, 1.0].
+        let position_on_edge = position_on_edge.max(0.0).min(1.0);
+
+        // Calculate the coordinates of the point on the edge.
+        let start_coord = coord! {x: start_node.lon, y: start_node.lat};
+        let end_coord = coord! { x:end_node.lon, y: end_node.lat};
+        let point_on_edge = start_coord + (end_coord - start_coord) * position_on_edge;
+
+        // Find the nearest node to the point on the edge.
+        let mut nearest_node_index = None;
+        let mut nearest_distance = f64::MAX;
+        for node_index in self.graph.node_indices() {
+            let node = &self.graph[node_index];
+            let coord = coord! {x: node.lon, y: node.lat};
+            let distance = euclidean_distance(&point_on_edge, &coord);
+
+            if distance < nearest_distance {
+                nearest_node_index = Some(node_index);
+                nearest_distance = distance;
+            }
+        }
+
+        nearest_node_index.map(|index| self.graph[index].id)
+    }
+}
+
+fn euclidean_distance(coord1: &Coord, coord2: &Coord) -> f64 {
+    let dx = coord1.x - coord2.x;
+    let dy = coord1.y - coord2.y;
+    (dx * dx + dy * dy).sqrt()
 }
 
 #[cfg(test)]
@@ -291,5 +357,63 @@ mod tests {
         // Test for an invalid edge.
         let edge = railway_graph.railway_edge(1, 3);
         assert!(edge.is_none());
+    }
+
+    #[test]
+    fn test_nearest_node() {
+        // Create a simple RailwayGraph with three nodes and two edges
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Node,
+                lat: Some(50.1119),
+                lon: Some(8.6831),
+                tags: Some(HashMap::new()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![1, 2]),
+                geometry: Some(vec![
+                    Coordinate {
+                        lat: 50.1109,
+                        lon: 8.6821,
+                    },
+                    Coordinate {
+                        lat: 50.1119,
+                        lon: 8.6831,
+                    },
+                ]),
+            },
+        ];
+
+        let railway_graph = from_railway_elements(&elements);
+
+        // Call the nearest_node function
+        let edge_id = 3;
+        let position_on_edge = 0.52;
+        let nearest_node_id = railway_graph.nearest_node(edge_id, position_on_edge, Some(1));
+
+        assert_eq!(nearest_node_id, Some(2));
+
+        let nearest_node_id = railway_graph.nearest_node(edge_id, position_on_edge, Some(2));
+        assert_eq!(nearest_node_id, Some(1));
+
+        let nearest_node_id = railway_graph.nearest_node(5, position_on_edge, Some(2));
+        assert_eq!(nearest_node_id, None);
     }
 }

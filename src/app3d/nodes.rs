@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_mod_picking::{PickableBundle, PickingEvent};
 
-use crate::app3d::train_agent::{self, TrainAgent};
+use crate::app3d::train_agent::{self, create_train, TrainAgent};
 
 use super::{AppResource, InteractionMode, InteractionModeResource};
 
@@ -44,34 +44,44 @@ pub fn select_node_system(
         }
     }
 
-    if let Some((entity, id, transform)) = selection {
+    if let Some((entity, node_id, transform)) = selection {
         // Check the current interaction mode
         match interaction_mode.mode {
             InteractionMode::SelectMode => {
                 println!("Selected node: {:?}", entity);
                 selected_node.end_node_id = selected_node.start_node_id;
-                selected_node.start_node_id = Some(id);
+                selected_node.start_node_id = Some(node_id);
             }
             InteractionMode::PlaceTrain => {
-                println!("Placing train on node: {:?}", id);
-                let mut train_agent = TrainAgent::on_node(id);
-                if let Some(graph) = &app_resource.graph {
-                    train_agent.train(graph, 100000);
+                println!(
+                    "Selected node: {:?} {:?}",
+                    entity,
+                    app_resource.simulation.is_some()
+                );
+                if let Some(simulation) = &app_resource.simulation {
+                    let mut sim = simulation.lock().unwrap();
+                    let id = create_train(Some(node_id), None, &mut sim);
+                    let mut train_agent = TrainAgent::on_node(id, node_id);
+                    if let Some(graph) = &app_resource.graph {
+                        train_agent.train(graph, 100000);
+                    }
+
+                    println!("Placing train on node: {:?}", node_id);
+                    commands
+                        .spawn((
+                            Transform::from_xyz(
+                                transform.translation.x,
+                                transform.translation.y,
+                                transform.translation.z + 1.0,
+                            ),
+                            GlobalTransform::default(),
+                            ComputedVisibility::default(),
+                            Visibility::Inherited,
+                            train_agent,
+                        ))
+                        .insert(PickableBundle::default())
+                        .with_children(train_agent::create_train_agent_bundle(meshes, materials));
                 }
-                commands
-                    .spawn((
-                        Transform::from_xyz(
-                            transform.translation.x,
-                            transform.translation.y,
-                            transform.translation.z + 1.0,
-                        ),
-                        GlobalTransform::default(),
-                        ComputedVisibility::default(),
-                        Visibility::Inherited,
-                        train_agent,
-                    ))
-                    .insert(PickableBundle::default())
-                    .with_children(train_agent::create_train_agent_bundle(meshes, materials));
             }
         }
     }

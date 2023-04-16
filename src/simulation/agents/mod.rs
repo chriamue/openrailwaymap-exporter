@@ -31,7 +31,7 @@ pub enum RailMovableAction {
 
 /// A trait that represents a decision agent responsible for choosing the best action
 /// based on the current state of the simulation.
-pub trait DecisionAgent {
+pub trait DecisionAgent: Send {
     /// The associated action type for this decision agent.
     type A;
 

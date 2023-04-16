@@ -42,6 +42,12 @@ impl RailwayGraph {
             vec![]
         }
     }
+
+    /// Returns the next reachable node on the shortest path
+    pub fn get_next_node(&self, current: i64, target: i64) -> Option<i64> {
+        let path = self.shortest_path_nodes(current, target)?;
+        path.get(1).copied()
+    }
 }
 
 #[cfg(test)]
@@ -126,5 +132,15 @@ pub mod tests {
         let start_node_id = 1;
         let reachable_nodes = railway_graph.reachable_nodes(start_node_id);
         assert_eq!(reachable_nodes, vec![2, 3]);
+    }
+
+    #[test]
+    fn test_get_next_node() {
+        let railway_graph = from_railway_elements(&test_elements());
+
+        assert_eq!(railway_graph.get_next_node(1, 2), Some(2));
+        assert_eq!(railway_graph.get_next_node(1, 3), Some(2));
+        assert_eq!(railway_graph.get_next_node(2, 3), Some(3));
+        assert_eq!(railway_graph.get_next_node(1, 4), None);
     }
 }

@@ -5,8 +5,11 @@
 //!
 #![cfg_attr(target_arch = "wasm32", allow(dead_code, unused_imports))]
 
+use std::sync::{Arc, Mutex};
+
 use crate::app3d::train_agent::TrainAgent;
 use crate::prelude::RailwayGraph;
+use crate::simulation::Simulation;
 use bevy::input::Input;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
@@ -39,6 +42,7 @@ use self::train_agent::SelectedTrain;
 pub struct AppResource {
     area_name: String,
     graph: Option<RailwayGraph>,
+    simulation: Option<Arc<Mutex<Simulation>>>,
     look_at_position: Option<Vec3>,
 }
 
@@ -106,8 +110,9 @@ pub fn init_with_graph(graph: RailwayGraph) {
 
     let app_resource = AppResource {
         area_name: "".to_string(),
-        graph: Some(graph),
+        graph: Some(graph.clone()),
         look_at_position: None,
+        simulation: Some(Arc::new(Mutex::new(Simulation::new(graph)))),
     };
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);

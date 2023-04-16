@@ -101,6 +101,10 @@ pub fn select_graph_ui_system(
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    use std::sync::{Arc, Mutex};
+
+    use crate::simulation::Simulation;
+
     egui::Window::new("Railway Area").show(contexts.ctx_mut(), |ui| {
         ui.label("Enter an Area:");
         ui.text_edit_singleline(&mut app_resource.area_name);
@@ -129,7 +133,8 @@ pub fn select_graph_ui_system(
                 let graph = OverpassImporter::import(&api_json_value).unwrap();
                 let (min_coord, max_coord) = graph.bounding_box();
                 projection.set_bounding_box(min_coord, max_coord);
-                app_resource.graph = Some(graph);
+                app_resource.graph = Some(graph.clone());
+                app_resource.simulation = Some(Arc::new(Mutex::new(Simulation::new(graph))));
                 ui.set_enabled(false);
                 display_graph(
                     commands,

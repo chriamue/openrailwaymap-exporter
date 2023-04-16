@@ -13,7 +13,7 @@ pub trait ObservableEnvironment {
     fn get_graph(&self) -> &RailwayGraph;
 
     /// Returns a vector of references to the simulation objects.
-    fn get_objects(&self) -> Vec<&Box<dyn SimulationObject>>;
+    fn get_objects(&self) -> Vec<&dyn SimulationObject>;
 }
 
 /// A trait representing a reference to an observable environment.
@@ -38,8 +38,11 @@ impl ObservableEnvironment for SimulationEnvironment {
         &self.graph
     }
 
-    fn get_objects(&self) -> Vec<&Box<dyn SimulationObject>> {
-        self.objects.values().collect()
+    fn get_objects(&self) -> Vec<&dyn SimulationObject> {
+        self.objects
+            .values()
+            .map(|object| object.as_ref())
+            .collect()
     }
 }
 

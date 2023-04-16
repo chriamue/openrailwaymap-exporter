@@ -12,7 +12,7 @@ pub struct Train {
     /// The unique identifier for the train.
     pub id: i64,
     /// The current position of the train, represented by a node ID.
-    pub position: Option<i64>,
+    pub position: Option<NodeId>,
     /// The geographical location of the train, represented by a coordinate.
     pub geo_location: Option<Coord<f64>>,
     /// The next target node ID for the train to move towards.
@@ -33,6 +33,10 @@ impl RailwayObject for Train {
 
     fn position(&self) -> Option<NodeId> {
         self.position
+    }
+
+    fn set_position(&mut self, position: Option<NodeId>) {
+        self.position = position;
     }
 }
 
