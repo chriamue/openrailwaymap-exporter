@@ -18,6 +18,7 @@ pub mod agents;
 
 pub mod environment;
 pub use environment::SimulationEnvironment;
+use geo::coord;
 
 #[cfg(test)]
 mod tests;
@@ -163,30 +164,25 @@ impl Simulation {
             if let Some(current_position) = object.position() {
                 let current_speed = object.speed();
                 let target = object.next_target();
-
-                let mut distance_to_travel = current_speed * delta_time.as_secs_f64();
-
+                let current_location = object.geo_location().unwrap();
+    
                 let graph = &self.environment.graph;
                 let next_node = graph.get_next_node(current_position, target.unwrap_or_default());
-
-                while let Some(next_node) = next_node {
+    
+                if let Some(next_node) = next_node {
                     let edge = graph
                         .railway_edge(current_position, next_node)
                         .expect("Invalid edge");
-                    let distance_to_next_node = edge.length;
-
-                    if distance_to_travel < distance_to_next_node {
-                        let position_on_edge = distance_to_travel / distance_to_next_node;
-                        let new_position =
-                            graph.nearest_node(edge.id, position_on_edge, Some(current_position));
-                        object.set_position(new_position);
-                        break;
-                    } else {
-                        distance_to_travel -= distance_to_next_node;
-                        object.set_position(Some(next_node));
-                    }
+                    let direction_node = &graph.graph[*graph.node_indices.get(&next_node).unwrap()];
+    
+                    let direction_coord = coord! { x: direction_node.lon, y: direction_node.lat };
+                    let distance_to_travel = current_speed * delta_time.as_secs_f64();
+                    let new_geo_location = edge.position_on_edge(current_location, distance_to_travel, direction_coord);
+    
+                    object.set_geo_location(Some(new_geo_location));
                 }
             }
         }
     }
+    
 }

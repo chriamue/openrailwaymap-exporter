@@ -29,7 +29,7 @@ fn test_simulation_with_agent() {
     let agent = ForwardUntilTargetAgent::new(train.id());
 
     // Add the train and its agent to the simulation
-    simulation.add_object(Box::new(train), Some(Box::new(agent)));
+    simulation.add_object(Box::new(train.clone()), Some(Box::new(agent)));
 
     // Update the simulation with a given delta_time
     let delta_time = Duration::from_secs(1);
@@ -43,4 +43,7 @@ fn test_simulation_with_agent() {
 
     let expected_new_position = 1; // Calculate the expected new position based on the train's speed and delta_time
     assert_eq!(updated_train.position().unwrap(), expected_new_position);
+
+    // Check if the train's position has changed after the update
+    assert_ne!(updated_train.geo_location().unwrap(), train.geo_location().unwrap());
 }
