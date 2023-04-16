@@ -149,6 +149,11 @@
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -157,7 +162,8 @@
 
 </span><span class="kw">use crate</span>::{
     prelude::RailwayGraph,
-    railway_objects::{Movable, RailwayObject},
+    railway_objects::{Movable, NextTarget, RailwayObject},
+    types::RailwayObjectId,
 };
 <span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::time::Duration;
@@ -166,35 +172,26 @@
 
 <span class="kw">pub mod </span>agents;
 
+<span class="kw">pub mod </span>environment;
+<span class="kw">pub use </span>environment::SimulationEnvironment;
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests;
 
 <span class="doccomment">/// A trait that defines an object within the simulation that can move along a railway.
-</span><span class="kw">pub trait </span>SimulationObject: RailwayObject + Movable {}
-<span class="kw">impl</span>&lt;T: RailwayObject + Movable&gt; SimulationObject <span class="kw">for </span>T {}
+</span><span class="kw">pub trait </span>SimulationObject: RailwayObject + Movable + NextTarget {}
+<span class="kw">impl</span>&lt;T: RailwayObject + Movable + NextTarget&gt; SimulationObject <span class="kw">for </span>T {}
 
 <span class="doccomment">/// A `Simulation` struct holding a railway graph and a list of moveable railway objects.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Simulation&lt;SO, DA&gt;
-<span class="kw">where
-    </span>SO: SimulationObject,
-    DA: DecisionAgent&lt;A = RailMovableAction&gt;,
-{
-    <span class="doccomment">/// The railway graph representing the railway infrastructure.
-    </span><span class="kw">pub </span>graph: RailwayGraph,
-
-    <span class="doccomment">/// A list of moveable railway objects within the simulation.
-    </span><span class="kw">pub </span>objects: HashMap&lt;i64, SO&gt;,
+</span><span class="kw">pub struct </span>Simulation {
+    <span class="doccomment">/// The simulation environment
+    </span><span class="kw">pub </span>environment: SimulationEnvironment,
     <span class="doccomment">/// A list of agents
-    </span><span class="kw">pub </span>object_agents: HashMap&lt;i64, DA&gt;,
+    </span><span class="kw">pub </span>object_agents: HashMap&lt;RailwayObjectId, Box&lt;<span class="kw">dyn </span>DecisionAgent&lt;A = RailMovableAction&gt;&gt;&gt;,
     elapsed_time: Duration,
 }
 
-<span class="kw">impl</span>&lt;SO, DA&gt; Simulation&lt;SO, DA&gt;
-<span class="kw">where
-    </span>SO: SimulationObject,
-    DA: DecisionAgent&lt;A = RailMovableAction&gt;,
-{
+<span class="kw">impl </span>Simulation {
     <span class="doccomment">/// Creates a new simulation with the given railway graph.
     ///
     /// # Arguments
@@ -207,8 +204,10 @@
     ///
     </span><span class="kw">pub fn </span>new(graph: RailwayGraph) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            graph,
-            objects: HashMap::new(),
+            environment: SimulationEnvironment {
+                graph,
+                objects: HashMap::new(),
+            },
             object_agents: HashMap::new(),
             elapsed_time: Duration::default(),
         }
@@ -224,8 +223,14 @@
     ///
     /// A boolean indicating if the object was successfully added.
     ///
-    </span><span class="kw">pub fn </span>add_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, object: SO, agent: <span class="prelude-ty">Option</span>&lt;DA&gt;) -&gt; bool {
-        <span class="kw">if let </span>std::collections::hash_map::Entry::Vacant(e) = <span class="self">self</span>.objects.entry(object.id()) {
+    </span><span class="kw">pub fn </span>add_object(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        object: Box&lt;<span class="kw">dyn </span>SimulationObject&gt;,
+        agent: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>DecisionAgent&lt;A = RailMovableAction&gt;&gt;&gt;,
+    ) -&gt; bool {
+        <span class="kw">if let </span>std::collections::hash_map::Entry::Vacant(e) =
+            <span class="self">self</span>.environment.objects.entry(object.id())
+        {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = agent {
                 <span class="self">self</span>.object_agents.insert(object.id(), agent);
             }
@@ -247,7 +252,7 @@
     /// A boolean indicating if the object was successfully removed.
     ///
     </span><span class="kw">pub fn </span>remove_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, id: i64) -&gt; bool {
-        <span class="self">self</span>.objects.remove(<span class="kw-2">&amp;</span>id).is_some()
+        <span class="self">self</span>.environment.objects.remove(<span class="kw-2">&amp;</span>id).is_some()
     }
 
     <span class="doccomment">/// Updates the simulation state based on the given delta time.
@@ -260,7 +265,7 @@
         </span><span class="self">self</span>.elapsed_time += delta_time;
 
         <span class="comment">// Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
-        </span><span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.objects.keys().cloned().collect();
+        </span><span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.environment.objects.keys().cloned().collect();
 
         <span class="comment">// Iterate over each object in the simulation and update its state based on the delta time.
         </span><span class="kw">for </span>id <span class="kw">in </span>object_ids {
@@ -274,13 +279,18 @@
     ///
     /// * `delta_time` - The elapsed time since the last update.
     /// * `id` - The unique identifier of the moveable railway object to be updated.
-    </span><span class="kw">fn </span>update_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delta_time: Duration, id: i64) {
+    </span><span class="kw">fn </span>update_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delta_time: Duration, id: RailwayObjectId) {
+        <span class="comment">// Get the agent.
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
+            <span class="comment">// Observe the environment.
+            </span>agent.observe(<span class="kw-2">&amp;</span><span class="self">self</span>.environment);
+        }
         <span class="comment">// Get a mutable reference to the object to be updated.
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.objects.get_mut(<span class="kw-2">&amp;</span>id) {
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.environment.objects.get_mut(<span class="kw-2">&amp;</span>id) {
             <span class="comment">// Get the action from the decision agent.
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get(<span class="kw-2">&amp;</span>id) {
-                <span class="kw">let </span>action = agent.next_action();
-
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
+                <span class="kw">let </span>action = agent.next_action(<span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">1</span>)));
+                <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, action);
                 <span class="comment">// Update the acceleration based on the action.
                 </span><span class="kw">match </span>action {
                     RailMovableAction::Stop =&gt; {

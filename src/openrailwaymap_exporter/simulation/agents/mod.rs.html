@@ -72,13 +72,24 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types and traits related to decision agents.
 //!
 //! Decision agents are responsible for choosing the best action based on the current
 //! state of the simulation. They interact with movable objects on rail tracks, such as trains,
 //! to control their movement.
+</span><span class="kw">use </span>std::time::Duration;
 
-</span><span class="kw">mod </span>forward_until_target_agent;
+<span class="kw">mod </span>forward_until_target_agent;
+<span class="kw">use </span><span class="kw">super</span>::SimulationEnvironment;
 <span class="kw">pub use </span>forward_until_target_agent::ForwardUntilTargetAgent;
 
 <span class="doccomment">/// Represents the possible actions a movable object on rail tracks can take in the simulation.
@@ -112,7 +123,14 @@
     /// # Returns
     ///
     /// * `Self::A` - The action chosen by the decision agent.
-    </span><span class="kw">fn </span>next_action(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::A;
+    </span><span class="kw">fn </span>next_action(<span class="kw-2">&amp;</span><span class="self">self</span>, delta_time: <span class="prelude-ty">Option</span>&lt;Duration&gt;) -&gt; <span class="self">Self</span>::A;
+
+    <span class="doccomment">/// Observes the current environment and updates the agent&#39;s internal state.
+    ///
+    /// # Arguments
+    ///
+    /// * `environment` - The current environment.
+    </span><span class="kw">fn </span>observe(<span class="kw-2">&amp;mut </span><span class="self">self</span>, environment: <span class="kw-2">&amp;</span>SimulationEnvironment);
 }
 
 <span class="attr">#[cfg(test)]

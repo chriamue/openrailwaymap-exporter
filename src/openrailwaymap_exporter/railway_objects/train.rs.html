@@ -161,6 +161,8 @@
 
 <span class="kw">use </span>geo_types::Coord;
 
+<span class="kw">use </span><span class="kw">crate</span>::types::NodeId;
+
 <span class="kw">use super</span>::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
 
 <span class="doccomment">/// A Train struct representing a train in the railway system.
@@ -184,39 +186,37 @@
 
 <span class="doccomment">/// Implements the `RailwayObject` trait for the `Train` struct.
 </span><span class="kw">impl </span>RailwayObject <span class="kw">for </span>Train {
-    <span class="kw">type </span>Node = i64;
-
     <span class="kw">fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
         <span class="self">self</span>.id
     }
 
-    <span class="kw">fn </span>position(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt; {
+    <span class="kw">fn </span>position(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt; {
         <span class="self">self</span>.position
     }
 }
 
 <span class="doccomment">/// Implements the `NextTarget` trait for the `Train` struct.
 </span><span class="kw">impl </span>NextTarget <span class="kw">for </span>Train {
-    <span class="kw">fn </span>next_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt; {
+    <span class="kw">fn </span>next_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt; {
         <span class="self">self</span>.next_target
     }
 
-    <span class="kw">fn </span>set_next_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt;) {
+    <span class="kw">fn </span>set_next_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="prelude-ty">Option</span>&lt;NodeId&gt;) {
         <span class="self">self</span>.next_target = target;
     }
 }
 
 <span class="doccomment">/// Implements the `MultipleTargets` trait for the `Train` struct.
 </span><span class="kw">impl </span>MultipleTargets <span class="kw">for </span>Train {
-    <span class="kw">fn </span>targets(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;<span class="self">Self</span>::Node&gt; {
+    <span class="kw">fn </span>targets(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;NodeId&gt; {
         <span class="kw-2">&amp;</span><span class="self">self</span>.targets
     }
 
-    <span class="kw">fn </span>add_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="self">Self</span>::Node) {
+    <span class="kw">fn </span>add_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: NodeId) {
         <span class="self">self</span>.targets.push_back(target);
     }
 
-    <span class="kw">fn </span>remove_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt; {
+    <span class="kw">fn </span>remove_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt; {
         <span class="self">self</span>.targets.pop_front()
     }
 }

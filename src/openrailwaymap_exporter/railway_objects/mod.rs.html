@@ -59,7 +59,6 @@
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
 </span><span class="kw">use </span>geo_types::Coord;
@@ -68,38 +67,37 @@
 <span class="kw">mod </span>train;
 <span class="kw">pub use </span>train::Train;
 
+<span class="kw">use </span><span class="kw">crate</span>::types::{NodeId, RailwayObjectId};
+
 <span class="doccomment">/// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model.
-</span><span class="kw">pub trait </span>RailwayObject: PartialEq {
-    <span class="doccomment">/// Node identifiers
-    </span><span class="kw">type </span>Node;
-
+</span><span class="kw">pub trait </span>RailwayObject: std::fmt::Debug {
     <span class="doccomment">/// Returns the unique identifier of the railway object.
-    </span><span class="kw">fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64;
+    </span><span class="kw">fn </span>id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; RailwayObjectId;
 
     <span class="doccomment">/// Returns the position of the railway object within the internal model.
-    </span><span class="kw">fn </span>position(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt;;
+    </span><span class="kw">fn </span>position(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt;;
 }
 
 <span class="doccomment">/// The `NextTarget` trait provides methods for managing a single target for a railway object.
 </span><span class="kw">pub trait </span>NextTarget: RailwayObject {
     <span class="doccomment">/// Returns the next target of the railway object, if any.
-    </span><span class="kw">fn </span>next_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt;;
+    </span><span class="kw">fn </span>next_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt;;
 
     <span class="doccomment">/// Sets the next target of the railway object.
-    </span><span class="kw">fn </span>set_next_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt;);
+    </span><span class="kw">fn </span>set_next_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="prelude-ty">Option</span>&lt;NodeId&gt;);
 }
 
 <span class="doccomment">/// The `MultipleTargets` trait provides methods for managing a list of targets for a railway object.
 </span><span class="kw">pub trait </span>MultipleTargets: RailwayObject {
     <span class="doccomment">/// Returns the list of targets for the railway object.
-    </span><span class="kw">fn </span>targets(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;<span class="self">Self</span>::Node&gt;;
+    </span><span class="kw">fn </span>targets(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VecDeque&lt;NodeId&gt;;
 
     <span class="doccomment">/// Adds a target to the list of targets for the railway object.
-    </span><span class="kw">fn </span>add_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: <span class="self">Self</span>::Node);
+    </span><span class="kw">fn </span>add_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, target: NodeId);
 
     <span class="doccomment">/// Removes and returns the first target from the list of targets for the railway object, if any.
-    </span><span class="kw">fn </span>remove_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Node&gt;;
+    </span><span class="kw">fn </span>remove_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt;;
 }
 
 <span class="doccomment">/// The `GeoLocation` trait provides a method for obtaining the geographical location of a railway object.

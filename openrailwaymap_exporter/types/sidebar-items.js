@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"type":[["EdgeId","A unique identifier for an edge in a `RailwayGraph`."],["NodeId","A unique identifier for a node in a `RailwayGraph`."],["RailwayObjectId","A unique identifier for a railway object."]]};
