@@ -630,6 +630,8 @@
 <a href="#630" id="630">630</a>
 <a href="#631" id="631">631</a>
 <a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
 </pre><pre class="rust"><code><span class="doccomment">//! `OverpassImporter` is a struct that implements the `RailwayGraphImporter` trait for importing
 //! railway graph data from the Overpass API.
 </span><span class="kw">mod </span>coordinate;
@@ -722,7 +724,7 @@
                 <span class="kw">let </span>length = calculate_geometry_length(geometry);
 
                 <span class="kw">let </span>(node_id, node_index) = find_next_existing_node(<span class="prelude-val">None</span>, nodes_ids, <span class="kw-2">&amp;</span>node_indices);
-                <span class="kw">let </span>(_next_node_id, next_node_index) =
+                <span class="kw">let </span>(next_node_id, next_node_index) =
                     find_next_existing_node(node_id, nodes_ids, <span class="kw-2">&amp;</span>node_indices);
 
                 <span class="kw">if let </span>(<span class="prelude-val">Some</span>(node_index), <span class="prelude-val">Some</span>(next_node_index)) = (node_index, next_node_index) {
@@ -739,6 +741,8 @@
                                     .map(|coord| <span class="macro">coord! </span>{ x: coord.lon, y: coord.lat })
                                     .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;(),
                             ),
+                            source: node_id.unwrap(),
+                            target: next_node_id.unwrap(),
                         },
                     );
                 }

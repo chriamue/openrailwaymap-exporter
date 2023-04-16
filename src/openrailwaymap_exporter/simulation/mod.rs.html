@@ -187,6 +187,9 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -195,7 +198,7 @@
 
 </span><span class="kw">use crate</span>::{
     prelude::RailwayGraph,
-    railway_objects::{Movable, NextTarget, RailwayObject},
+    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject},
     types::RailwayObjectId,
 };
 <span class="kw">use </span>std::collections::HashMap;
@@ -212,8 +215,11 @@
 </span><span class="kw">mod </span>tests;
 
 <span class="doccomment">/// A trait that defines an object within the simulation that can move along a railway.
-</span><span class="kw">pub trait </span>SimulationObject: RailwayObject + Movable + NextTarget + Send + Sync {}
-<span class="kw">impl</span>&lt;T: RailwayObject + Movable + NextTarget + Send + Sync&gt; SimulationObject <span class="kw">for </span>T {}
+</span><span class="kw">pub trait </span>SimulationObject:
+    RailwayObject + Movable + NextTarget + GeoLocation + Send + Sync
+{
+}
+<span class="kw">impl</span>&lt;T: RailwayObject + Movable + NextTarget + GeoLocation + Send + Sync&gt; SimulationObject <span class="kw">for </span>T {}
 
 <span class="doccomment">/// A `Simulation` struct holding a railway graph and a list of moveable railway objects.
 </span><span class="kw">pub struct </span>Simulation {

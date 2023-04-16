@@ -82,7 +82,32 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
-</pre><pre class="rust"><code><span class="kw">use </span>geo_types::LineString;
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+</pre><pre class="rust"><code><span class="kw">use </span>geo_types::{Coord, LineString};
+
+<span class="kw">use </span><span class="kw">crate</span>::types::NodeId;
 
 <span class="doccomment">/// Represents a railway edge with a unique ID, a length, and a path.
 ///
@@ -99,6 +124,8 @@
 ///         coord! { x: 8.6821, y: 50.1109 },
 ///         coord! { x: 8.6921, y: 50.1209 },
 ///     ]),
+///     source: 2,
+///     target: 3
 /// };
 /// assert_eq!(edge.id, 1);
 /// ```
@@ -110,6 +137,17 @@
     </span><span class="kw">pub </span>length: f64,
     <span class="doccomment">/// The path of the edge, stored as a `LineString`.
     </span><span class="kw">pub </span>path: LineString&lt;f64&gt;,
+    <span class="doccomment">/// Source node identifier
+    </span><span class="kw">pub </span>source: NodeId,
+    <span class="doccomment">/// Target node identifier
+    </span><span class="kw">pub </span>target: NodeId,
+}
+
+<span class="kw">impl </span>RailwayEdge {
+    <span class="doccomment">/// Coordinates of source node
+    </span><span class="kw">pub fn </span>source_coordinate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Coord&lt;f64&gt; {
+        <span class="self">self</span>.path.points().next().unwrap_or_default().<span class="number">0
+    </span>}
 }
 
 <span class="attr">#[cfg(test)]
@@ -127,6 +165,8 @@
                 <span class="macro">coord! </span>{ x: <span class="number">8.6821</span>, y: <span class="number">50.1109 </span>},
                 <span class="macro">coord! </span>{ x: <span class="number">8.6921</span>, y: <span class="number">50.1209 </span>},
             ]),
+            source: <span class="number">0</span>,
+            target: <span class="number">0</span>,
         };
 
         <span class="macro">assert_eq!</span>(edge.id, <span class="number">1</span>);
@@ -142,6 +182,8 @@
                 <span class="macro">coord! </span>{ x: <span class="number">8.6821</span>, y: <span class="number">50.1109 </span>},
                 <span class="macro">coord! </span>{ x: <span class="number">8.6921</span>, y: <span class="number">50.1209 </span>},
             ]),
+            source: <span class="number">0</span>,
+            target: <span class="number">0</span>,
         };
 
         <span class="kw">let </span>edge2 = RailwayEdge {
@@ -151,6 +193,8 @@
                 <span class="macro">coord! </span>{ x: <span class="number">8.6821</span>, y: <span class="number">50.1109 </span>},
                 <span class="macro">coord! </span>{ x: <span class="number">8.6921</span>, y: <span class="number">50.1209 </span>},
             ]),
+            source: <span class="number">0</span>,
+            target: <span class="number">0</span>,
         };
 
         <span class="kw">let </span>edge3 = RailwayEdge {
@@ -160,6 +204,8 @@
                 <span class="macro">coord! </span>{ x: <span class="number">8.6921</span>, y: <span class="number">50.1209 </span>},
                 <span class="macro">coord! </span>{ x: <span class="number">8.7021</span>, y: <span class="number">50.1309 </span>},
             ]),
+            source: <span class="number">0</span>,
+            target: <span class="number">0</span>,
         };
 
         <span class="macro">assert_eq!</span>(edge1, edge2);

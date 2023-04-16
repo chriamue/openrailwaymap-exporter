@@ -61,6 +61,8 @@
 <a href="#61" id="61">61</a>
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
 </span><span class="kw">use </span>geo_types::Coord;
@@ -108,6 +110,8 @@
 </span><span class="kw">pub trait </span>GeoLocation {
     <span class="doccomment">/// Returns the geographical location of the railway object as a coordinate.
     </span><span class="kw">fn </span>geo_location(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Coord&lt;f64&gt;&gt;;
+    <span class="doccomment">/// Sets the geographical location of the railway object
+    </span><span class="kw">fn </span>set_geo_location(<span class="kw-2">&amp;mut </span><span class="self">self</span>, location: <span class="prelude-ty">Option</span>&lt;Coord&lt;f64&gt;&gt;);
 }
 
 <span class="doccomment">/// The Movable trait
