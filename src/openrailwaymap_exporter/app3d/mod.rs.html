@@ -328,6 +328,11 @@
 <a href="#328" id="328">328</a>
 <a href="#329" id="329">329</a>
 <a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -335,8 +340,11 @@
 //!
 </span><span class="attr">#![cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, allow(dead_code, unused_imports))]
 
-</span><span class="kw">use </span><span class="kw">crate</span>::app3d::train_agent::TrainAgent;
+</span><span class="kw">use </span>std::sync::{Arc, Mutex};
+
+<span class="kw">use </span><span class="kw">crate</span>::app3d::train_agent::TrainAgent;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
+<span class="kw">use </span><span class="kw">crate</span>::simulation::Simulation;
 <span class="kw">use </span>bevy::input::Input;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::EguiPlugin;
@@ -369,6 +377,7 @@
 </span><span class="kw">pub struct </span>AppResource {
     area_name: String,
     graph: <span class="prelude-ty">Option</span>&lt;RailwayGraph&gt;,
+    simulation: <span class="prelude-ty">Option</span>&lt;Arc&lt;Mutex&lt;Simulation&gt;&gt;&gt;,
     look_at_position: <span class="prelude-ty">Option</span>&lt;Vec3&gt;,
 }
 
@@ -436,8 +445,9 @@
 
     <span class="kw">let </span>app_resource = AppResource {
         area_name: <span class="string">&quot;&quot;</span>.to_string(),
-        graph: <span class="prelude-val">Some</span>(graph),
+        graph: <span class="prelude-val">Some</span>(graph.clone()),
         look_at_position: <span class="prelude-val">None</span>,
+        simulation: <span class="prelude-val">Some</span>(Arc::new(Mutex::new(Simulation::new(graph)))),
     };
     <span class="kw">let </span><span class="kw-2">mut </span>app = App::new();
     app.add_plugins(DefaultPlugins);

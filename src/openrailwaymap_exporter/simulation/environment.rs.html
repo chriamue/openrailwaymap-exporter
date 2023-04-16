@@ -67,6 +67,9 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
 </pre><pre class="rust"><code><span class="doccomment">//! module with environment traits
 </span><span class="kw">use </span>std::collections::HashMap;
 
@@ -82,7 +85,7 @@
     </span><span class="kw">fn </span>get_graph(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>RailwayGraph;
 
     <span class="doccomment">/// Returns a vector of references to the simulation objects.
-    </span><span class="kw">fn </span>get_objects(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="kw-2">&amp;</span>Box&lt;<span class="kw">dyn </span>SimulationObject&gt;&gt;;
+    </span><span class="kw">fn </span>get_objects(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SimulationObject&gt;;
 }
 
 <span class="doccomment">/// A trait representing a reference to an observable environment.
@@ -107,8 +110,11 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.graph
     }
 
-    <span class="kw">fn </span>get_objects(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="kw-2">&amp;</span>Box&lt;<span class="kw">dyn </span>SimulationObject&gt;&gt; {
-        <span class="self">self</span>.objects.values().collect()
+    <span class="kw">fn </span>get_objects(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SimulationObject&gt; {
+        <span class="self">self</span>.objects
+            .values()
+            .map(|object| object.as_ref())
+            .collect()
     }
 }
 

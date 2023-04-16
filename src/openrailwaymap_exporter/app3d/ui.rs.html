@@ -200,6 +200,11 @@
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -303,6 +308,10 @@
     meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
 ) {
+    <span class="kw">use </span>std::sync::{Arc, Mutex};
+
+    <span class="kw">use </span><span class="kw">crate</span>::simulation::Simulation;
+
     egui::Window::new(<span class="string">&quot;Railway Area&quot;</span>).show(contexts.ctx_mut(), |ui| {
         ui.label(<span class="string">&quot;Enter an Area:&quot;</span>);
         ui.text_edit_singleline(<span class="kw-2">&amp;mut </span>app_resource.area_name);
@@ -331,7 +340,8 @@
                 <span class="kw">let </span>graph = OverpassImporter::import(<span class="kw-2">&amp;</span>api_json_value).unwrap();
                 <span class="kw">let </span>(min_coord, max_coord) = graph.bounding_box();
                 projection.set_bounding_box(min_coord, max_coord);
-                app_resource.graph = <span class="prelude-val">Some</span>(graph);
+                app_resource.graph = <span class="prelude-val">Some</span>(graph.clone());
+                app_resource.simulation = <span class="prelude-val">Some</span>(Arc::new(Mutex::new(Simulation::new(graph))));
                 ui.set_enabled(<span class="bool-val">false</span>);
                 display_graph(
                     commands,

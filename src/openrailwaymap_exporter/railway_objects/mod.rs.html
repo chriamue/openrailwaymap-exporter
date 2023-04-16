@@ -59,6 +59,8 @@
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
 </span><span class="kw">use </span>geo_types::Coord;
@@ -77,6 +79,8 @@
 
     <span class="doccomment">/// Returns the position of the railway object within the internal model.
     </span><span class="kw">fn </span>position(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt;;
+    <span class="doccomment">/// sets the position of the rail object
+    </span><span class="kw">fn </span>set_position(<span class="kw-2">&amp;mut </span><span class="self">self</span>, position: <span class="prelude-ty">Option</span>&lt;NodeId&gt;);
 }
 
 <span class="doccomment">/// The `NextTarget` trait provides methods for managing a single target for a railway object.

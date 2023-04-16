@@ -76,10 +76,20 @@
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::{PickableBundle, PickingEvent};
 
-<span class="kw">use </span><span class="kw">crate</span>::app3d::train_agent::{<span class="self">self</span>, TrainAgent};
+<span class="kw">use </span><span class="kw">crate</span>::app3d::train_agent::{<span class="self">self</span>, create_train, TrainAgent};
 
 <span class="kw">use super</span>::{AppResource, InteractionMode, InteractionModeResource};
 
@@ -122,34 +132,44 @@
         }
     }
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>((entity, id, transform)) = selection {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>((entity, node_id, transform)) = selection {
         <span class="comment">// Check the current interaction mode
         </span><span class="kw">match </span>interaction_mode.mode {
             InteractionMode::SelectMode =&gt; {
                 <span class="macro">println!</span>(<span class="string">&quot;Selected node: {:?}&quot;</span>, entity);
                 selected_node.end_node_id = selected_node.start_node_id;
-                selected_node.start_node_id = <span class="prelude-val">Some</span>(id);
+                selected_node.start_node_id = <span class="prelude-val">Some</span>(node_id);
             }
             InteractionMode::PlaceTrain =&gt; {
-                <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, id);
-                <span class="kw">let </span><span class="kw-2">mut </span>train_agent = TrainAgent::on_node(id);
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
-                    train_agent.train(graph, <span class="number">100000</span>);
+                <span class="macro">println!</span>(
+                    <span class="string">&quot;Selected node: {:?} {:?}&quot;</span>,
+                    entity,
+                    app_resource.simulation.is_some()
+                );
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
+                    <span class="kw">let </span><span class="kw-2">mut </span>sim = simulation.lock().unwrap();
+                    <span class="kw">let </span>id = create_train(<span class="prelude-val">Some</span>(node_id), <span class="prelude-val">None</span>, <span class="kw-2">&amp;mut </span>sim);
+                    <span class="kw">let </span><span class="kw-2">mut </span>train_agent = TrainAgent::on_node(id, node_id);
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
+                        train_agent.train(graph, <span class="number">100000</span>);
+                    }
+
+                    <span class="macro">println!</span>(<span class="string">&quot;Placing train on node: {:?}&quot;</span>, node_id);
+                    commands
+                        .spawn((
+                            Transform::from_xyz(
+                                transform.translation.x,
+                                transform.translation.y,
+                                transform.translation.z + <span class="number">1.0</span>,
+                            ),
+                            GlobalTransform::default(),
+                            ComputedVisibility::default(),
+                            Visibility::Inherited,
+                            train_agent,
+                        ))
+                        .insert(PickableBundle::default())
+                        .with_children(train_agent::create_train_agent_bundle(meshes, materials));
                 }
-                commands
-                    .spawn((
-                        Transform::from_xyz(
-                            transform.translation.x,
-                            transform.translation.y,
-                            transform.translation.z + <span class="number">1.0</span>,
-                        ),
-                        GlobalTransform::default(),
-                        ComputedVisibility::default(),
-                        Visibility::Inherited,
-                        train_agent,
-                    ))
-                    .insert(PickableBundle::default())
-                    .with_children(train_agent::create_train_agent_bundle(meshes, materials));
             }
         }
     }

@@ -128,6 +128,22 @@
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
@@ -171,6 +187,12 @@
         } <span class="kw">else </span>{
             <span class="macro">vec!</span>[]
         }
+    }
+
+    <span class="doccomment">/// Returns the next reachable node on the shortest path
+    </span><span class="kw">pub fn </span>get_next_node(<span class="kw-2">&amp;</span><span class="self">self</span>, current: i64, target: i64) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
+        <span class="kw">let </span>path = <span class="self">self</span>.shortest_path_nodes(current, target)<span class="question-mark">?</span>;
+        path.get(<span class="number">1</span>).copied()
     }
 }
 
@@ -256,6 +278,16 @@
         <span class="kw">let </span>start_node_id = <span class="number">1</span>;
         <span class="kw">let </span>reachable_nodes = railway_graph.reachable_nodes(start_node_id);
         <span class="macro">assert_eq!</span>(reachable_nodes, <span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>]);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_get_next_node() {
+        <span class="kw">let </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>test_elements());
+
+        <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">1</span>, <span class="number">2</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">1</span>, <span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">2</span>, <span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">1</span>, <span class="number">4</span>), <span class="prelude-val">None</span>);
     }
 }
 </code></pre></div>
