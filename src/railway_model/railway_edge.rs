@@ -1,4 +1,6 @@
-use geo_types::LineString;
+use geo_types::{Coord, LineString};
+
+use crate::types::NodeId;
 
 /// Represents a railway edge with a unique ID, a length, and a path.
 ///
@@ -15,6 +17,8 @@ use geo_types::LineString;
 ///         coord! { x: 8.6821, y: 50.1109 },
 ///         coord! { x: 8.6921, y: 50.1209 },
 ///     ]),
+///     source: 2,
+///     target: 3
 /// };
 /// assert_eq!(edge.id, 1);
 /// ```
@@ -26,6 +30,17 @@ pub struct RailwayEdge {
     pub length: f64,
     /// The path of the edge, stored as a `LineString`.
     pub path: LineString<f64>,
+    /// Source node identifier
+    pub source: NodeId,
+    /// Target node identifier
+    pub target: NodeId,
+}
+
+impl RailwayEdge {
+    /// Coordinates of source node
+    pub fn source_coordinate(&self) -> Coord<f64> {
+        self.path.points().next().unwrap_or_default().0
+    }
 }
 
 #[cfg(test)]
@@ -43,6 +58,8 @@ mod tests {
                 coord! { x: 8.6821, y: 50.1109 },
                 coord! { x: 8.6921, y: 50.1209 },
             ]),
+            source: 0,
+            target: 0,
         };
 
         assert_eq!(edge.id, 1);
@@ -58,6 +75,8 @@ mod tests {
                 coord! { x: 8.6821, y: 50.1109 },
                 coord! { x: 8.6921, y: 50.1209 },
             ]),
+            source: 0,
+            target: 0,
         };
 
         let edge2 = RailwayEdge {
@@ -67,6 +86,8 @@ mod tests {
                 coord! { x: 8.6821, y: 50.1109 },
                 coord! { x: 8.6921, y: 50.1209 },
             ]),
+            source: 0,
+            target: 0,
         };
 
         let edge3 = RailwayEdge {
@@ -76,6 +97,8 @@ mod tests {
                 coord! { x: 8.6921, y: 50.1209 },
                 coord! { x: 8.7021, y: 50.1309 },
             ]),
+            source: 0,
+            target: 0,
         };
 
         assert_eq!(edge1, edge2);

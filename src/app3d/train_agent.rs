@@ -105,7 +105,6 @@ pub fn create_train(
     target: Option<i64>,
     simulation: &mut Simulation,
 ) -> RailwayObjectId {
-    println!("create_train@");
     let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
     let agent = ForwardUntilTargetAgent::new(id);
     let train = Train {

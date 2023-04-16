@@ -53,11 +53,6 @@ pub fn select_node_system(
                 selected_node.start_node_id = Some(node_id);
             }
             InteractionMode::PlaceTrain => {
-                println!(
-                    "Selected node: {:?} {:?}",
-                    entity,
-                    app_resource.simulation.is_some()
-                );
                 if let Some(simulation) = &app_resource.simulation {
                     let mut sim = simulation.lock().unwrap();
                     let id = create_train(Some(node_id), None, &mut sim);

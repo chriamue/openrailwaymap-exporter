@@ -6,7 +6,7 @@
 
 use crate::{
     prelude::RailwayGraph,
-    railway_objects::{Movable, NextTarget, RailwayObject},
+    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject},
     types::RailwayObjectId,
 };
 use std::collections::HashMap;
@@ -23,8 +23,11 @@ pub use environment::SimulationEnvironment;
 mod tests;
 
 /// A trait that defines an object within the simulation that can move along a railway.
-pub trait SimulationObject: RailwayObject + Movable + NextTarget + Send + Sync {}
-impl<T: RailwayObject + Movable + NextTarget + Send + Sync> SimulationObject for T {}
+pub trait SimulationObject:
+    RailwayObject + Movable + NextTarget + GeoLocation + Send + Sync
+{
+}
+impl<T: RailwayObject + Movable + NextTarget + GeoLocation + Send + Sync> SimulationObject for T {}
 
 /// A `Simulation` struct holding a railway graph and a list of moveable railway objects.
 pub struct Simulation {

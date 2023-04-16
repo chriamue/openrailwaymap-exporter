@@ -90,7 +90,7 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                 let length = calculate_geometry_length(geometry);
 
                 let (node_id, node_index) = find_next_existing_node(None, nodes_ids, &node_indices);
-                let (_next_node_id, next_node_index) =
+                let (next_node_id, next_node_index) =
                     find_next_existing_node(node_id, nodes_ids, &node_indices);
 
                 if let (Some(node_index), Some(next_node_index)) = (node_index, next_node_index) {
@@ -107,6 +107,8 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                                     .map(|coord| coord! { x: coord.lon, y: coord.lat })
                                     .collect::<Vec<_>>(),
                             ),
+                            source: node_id.unwrap(),
+                            target: next_node_id.unwrap(),
                         },
                     );
                 }

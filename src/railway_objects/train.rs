@@ -71,6 +71,10 @@ impl GeoLocation for Train {
     fn geo_location(&self) -> Option<Coord<f64>> {
         self.geo_location
     }
+
+    fn set_geo_location(&mut self, location: Option<Coord<f64>>) {
+        self.geo_location = location;
+    }
 }
 
 impl Movable for Train {

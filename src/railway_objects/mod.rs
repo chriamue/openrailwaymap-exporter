@@ -45,6 +45,8 @@ pub trait MultipleTargets: RailwayObject {
 pub trait GeoLocation {
     /// Returns the geographical location of the railway object as a coordinate.
     fn geo_location(&self) -> Option<Coord<f64>>;
+    /// Sets the geographical location of the railway object
+    fn set_geo_location(&mut self, location: Option<Coord<f64>>);
 }
 
 /// The Movable trait
