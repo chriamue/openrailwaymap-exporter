@@ -2,6 +2,8 @@ use std::collections::VecDeque;
 
 use geo_types::Coord;
 
+use crate::types::NodeId;
+
 use super::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
 
 /// A Train struct representing a train in the railway system.
@@ -25,39 +27,37 @@ pub struct Train {
 
 /// Implements the `RailwayObject` trait for the `Train` struct.
 impl RailwayObject for Train {
-    type Node = i64;
-
     fn id(&self) -> i64 {
         self.id
     }
 
-    fn position(&self) -> Option<Self::Node> {
+    fn position(&self) -> Option<NodeId> {
         self.position
     }
 }
 
 /// Implements the `NextTarget` trait for the `Train` struct.
 impl NextTarget for Train {
-    fn next_target(&self) -> Option<Self::Node> {
+    fn next_target(&self) -> Option<NodeId> {
         self.next_target
     }
 
-    fn set_next_target(&mut self, target: Option<Self::Node>) {
+    fn set_next_target(&mut self, target: Option<NodeId>) {
         self.next_target = target;
     }
 }
 
 /// Implements the `MultipleTargets` trait for the `Train` struct.
 impl MultipleTargets for Train {
-    fn targets(&self) -> &VecDeque<Self::Node> {
+    fn targets(&self) -> &VecDeque<NodeId> {
         &self.targets
     }
 
-    fn add_target(&mut self, target: Self::Node) {
+    fn add_target(&mut self, target: NodeId) {
         self.targets.push_back(target);
     }
 
-    fn remove_target(&mut self) -> Option<Self::Node> {
+    fn remove_target(&mut self) -> Option<NodeId> {
         self.targets.pop_front()
     }
 }

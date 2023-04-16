@@ -3,8 +3,10 @@
 //! Decision agents are responsible for choosing the best action based on the current
 //! state of the simulation. They interact with movable objects on rail tracks, such as trains,
 //! to control their movement.
+use std::time::Duration;
 
 mod forward_until_target_agent;
+use super::SimulationEnvironment;
 pub use forward_until_target_agent::ForwardUntilTargetAgent;
 
 /// Represents the possible actions a movable object on rail tracks can take in the simulation.
@@ -38,7 +40,14 @@ pub trait DecisionAgent {
     /// # Returns
     ///
     /// * `Self::A` - The action chosen by the decision agent.
-    fn next_action(&self) -> Self::A;
+    fn next_action(&self, delta_time: Option<Duration>) -> Self::A;
+
+    /// Observes the current environment and updates the agent's internal state.
+    ///
+    /// # Arguments
+    ///
+    /// * `environment` - The current environment.
+    fn observe(&mut self, environment: &SimulationEnvironment);
 }
 
 #[cfg(test)]

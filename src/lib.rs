@@ -31,6 +31,7 @@ pub mod railway_api_client;
 pub mod railway_model;
 pub mod railway_objects;
 pub mod simulation;
+pub mod types;
 
 #[cfg(test)]
 pub mod tests;

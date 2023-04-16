@@ -6,38 +6,37 @@ use std::collections::VecDeque;
 mod train;
 pub use train::Train;
 
+use crate::types::{NodeId, RailwayObjectId};
+
 /// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model.
-pub trait RailwayObject: PartialEq {
-    /// Node identifiers
-    type Node;
-
+pub trait RailwayObject: std::fmt::Debug {
     /// Returns the unique identifier of the railway object.
-    fn id(&self) -> i64;
+    fn id(&self) -> RailwayObjectId;
 
     /// Returns the position of the railway object within the internal model.
-    fn position(&self) -> Option<Self::Node>;
+    fn position(&self) -> Option<NodeId>;
 }
 
 /// The `NextTarget` trait provides methods for managing a single target for a railway object.
 pub trait NextTarget: RailwayObject {
     /// Returns the next target of the railway object, if any.
-    fn next_target(&self) -> Option<Self::Node>;
+    fn next_target(&self) -> Option<NodeId>;
 
     /// Sets the next target of the railway object.
-    fn set_next_target(&mut self, target: Option<Self::Node>);
+    fn set_next_target(&mut self, target: Option<NodeId>);
 }
 
 /// The `MultipleTargets` trait provides methods for managing a list of targets for a railway object.
 pub trait MultipleTargets: RailwayObject {
     /// Returns the list of targets for the railway object.
-    fn targets(&self) -> &VecDeque<Self::Node>;
+    fn targets(&self) -> &VecDeque<NodeId>;
 
     /// Adds a target to the list of targets for the railway object.
-    fn add_target(&mut self, target: Self::Node);
+    fn add_target(&mut self, target: NodeId);
 
     /// Removes and returns the first target from the list of targets for the railway object, if any.
-    fn remove_target(&mut self) -> Option<Self::Node>;
+    fn remove_target(&mut self) -> Option<NodeId>;
 }
 
 /// The `GeoLocation` trait provides a method for obtaining the geographical location of a railway object.
