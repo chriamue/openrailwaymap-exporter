@@ -8,7 +8,7 @@ use crate::{
         count_way_elements, create_nodes, find_next_existing_node, from_railway_elements,
         RailwayElement,
     },
-    prelude::{RailwayEdge, RailwayNode},
+    prelude::{OverpassImporter, RailwayEdge, RailwayGraph, RailwayGraphImporter, RailwayNode},
 };
 
 pub fn test_json_1() -> Value {
@@ -19,6 +19,10 @@ pub fn test_json_1() -> Value {
 pub fn test_json_vilbel() -> Value {
     serde_json::from_slice(include_bytes!("res/vilbel.json"))
         .expect("Failed to deserialize the JSON data")
+}
+
+pub fn test_graph_vilbel() -> RailwayGraph {
+    OverpassImporter::import(&test_json_vilbel()).unwrap()
 }
 
 #[test]
