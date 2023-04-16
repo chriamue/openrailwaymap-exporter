@@ -41,6 +41,10 @@ impl RailwayEdge {
     pub fn source_coordinate(&self) -> Coord<f64> {
         self.path.points().next().unwrap_or_default().0
     }
+    /// Coordinates of target node
+    pub fn target_coordinate(&self) -> Coord<f64> {
+        self.path.points().last().unwrap().0
+    }
 }
 
 #[cfg(test)]
@@ -103,5 +107,39 @@ mod tests {
 
         assert_eq!(edge1, edge2);
         assert_ne!(edge1, edge3);
+    }
+
+    #[test]
+    fn test_source_coordinate() {
+        let edge = RailwayEdge {
+            id: 1,
+            length: 1500.0,
+            path: LineString::from(vec![
+                coord! { x: 8.6821, y: 50.1109 },
+                coord! { x: 8.6921, y: 50.1209 },
+            ]),
+            source: 0,
+            target: 0,
+        };
+
+        let source_coord = edge.source_coordinate();
+        assert_eq!(source_coord, coord! { x: 8.6821, y: 50.1109 });
+    }
+
+    #[test]
+    fn test_target_coordinate() {
+        let edge = RailwayEdge {
+            id: 1,
+            length: 1500.0,
+            path: LineString::from(vec![
+                coord! { x: 8.6821, y: 50.1109 },
+                coord! { x: 8.6921, y: 50.1209 },
+            ]),
+            source: 0,
+            target: 0,
+        };
+
+        let target_coord = edge.target_coordinate();
+        assert_eq!(target_coord, coord! { x: 8.6921, y: 50.1209 });
     }
 }

@@ -32,6 +32,7 @@ bevy_panorbit_camera = { version = "0.2.0", optional = true }
 bevy_polyline = { version = "0.6.0", optional = true }
 geoutils = "0.5.1"
 geo-types = "0.7.9"
+geo = "0.24.1"
 petgraph = "0.6.3"
 rand = "0.8.4"
 rurel = { version = "0.4.0", optional = true }
