@@ -82,4 +82,5 @@ required-features = ["app3d"]
 
 [[test]]
 name = "bdd_tests"
+required-features = ["cucumber"]
 harness = false
