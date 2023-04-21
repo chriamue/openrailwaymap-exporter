@@ -15,6 +15,8 @@ crate-type = ["cdylib", "rlib"]
 default = ["app3d", "ai"]
 ai = ["rurel"]
 app3d = ["ai", "bevy", "bevy_egui", "bevy_mod_picking", "bevy_panorbit_camera", "bevy_polyline"]
+cucumber = []
+
 
 [dependencies]
 anyhow = "1.0"
@@ -62,6 +64,7 @@ console_error_panic_hook = "0.1"
 
 [dev-dependencies]
 approx = "0.5.1"
+cucumber = { version = "0.19.1" }
 tokio = { version = "1.13", features = ["rt", "macros"] }
 criterion = { version = "0.4", default-features = false }
 wasm-bindgen-test = "0.3.33"
@@ -76,3 +79,7 @@ harness = false
 name = "app3d"
 path = "examples/app3d.rs"
 required-features = ["app3d"]
+
+[[test]]
+name = "bdd_tests"
+harness = false
