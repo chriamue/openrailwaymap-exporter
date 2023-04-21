@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":[["PathFinding","`PathFinding` trait provides pathfinding algorithms for railway networks."]]};
+window.SIDEBAR_ITEMS = {"trait":["PathFinding"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":[["generate_dot_string","Generates a DOT string representation of a given RailwayGraph."],["generate_svg_string","Generates an SVG string representation of a given RailwayGraph."]]};
+window.SIDEBAR_ITEMS = {"fn":["generate_dot_string","generate_svg_string"]};

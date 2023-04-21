@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["SimulationEnvironment","Represents the environment for the decision agent, containing the `RailwayGraph`."]],"trait":[["ObservableEnvironment","A trait representing an environment that can be observed by decision agents."],["ObservableEnvironmentRef","A trait representing a reference to an observable environment."]]};
+window.SIDEBAR_ITEMS = {"struct":["SimulationEnvironment"],"trait":["ObservableEnvironment","ObservableEnvironmentRef"]};

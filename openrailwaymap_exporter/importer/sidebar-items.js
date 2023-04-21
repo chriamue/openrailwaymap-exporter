@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["overpass_importer","`OverpassImporter` is a struct that implements the `RailwayGraphImporter` trait for importing railway graph data from the Overpass API."]],"trait":[["RailwayGraphImporter","`RailwayGraphImporter` is a trait for importing railway graph data from different formats/sources."]]};
+window.SIDEBAR_ITEMS = {"mod":["overpass_importer"],"trait":["RailwayGraphImporter"]};

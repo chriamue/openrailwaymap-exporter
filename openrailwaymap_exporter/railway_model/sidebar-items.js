@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["railway_graph","A module for working with railway graphs."]],"struct":[["RailwayEdge","Represents a railway edge with a unique ID, a length, and a path."],["RailwayNode","Represents a railway node with a unique ID and geographic coordinates (latitude and longitude)."]]};
+window.SIDEBAR_ITEMS = {"mod":["railway_graph"],"struct":["RailwayEdge","RailwayNode"]};

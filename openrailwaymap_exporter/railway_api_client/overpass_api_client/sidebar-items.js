@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["OverpassApiClient","A basic client for the OpenRailwayMap API."]]};
+window.SIDEBAR_ITEMS = {"struct":["OverpassApiClient"]};
