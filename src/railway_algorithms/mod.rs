@@ -80,31 +80,44 @@ impl RailwayEdge {
             geo::Closest::Indeterminate => p_current_position,
         };
         let current_distance = current_point.euclidean_distance(&p_current_position);
-    
+
         let target_distance = current_distance + distance;
         let mut remaining_distance = target_distance;
-    
+
         let points: Vec<_> = self.path.points().collect();
         let _source_coord = self.source_coordinate();
         let target_coord = self.target_coordinate();
-    
-        let is_forward = direction_node.euclidean_distance(&target_coord) < current_position.euclidean_distance(&target_coord);
-    
-        let starts: Vec<_> = if is_forward { points.iter().collect() } else { points.iter().rev().collect() };
-        let ends: Vec<_> = if is_forward { points.iter().skip(1).collect() } else { points.iter().rev().skip(1).collect() };
-    
-        let segments: Vec<_> = starts.iter().zip(ends.iter()).map(|(s, e)| (*s, *e)).collect();
-    
+
+        let is_forward = direction_node.euclidean_distance(&target_coord)
+            < current_position.euclidean_distance(&target_coord);
+
+        let starts: Vec<_> = if is_forward {
+            points.iter().collect()
+        } else {
+            points.iter().rev().collect()
+        };
+        let ends: Vec<_> = if is_forward {
+            points.iter().skip(1).collect()
+        } else {
+            points.iter().rev().skip(1).collect()
+        };
+
+        let segments: Vec<_> = starts
+            .iter()
+            .zip(ends.iter())
+            .map(|(s, e)| (*s, *e))
+            .collect();
+
         let mut previous_point = current_point;
-    
+
         fn normalize_vector(x: f64, y: f64) -> (f64, f64) {
             let length = (x * x + y * y).sqrt();
             (x / length, y / length)
         }
-    
+
         for (start, end) in segments {
             let segment_length = start.euclidean_distance(end);
-    
+
             if remaining_distance < segment_length {
                 let (dir_x, dir_y) = normalize_vector(end.x() - start.x(), end.y() - start.y());
                 let new_position = Point::new(
@@ -117,10 +130,9 @@ impl RailwayEdge {
                 previous_point = *end;
             }
         }
-    
+
         direction_node
     }
-    
 }
 
 #[cfg(test)]

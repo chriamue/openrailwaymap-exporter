@@ -45,5 +45,8 @@ fn test_simulation_with_agent() {
     assert_eq!(updated_train.position().unwrap(), expected_new_position);
 
     // Check if the train's position has changed after the update
-    assert_ne!(updated_train.geo_location().unwrap(), train.geo_location().unwrap());
+    assert_ne!(
+        updated_train.geo_location().unwrap(),
+        train.geo_location().unwrap()
+    );
 }

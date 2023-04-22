@@ -1,23 +1,37 @@
 use cucumber::{given, then, when, World};
+use geo::Coord;
 use serde_json::Value;
 use std::fs;
 use std::path::Path;
 
 use openrailwaymap_exporter::importer::overpass_importer::OverpassImporter;
 use openrailwaymap_exporter::importer::RailwayGraphImporter;
+use openrailwaymap_exporter::prelude::RailwayEdge;
 use openrailwaymap_exporter::prelude::RailwayGraph;
 
+pub mod steps;
+
 #[derive(World, Debug)]
-struct MyWorld {
+pub struct BddWorld {
     json: Value,
     railway_graph: RailwayGraph,
+    edge: Option<RailwayEdge>,
+    current_location: Option<Coord<f64>>,
+    distance_to_travel: Option<f64>,
+    direction_coord: Option<Coord<f64>>,
+    new_position: Option<Coord<f64>>,
 }
 
-impl std::default::Default for MyWorld {
-    fn default() -> MyWorld {
-        MyWorld {
+impl std::default::Default for BddWorld {
+    fn default() -> BddWorld {
+        BddWorld {
             json: Value::Null,
             railway_graph: test_graph_vilbel(),
+            edge: None,
+            current_location: None,
+            distance_to_travel: None,
+            direction_coord: None,
+            new_position: None,
         }
     }
 }
@@ -32,7 +46,7 @@ pub fn test_graph_vilbel() -> RailwayGraph {
 }
 
 #[given(expr = "the JSON data from {string}")]
-async fn given_json_data(w: &mut MyWorld, file_path: String) {
+async fn given_json_data(w: &mut BddWorld, file_path: String) {
     let json_data =
         fs::read_to_string(Path::new(&file_path)).expect("Failed to read the JSON data from file");
 
@@ -40,21 +54,21 @@ async fn given_json_data(w: &mut MyWorld, file_path: String) {
 }
 
 #[when("the railway graph is imported")]
-async fn when_import_railway_graph(w: &mut MyWorld) {
+async fn when_import_railway_graph(w: &mut BddWorld) {
     w.railway_graph = OverpassImporter::import(&w.json).unwrap();
 }
 
 #[then(expr = "the graph should have {int} nodes")]
-async fn then_graph_should_have_nodes(w: &mut MyWorld, expected_nodes: usize) {
+async fn then_graph_should_have_nodes(w: &mut BddWorld, expected_nodes: usize) {
     assert_eq!(w.railway_graph.graph.node_count(), expected_nodes);
 }
 
 #[then(expr = "the graph should have {int} edges")]
-async fn then_graph_should_have_edges(w: &mut MyWorld, expected_edges: usize) {
+async fn then_graph_should_have_edges(w: &mut BddWorld, expected_edges: usize) {
     assert_eq!(w.railway_graph.graph.edge_count(), expected_edges);
 }
 
 #[tokio::main]
 async fn main() {
-    MyWorld::run("tests/features").await;
+    BddWorld::run("tests/features").await;
 }
