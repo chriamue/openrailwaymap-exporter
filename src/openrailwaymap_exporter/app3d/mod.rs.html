@@ -333,6 +333,13 @@
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -424,7 +431,8 @@
         .add_system(select_train_system)
         .add_system(edges::show_edges_on_path)
         .add_system(train_agent::train_agent_system)
-        .add_system(train_agent::train_agent_line_system);
+        .add_system(train_agent::train_agent_line_system)
+        .add_system(update_simulation_system);
     ui::add_ui_systems_to_app(app);
 }
 
@@ -501,6 +509,12 @@
         },
         ..Default::default()
     });
+}
+
+<span class="kw">fn </span>update_simulation_system(app_resource: Res&lt;AppResource&gt;, time: Res&lt;Time&gt;) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
+        simulation.lock().unwrap().update(time.delta())
+    }
 }
 
 <span class="kw">fn </span>update_look_at_position_system(

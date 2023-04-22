@@ -93,6 +93,23 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
 </span><span class="kw">use </span>geo_types::Coord;
@@ -143,6 +160,17 @@
     /// A reference to the `Any` trait for the object.
     ///
     </span><span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any;
+
+    <span class="doccomment">/// Returns a mutable reference to the `Any` trait for this object.
+    ///
+    /// This method is useful for downcasting the object to a concrete type
+    /// when working with trait objects.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to the `Any` trait for the object.
+    ///
+    </span><span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Any;
 }
 
 <span class="doccomment">/// The `NextTarget` trait provides methods for managing a single target for a railway object.
@@ -176,6 +204,12 @@
 
 <span class="doccomment">/// The Movable trait
 </span><span class="kw">pub trait </span>Movable {
+    <span class="doccomment">/// Returns the max speed of the object in km/h.
+    </span><span class="kw">fn </span>max_speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
+
+    <span class="doccomment">/// Sets the max speed of the object in km/h.
+    </span><span class="kw">fn </span>set_max_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_speed: f64);
+
     <span class="doccomment">/// Returns the current speed of the object in km/h.
     </span><span class="kw">fn </span>speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
 

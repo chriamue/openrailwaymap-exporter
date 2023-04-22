@@ -206,6 +206,32 @@
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -214,7 +240,7 @@
 
 </span><span class="kw">use crate</span>::{
     prelude::RailwayGraph,
-    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject},
+    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     types::RailwayObjectId,
 };
 <span class="kw">use </span>std::collections::HashMap;
@@ -227,8 +253,10 @@
 <span class="kw">pub mod </span>agents;
 
 <span class="kw">pub mod </span>environment;
+<span class="kw">use </span>bevy::prelude::warn;
 <span class="kw">pub use </span>environment::SimulationEnvironment;
 <span class="kw">use </span>geo::coord;
+<span class="kw">use </span>rand::seq::SliceRandom;
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests;
@@ -378,10 +406,11 @@
                 }
 
                 <span class="comment">// Update speed based on the acceleration
-                </span>object.set_speed(object.speed() + delta_time.as_secs_f64() * object.acceleration());
+                </span>object.set_speed(object.max_speed().min(object.speed() + delta_time.as_secs_f64() * object.acceleration()));
             }
         }
         <span class="self">self</span>.update_object_position(id, delta_time);
+        <span class="self">self</span>.update_train_target(id);
     }
 
     <span class="kw">fn </span>update_object_position(<span class="kw-2">&amp;mut </span><span class="self">self</span>, id: RailwayObjectId, delta_time: Duration) {
@@ -389,26 +418,49 @@
             <span class="kw">if let </span><span class="prelude-val">Some</span>(current_position) = object.position() {
                 <span class="kw">let </span>current_speed = object.speed();
                 <span class="kw">let </span>target = object.next_target();
-                <span class="kw">let </span>current_location = object.geo_location().unwrap();
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(current_location) = object.geo_location() {
+                    <span class="kw">let </span>graph = <span class="kw-2">&amp;</span><span class="self">self</span>.environment.graph;
+                    <span class="kw">let </span>next_node =
+                        graph.get_next_node(current_position, target.unwrap_or_default());
 
-                <span class="kw">let </span>graph = <span class="kw-2">&amp;</span><span class="self">self</span>.environment.graph;
-                <span class="kw">let </span>next_node = graph.get_next_node(current_position, target.unwrap_or_default());
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(next_node) = next_node {
+                        <span class="kw">let </span>edge = graph
+                            .railway_edge(current_position, next_node)
+                            .expect(<span class="string">&quot;Invalid edge&quot;</span>);
+                        <span class="kw">let </span>direction_node =
+                            <span class="kw-2">&amp;</span>graph.graph[<span class="kw-2">*</span>graph.node_indices.get(<span class="kw-2">&amp;</span>next_node).unwrap()];
 
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(next_node) = next_node {
-                    <span class="kw">let </span>edge = graph
-                        .railway_edge(current_position, next_node)
-                        .expect(<span class="string">&quot;Invalid edge&quot;</span>);
-                    <span class="kw">let </span>direction_node = <span class="kw-2">&amp;</span>graph.graph[<span class="kw-2">*</span>graph.node_indices.get(<span class="kw-2">&amp;</span>next_node).unwrap()];
+                        <span class="kw">let </span>direction_coord =
+                            <span class="macro">coord! </span>{ x: direction_node.lon, y: direction_node.lat };
+                        <span class="kw">let </span>distance_to_travel = current_speed * delta_time.as_secs_f64();
 
-                    <span class="kw">let </span>direction_coord = <span class="macro">coord! </span>{ x: direction_node.lon, y: direction_node.lat };
-                    <span class="kw">let </span>distance_to_travel = current_speed * delta_time.as_secs_f64();
-                    <span class="kw">let </span>new_geo_location = edge.position_on_edge(
-                        current_location,
-                        distance_to_travel,
-                        direction_coord,
-                    );
+                        <span class="kw">let </span>new_geo_location = edge.position_on_edge(
+                            current_location,
+                            distance_to_travel,
+                            direction_coord,
+                        );
 
-                    object.set_geo_location(<span class="prelude-val">Some</span>(new_geo_location));
+                        object.set_geo_location(<span class="prelude-val">Some</span>(new_geo_location));
+                    }
+                } <span class="kw">else </span>{
+                    <span class="macro">warn!</span>(<span class="string">&quot;object {} has no coordinates&quot;</span>, object.id())
+                }
+            }
+        }
+    }
+
+    <span class="kw">fn </span>update_train_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, id: RailwayObjectId) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.environment.objects.get_mut(<span class="kw-2">&amp;</span>id) {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = object.as_any_mut().downcast_mut::&lt;Train&gt;() {
+                <span class="kw">if </span>train.next_target().is_none() || train.position() == train.next_target() {
+                    <span class="kw">let </span>reachable_nodes = <span class="self">self
+                        </span>.environment
+                        .graph
+                        .reachable_nodes(train.position().unwrap());
+                    <span class="kw">if </span>!reachable_nodes.is_empty() {
+                        <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
+                        train.set_next_target(<span class="prelude-val">Some</span>(<span class="kw-2">*</span>reachable_nodes.choose(<span class="kw-2">&amp;mut </span>rng).unwrap()));
+                    }
                 }
             }
         }

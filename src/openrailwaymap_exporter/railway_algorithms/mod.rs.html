@@ -239,6 +239,22 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
@@ -250,7 +266,7 @@
 </span><span class="kw">mod </span>path_finding;
 <span class="kw">use </span><span class="kw">crate</span>::algorithms::points_in_front;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::{RailwayEdge, RailwayGraph};
-<span class="kw">use </span>geo::Coord;
+<span class="kw">use </span>geo::{Coord, HaversineDistance, Point};
 
 <span class="kw">use </span>geo::algorithm::euclidean_distance::EuclideanDistance;
 <span class="kw">pub use </span>path_finding::PathFinding;
@@ -330,17 +346,21 @@
         <span class="kw">let </span><span class="kw-2">mut </span>new_position = current_location;
 
         <span class="kw">for </span>next_point <span class="kw">in </span>points_in_front {
-            <span class="kw">let </span>segment_distance = current_point.euclidean_distance(<span class="kw-2">&amp;</span>next_point);
+            <span class="kw">let </span>current_point_geo = Point::new(current_point.x, current_point.y);
+            <span class="kw">let </span>next_point_geo = Point::new(next_point.x, next_point.y);
 
+            <span class="comment">// Use haversine_distance instead of euclidean_distance
+            </span><span class="kw">let </span>segment_distance = current_point_geo.haversine_distance(<span class="kw-2">&amp;</span>next_point_geo);
+
+            <span class="kw">let </span>ratio = remaining_distance / segment_distance;
+            new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
+            new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
             <span class="kw">if </span>remaining_distance &lt; segment_distance {
-                <span class="kw">let </span>ratio = remaining_distance / segment_distance;
-                new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
-                new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
                 <span class="kw">break</span>;
+            } <span class="kw">else </span>{
+                current_point = next_point;
+                remaining_distance -= segment_distance;
             }
-
-            current_point = next_point;
-            remaining_distance -= segment_distance;
         }
         new_position
     }
@@ -363,35 +383,47 @@
             id: <span class="number">1</span>,
             length: <span class="number">100.0</span>,
             path: <span class="macro">line_string!</span>[
-                <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">0.0 </span>},
-                <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">20.0 </span>},
-                <span class="macro">coord! </span>{ x: <span class="number">50.0</span>, y: <span class="number">50.0 </span>},
-                <span class="macro">coord! </span>{ x: <span class="number">100.0</span>, y: <span class="number">100.0 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">8.6821</span>, y: <span class="number">50.1109 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">8.6825</span>, y: <span class="number">50.1112 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">8.6830</span>, y: <span class="number">50.1115 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">8.6835</span>, y: <span class="number">50.1118 </span>},
             ],
             source: <span class="number">1</span>,
             target: <span class="number">2</span>,
         };
 
-        <span class="kw">let </span>current_position1 = <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">0.0 </span>};
-        <span class="kw">let </span>current_position2 = <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">20.0 </span>};
+        <span class="kw">let </span>current_position1 = <span class="macro">coord! </span>{ x: <span class="number">8.6821</span>, y: <span class="number">50.1109 </span>};
+        <span class="kw">let </span>current_position2 = <span class="macro">coord! </span>{ x: <span class="number">8.6825</span>, y: <span class="number">50.1112 </span>};
         <span class="kw">let </span>distance1 = <span class="number">15.0</span>;
-        <span class="kw">let </span>direction1 = <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">20.0 </span>};
-        <span class="kw">let </span>direction2 = <span class="macro">coord! </span>{ x: <span class="number">100.0</span>, y: <span class="number">100.0 </span>};
+        <span class="kw">let </span>direction1 = <span class="macro">coord! </span>{ x: <span class="number">8.6825</span>, y: <span class="number">50.1112 </span>};
+        <span class="kw">let </span>direction2 = <span class="macro">coord! </span>{ x: <span class="number">8.6835</span>, y: <span class="number">50.1118 </span>};
 
         <span class="kw">let </span>new_position1 = edge.position_on_edge(current_position1, distance1, direction1);
         <span class="kw">let </span>new_position2 = edge.position_on_edge(current_position2, distance1, direction2);
 
-        <span class="macro">assert_eq!</span>(new_position1, <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">15.0 </span>});
-        <span class="macro">assert_relative_eq!</span>(new_position2, <span class="macro">coord! </span>{ x: <span class="number">12.9</span>, y: <span class="number">27.7 </span>}, epsilon = <span class="number">0.1</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position1.x, <span class="number">8.6823</span>, epsilon = <span class="number">0.001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position1.y, <span class="number">50.1111</span>, epsilon = <span class="number">0.001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position2.x, <span class="number">8.6830</span>, epsilon = <span class="number">0.001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position2.y, <span class="number">50.1115</span>, epsilon = <span class="number">0.001</span>);
 
-        <span class="kw">let </span>current_position3 = <span class="macro">coord! </span>{ x: <span class="number">50.0</span>, y: <span class="number">50.0 </span>};
+        <span class="kw">let </span>current_position3 = <span class="macro">coord! </span>{ x: <span class="number">8.6830</span>, y: <span class="number">50.1115 </span>};
         <span class="kw">let </span>distance2 = <span class="number">25.0</span>;
 
         <span class="kw">let </span>new_position3 = edge.position_on_edge(current_position3, distance2, direction1);
         <span class="kw">let </span>new_position4 = edge.position_on_edge(current_position3, distance2, direction2);
 
-        <span class="macro">assert_relative_eq!</span>(new_position3, <span class="macro">coord! </span>{ x: <span class="number">32.3</span>, y: <span class="number">32.3 </span>}, epsilon = <span class="number">0.1</span>);
-        <span class="macro">assert_relative_eq!</span>(new_position4, <span class="macro">coord! </span>{ x: <span class="number">67.7</span>, y: <span class="number">67.7 </span>}, epsilon = <span class="number">0.1</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position3.x, <span class="number">8.6827</span>, epsilon = <span class="number">0.0001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position3.y, <span class="number">50.1113</span>, epsilon = <span class="number">0.0001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position4.x, <span class="number">8.6833</span>, epsilon = <span class="number">0.0001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position4.y, <span class="number">50.1116</span>, epsilon = <span class="number">0.0001</span>);
+
+        <span class="kw">let </span>current_position4 = <span class="macro">coord! </span>{ x: <span class="number">8.6830</span>, y: <span class="number">50.1115 </span>};
+        <span class="kw">let </span>distance3 = <span class="number">100.0</span>;
+
+        <span class="kw">let </span>new_position5 = edge.position_on_edge(current_position4, distance3, direction2);
+
+        <span class="macro">assert_relative_eq!</span>(new_position5.x, <span class="number">8.6840</span>, epsilon = <span class="number">0.0001</span>);
+        <span class="macro">assert_relative_eq!</span>(new_position5.y, <span class="number">50.1121</span>, epsilon = <span class="number">0.0001</span>);
     }
 
     <span class="kw">pub fn </span>test_elements() -&gt; Vec&lt;RailwayElement&gt; {

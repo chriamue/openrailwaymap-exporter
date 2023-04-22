@@ -422,12 +422,10 @@
 <a href="#422" id="422">422</a>
 <a href="#423" id="423">423</a>
 <a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span>geo_types::coord;
+<span class="kw">use </span>geo::coord;
 <span class="kw">use </span>rand::seq::SliceRandom;
 
 <span class="kw">use super</span>::{AppResource, Node};
@@ -435,7 +433,7 @@
     ai::{TrainAgentAI, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
-    railway_objects::{Movable, NextTarget, RailwayObject, Train},
+    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     simulation::{
         agents::{ForwardUntilTargetAgent, RailMovableAction},
         Simulation, SimulationObject,
@@ -461,7 +459,8 @@
 <span class="attr">#[derive(Component, Debug)]
 </span><span class="kw">pub struct </span>TrainAgent {
     <span class="kw">pub </span>id: RailwayObjectId,
-    <span class="kw">pub </span>train: Train,
+    <span class="attr">#[deprecated(since = <span class="string">&quot;0.1.0&quot;</span>, note = <span class="string">&quot;This field is no longer used.&quot;</span>)]
+    </span><span class="kw">pub </span>train: Train,
     <span class="kw">pub </span>current_edge: <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt;,
     <span class="kw">pub </span>edge_progress: f64,
     <span class="kw">pub </span>remaining_distance: f64, <span class="comment">// Distance in meters
@@ -532,13 +531,23 @@
     simulation: <span class="kw-2">&amp;mut </span>Simulation,
 ) -&gt; RailwayObjectId {
     <span class="kw">let </span>id = TRAIN_AGENT_ID.fetch_add(<span class="number">1</span>, Ordering::SeqCst);
+
+    <span class="kw">let </span>geo_location = {
+        <span class="kw">let </span>node = simulation
+            .get_observable_environment()
+            .get_graph()
+            .get_node_by_id(position.unwrap());
+        <span class="prelude-val">Some</span>(<span class="macro">coord! </span>{ x: node.unwrap().lon, y: node.unwrap().lat})
+    };
+
     <span class="kw">let </span>agent = ForwardUntilTargetAgent::new(id);
     <span class="kw">let </span>train = Train {
         id,
         position,
-        geo_location: <span class="prelude-val">None</span>,
+        geo_location,
         next_target: target,
         targets: VecDeque::new(),
+        max_speed: <span class="number">80.0 </span>/ <span class="number">3.6</span>,
         speed: <span class="number">20.0</span>,
         ..Default::default()
     };
@@ -640,8 +649,6 @@
                         update_train_position(
                             <span class="kw-2">&amp;mut </span>train_agent,
                             <span class="kw-2">&amp;mut </span>transform,
-                            <span class="kw-2">&amp;</span>edge,
-                            time.delta_seconds() <span class="kw">as </span>f64,
                             <span class="kw-2">&amp;</span>projection,
                             <span class="kw-2">&amp;</span>app_resource,
                         );
@@ -757,49 +764,21 @@
 </span><span class="kw">fn </span>update_train_position(
     train_agent: <span class="kw-2">&amp;mut </span>TrainAgent,
     transform: <span class="kw-2">&amp;mut </span>Transform,
-    edge: <span class="kw-2">&amp;</span>RailwayEdge,
-    time_delta: f64,
     projection: <span class="kw-2">&amp;</span><span class="kw">super</span>::Projection,
     app_resource: <span class="kw-2">&amp;</span>Res&lt;AppResource&gt;,
 ) {
-    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(start_coord), <span class="prelude-val">Some</span>(end_coord)) =
-        (edge.path.coords().next(), edge.path.coords().last())
-    {
-        <span class="kw">let </span>edge_length = edge.length;
-
-        <span class="kw">let </span>distance = train_agent.train.speed() * time_delta;
-        <span class="kw">let </span>edge_progress = train_agent.edge_progress + distance;
-        <span class="kw">if </span>edge_progress &lt; edge_length {
-            <span class="kw">let </span>progress_ratio = edge_progress / edge_length;
-            train_agent.edge_progress = progress_ratio;
-
-            <span class="kw">let </span>new_coord = <span class="macro">coord! </span>{
-                x: start_coord.x + (end_coord.x - start_coord.x) * progress_ratio,
-                y: start_coord.y + (end_coord.y - start_coord.y) * progress_ratio,
-            };
-
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(view_coord) = projection.project(new_coord) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(location) = train.geo_location() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(view_coord) = projection.project(location) {
                 transform.translation.x = view_coord.x;
                 transform.translation.y = view_coord.y;
             }
-        } <span class="kw">else </span>{
-            <span class="comment">// The train has reached the end of the edge
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train_agent.train.next_target() {
-                train_agent.train.position = <span class="prelude-val">Some</span>(target_node_id);
-                train_agent.train.set_next_target(<span class="prelude-val">None</span>);
-                train_agent.current_edge = <span class="prelude-val">None</span>;
-                train_agent.edge_progress = <span class="number">0.0</span>;
-            }
-        }
-    }
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(distance) = train_agent.remaining_distance(graph) {
-            train_agent.remaining_distance = distance;
         }
     }
 }
 
 <span class="kw">pub fn </span>train_agent_line_system(
+    app_resource: Res&lt;AppResource&gt;,
     <span class="kw-2">mut </span>commands: Commands,
     train_agent_query: Query&lt;(<span class="kw-2">&amp;</span>TrainAgent, <span class="kw-2">&amp;</span>Transform)&gt;,
     node_query: Query&lt;(<span class="kw-2">&amp;</span>Node, <span class="kw-2">&amp;</span>Transform), Without&lt;TrainAgent&gt;&gt;,
@@ -811,44 +790,61 @@
         commands.entity(entity).despawn();
     }
     <span class="kw">for </span>(train_agent, train_agent_transform) <span class="kw">in </span>train_agent_query.iter() {
-        <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) = (
-            train_agent.train.position(),
-            train_agent.train.next_target(),
-        ) {
-            <span class="kw">let </span>current_node_transform = node_query
-                .iter()
-                .find(|(node, <span class="kw">_</span>)| node.id == current_node_id)
-                .map(|(<span class="kw">_</span>, transform)| transform);
-
-            <span class="kw">let </span>target_node_transform = node_query
-                .iter()
-                .find(|(node, <span class="kw">_</span>)| node.id == target_node_id)
-                .map(|(<span class="kw">_</span>, transform)| transform);
-
-            <span class="kw">if let </span>(<span class="prelude-val">Some</span>(_current_node_transform), <span class="prelude-val">Some</span>(target_node_transform)) =
-                (current_node_transform, target_node_transform)
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
+            <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) =
+                (train.position(), train.next_target())
             {
-                commands
-                    .spawn(PolylineBundle {
-                        polyline: polylines.add(Polyline {
-                            vertices: <span class="macro">vec!</span>[
-                                train_agent_transform.translation,
-                                <span class="comment">//current_node_transform.translation,
-                                </span>target_node_transform.translation,
-                            ],
-                        }),
-                        material: polyline_materials.add(PolylineMaterial {
-                            width: <span class="number">2.0</span>,
-                            color: Color::RED,
-                            perspective: <span class="bool-val">false</span>,
+                <span class="kw">let </span>current_node_transform = node_query
+                    .iter()
+                    .find(|(node, <span class="kw">_</span>)| node.id == current_node_id)
+                    .map(|(<span class="kw">_</span>, transform)| transform);
+
+                <span class="kw">let </span>target_node_transform = node_query
+                    .iter()
+                    .find(|(node, <span class="kw">_</span>)| node.id == target_node_id)
+                    .map(|(<span class="kw">_</span>, transform)| transform);
+
+                <span class="kw">if let </span>(<span class="prelude-val">Some</span>(_current_node_transform), <span class="prelude-val">Some</span>(target_node_transform)) =
+                    (current_node_transform, target_node_transform)
+                {
+                    commands
+                        .spawn(PolylineBundle {
+                            polyline: polylines.add(Polyline {
+                                vertices: <span class="macro">vec!</span>[
+                                    train_agent_transform.translation,
+                                    <span class="comment">//current_node_transform.translation,
+                                    </span>target_node_transform.translation,
+                                ],
+                            }),
+                            material: polyline_materials.add(PolylineMaterial {
+                                width: <span class="number">2.0</span>,
+                                color: Color::RED,
+                                perspective: <span class="bool-val">false</span>,
+                                ..default()
+                            }),
                             ..default()
-                        }),
-                        ..default()
-                    })
-                    .insert(TrainAgentLine);
+                        })
+                        .insert(TrainAgentLine);
+                }
             }
         }
     }
 }
+
+<span class="kw">fn </span>clone_train_from_app(train_agent: <span class="kw-2">&amp;</span>TrainAgent, app_resource: <span class="kw-2">&amp;</span>AppResource) -&gt; <span class="prelude-ty">Option</span>&lt;Train&gt; {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.try_lock() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(object) = simulation
+                .get_observable_environment()
+                .get_object(<span class="kw-2">&amp;</span>train_agent.id)
+            {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = object.as_any().downcast_ref::&lt;Train&gt;() {
+                    <span class="kw">return </span><span class="prelude-val">Some</span>(train.clone());
+                }
+            }
+        }
+    }
+    <span class="prelude-val">None
+</span>}
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

@@ -169,6 +169,22 @@
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
 </pre><pre class="rust"><code><span class="kw">use </span>geo_types::Coord;
 <span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::collections::VecDeque;
@@ -192,6 +208,8 @@
     </span><span class="kw">pub </span>targets: VecDeque&lt;i64&gt;,
     <span class="doccomment">/// The current speed of the train
     </span><span class="kw">pub </span>speed: f64,
+    <span class="doccomment">/// The current speed of the train
+    </span><span class="kw">pub </span>max_speed: f64,
     <span class="doccomment">/// The current acceleration of the train
     </span><span class="kw">pub </span>acceleration: f64,
 }
@@ -211,6 +229,10 @@
     }
 
     <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Any {
         <span class="self">self
     </span>}
 }
@@ -268,6 +290,14 @@
     <span class="kw">fn </span>set_acceleration(<span class="kw-2">&amp;mut </span><span class="self">self</span>, acceleration: f64) {
         <span class="self">self</span>.acceleration = acceleration;
     }
+
+    <span class="kw">fn </span>max_speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
+        <span class="self">self</span>.max_speed
+    }
+
+    <span class="kw">fn </span>set_max_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_speed: f64) {
+        <span class="self">self</span>.max_speed = max_speed;
+    }
 }
 
 <span class="attr">#[cfg(test)]
@@ -312,6 +342,7 @@
             geo_location: <span class="prelude-val">Some</span>(<span class="macro">coord! </span>{ x:<span class="number">1.0</span>, y: <span class="number">2.0</span>}),
             next_target: <span class="prelude-val">Some</span>(<span class="number">2</span>),
             targets: VecDeque::from(<span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]),
+            max_speed: <span class="number">80.0</span>,
             speed: <span class="number">0.0</span>,
             acceleration: <span class="number">0.0</span>,
         };
@@ -330,6 +361,7 @@
             geo_location: <span class="prelude-val">Some</span>(<span class="macro">coord! </span>{ x:<span class="number">1.0</span>, y: <span class="number">2.0</span>}),
             next_target: <span class="prelude-val">Some</span>(<span class="number">2</span>),
             targets: VecDeque::from(<span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]),
+            max_speed: <span class="number">80.0</span>,
             speed: <span class="number">0.0</span>,
             acceleration: <span class="number">0.0</span>,
         };
