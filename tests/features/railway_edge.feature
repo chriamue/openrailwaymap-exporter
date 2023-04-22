@@ -11,4 +11,4 @@ Feature: Railway Edge position_on_edge
     And a distance to travel of 500 meters
     And a direction coordinate of (8.6921, 50.1209)
     When I call position_on_edge with the given parameters
-    #Then the new position should be approximately (8.6854, 50.1140)
+    Then the new position should be approximately (8.6854, 50.1140)

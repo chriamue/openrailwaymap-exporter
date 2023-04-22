@@ -1,8 +1,10 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
+use geo::{coord, line_string};
 use openrailwaymap_exporter::{
     importer::overpass_importer::{find_next_existing_node, from_railway_elements, RailwayElement},
     railway_algorithms::PathFinding,
+    railway_model::RailwayEdge,
 };
 use petgraph::stable_graph::NodeIndex;
 use std::collections::HashMap;
@@ -67,11 +69,42 @@ fn reachable_nodes_benchmark(c: &mut Criterion) {
     });
 }
 
+fn update_position_benchmark(c: &mut Criterion) {
+    let edge = RailwayEdge {
+        id: 1,
+        length: 100.0,
+        path: line_string![
+            coord! { x: 0.0, y: 0.0 },
+            coord! { x: 0.0, y: 20.0 },
+            coord! { x: 50.0, y: 50.0 },
+            coord! { x: 100.0, y: 100.0 },
+        ],
+        source: 1,
+        target: 2,
+    };
+
+    let current_location = coord! { x: 10.0, y: 20.0 };
+    let distance_to_travel = 25.0;
+    let direction_coord = coord! { x: 100.0, y: 100.0 };
+
+    c.bench_function("update_position", |b| {
+        b.iter(|| {
+            let updated_position = edge.position_on_edge(
+                black_box(current_location),
+                black_box(distance_to_travel),
+                black_box(direction_coord),
+            );
+            assert_ne!(updated_position, current_location);
+        })
+    });
+}
+
 criterion_group!(
     benches,
     benchmark_from_railway_elements,
     find_next_existing_node_benchmark,
     shortest_path_edges_benchmark,
-    reachable_nodes_benchmark
+    reachable_nodes_benchmark,
+    update_position_benchmark
 );
 criterion_main!(benches);

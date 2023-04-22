@@ -7,8 +7,11 @@
 /// The `PathFinding` trait is implemented for the `RailwayGraph` type, allowing users
 /// to perform pathfinding operations on railway graphs.
 mod path_finding;
+use crate::algorithms::points_in_front;
 use crate::prelude::{RailwayEdge, RailwayGraph};
-use geo::{coord, Coord, Point};
+use geo::Coord;
+
+use geo::algorithm::euclidean_distance::EuclideanDistance;
 pub use path_finding::PathFinding;
 use petgraph::visit::Bfs;
 
@@ -51,142 +54,103 @@ impl RailwayGraph {
     }
 }
 
-use geo::algorithm::closest_point::ClosestPoint;
-use geo::algorithm::euclidean_distance::EuclideanDistance;
-
 impl RailwayEdge {
-    /// Returns a position on the edge given a current position, a distance to a node (source or target),
-    /// and the node itself.
+    /// Calculates a new position on the edge based on the given parameters.
     ///
     /// # Arguments
     ///
-    /// * `current_position` - The current position as a `Coord<f64>`.
-    /// * `distance` - The distance to the given node in meters.
-    /// * `direction_node` - The node (source or target) as a `Coord<f64>` where the distance is going to.
+    /// * `current_location` - A `Coord<f64>` representing the current location on the edge.
+    /// * `distance_to_travel` - A `f64` representing the distance to travel along the edge from the current location.
+    /// * `direction_coord` - A `Coord<f64>` representing the target direction along the edge.
     ///
     /// # Returns
     ///
-    /// A `Coord<f64>` representing the new position on the edge.
+    /// A `Coord<f64>` representing the new position on the edge after traveling the specified distance in the given direction.
+    ///
     pub fn position_on_edge(
         &self,
-        current_position: Coord<f64>,
-        distance: f64,
-        direction_node: Coord<f64>,
+        current_location: Coord<f64>,
+        distance_to_travel: f64,
+        direction_coord: Coord<f64>,
     ) -> Coord<f64> {
-        let p_current_position = Point::new(current_position.x, current_position.y);
-        let current_point = match self.path.closest_point(&p_current_position) {
-            geo::Closest::Intersection(p) => p,
-            geo::Closest::SinglePoint(p) => p,
-            geo::Closest::Indeterminate => p_current_position,
-        };
-        let current_distance = current_point.euclidean_distance(&p_current_position);
+        // Get the points in front of the current_location in the direction of direction_coord
+        let points_in_front = points_in_front(&self.path, current_location, direction_coord);
 
-        let target_distance = current_distance + distance;
-        let mut remaining_distance = target_distance;
-
-        let points: Vec<_> = self.path.points().collect();
-        let _source_coord = self.source_coordinate();
-        let target_coord = self.target_coordinate();
-
-        let is_forward = direction_node.euclidean_distance(&target_coord)
-            < current_position.euclidean_distance(&target_coord);
-
-        let starts: Vec<_> = if is_forward {
-            points.iter().collect()
-        } else {
-            points.iter().rev().collect()
-        };
-        let ends: Vec<_> = if is_forward {
-            points.iter().skip(1).collect()
-        } else {
-            points.iter().rev().skip(1).collect()
-        };
-
-        let segments: Vec<_> = starts
-            .iter()
-            .zip(ends.iter())
-            .map(|(s, e)| (*s, *e))
-            .collect();
-
-        let mut previous_point = current_point;
-
-        fn normalize_vector(x: f64, y: f64) -> (f64, f64) {
-            let length = (x * x + y * y).sqrt();
-            (x / length, y / length)
+        // If there are no points in front, return the current_location
+        if points_in_front.is_empty() {
+            return current_location;
         }
 
-        for (start, end) in segments {
-            let segment_length = start.euclidean_distance(end);
+        // Calculate the remaining distance to travel
+        let mut remaining_distance = distance_to_travel;
 
-            if remaining_distance < segment_length {
-                let (dir_x, dir_y) = normalize_vector(end.x() - start.x(), end.y() - start.y());
-                let new_position = Point::new(
-                    previous_point.x() + dir_x * remaining_distance,
-                    previous_point.y() + dir_y * remaining_distance,
-                );
-                return coord! { x: new_position.x(), y: new_position.y() };
-            } else {
-                remaining_distance -= segment_length;
-                previous_point = *end;
+        // Iterate through the points in front and find the point where the remaining_distance is reached
+        let mut current_point = current_location;
+        let mut new_position = current_location;
+
+        for next_point in points_in_front {
+            let segment_distance = current_point.euclidean_distance(&next_point);
+
+            if remaining_distance < segment_distance {
+                let ratio = remaining_distance / segment_distance;
+                new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
+                new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
+                break;
             }
-        }
 
-        direction_node
+            current_point = next_point;
+            remaining_distance -= segment_distance;
+        }
+        new_position
     }
 }
 
 #[cfg(test)]
 pub mod tests {
     use super::*;
+    use approx::assert_relative_eq;
     use geo::{coord, line_string};
 
     use crate::importer::overpass_importer::{
         from_railway_elements, Coordinate, ElementType, RailwayElement,
     };
-
     use std::collections::HashMap;
+
     #[test]
     fn test_position_on_edge() {
         let edge = RailwayEdge {
             id: 1,
-            length: 1500.0,
+            length: 100.0,
             path: line_string![
                 coord! { x: 0.0, y: 0.0 },
-                coord! { x: 0.0, y: 10.0 },
-                coord! { x: 10.0, y: 10.0 },
-                coord! { x: 10.0, y: 20.0 },
-                coord! { x: 20.0, y: 20.0 },
+                coord! { x: 0.0, y: 20.0 },
+                coord! { x: 50.0, y: 50.0 },
+                coord! { x: 100.0, y: 100.0 },
             ],
             source: 1,
             target: 2,
         };
 
-        let current_position = coord! { x: 0.0, y: 5.0 };
-        let distance = 7.0;
-        let source_node = coord! { x: 0.0, y: 0.0 };
-        let target_node = coord! { x: 20.0, y: 20.0 };
+        let current_position1 = coord! { x: 0.0, y: 0.0 };
+        let current_position2 = coord! { x: 0.0, y: 20.0 };
+        let distance1 = 15.0;
+        let direction1 = coord! { x: 0.0, y: 20.0 };
+        let direction2 = coord! { x: 100.0, y: 100.0 };
 
-        let new_position_to_source = edge.position_on_edge(current_position, distance, source_node);
-        let new_position_to_target = edge.position_on_edge(current_position, distance, target_node);
+        let new_position1 = edge.position_on_edge(current_position1, distance1, direction1);
+        let new_position2 = edge.position_on_edge(current_position2, distance1, direction2);
 
-        assert_eq!(new_position_to_source, coord! { x: -7.0, y: 5.0 });
-        assert_eq!(new_position_to_target, coord! { x: 0.0, y: 12.0 });
+        assert_eq!(new_position1, coord! { x: 0.0, y: 15.0 });
+        assert_relative_eq!(new_position2, coord! { x: 12.9, y: 27.7 }, epsilon = 0.1);
 
-        //let current_position = coord! { x: 10.0, y: 10.0 };
-        //let distance = 15.0;
+        let current_position3 = coord! { x: 50.0, y: 50.0 };
+        let distance2 = 25.0;
 
-        //let new_position_to_source = edge.position_on_edge(current_position, distance, source_node);
-        //let new_position_to_target = edge.position_on_edge(current_position, distance, target_node);
+        let new_position3 = edge.position_on_edge(current_position3, distance2, direction1);
+        let new_position4 = edge.position_on_edge(current_position3, distance2, direction2);
 
-        //assert_eq!(new_position_to_source, coord! { x: 0.0, y: 5.0 });
-        //assert_eq!(new_position_to_target, coord! { x: 15.0, y: 20.0 });
-
-        let current_position = coord! { x: 0.0, y: 0.0 };
-        let distance = 15.0;
-
-        let new_position_to_target = edge.position_on_edge(current_position, distance, target_node);
-
-        assert_eq!(new_position_to_target, coord! { x: 5.0, y: 10.0 });
+        assert_relative_eq!(new_position3, coord! { x: 32.3, y: 32.3 }, epsilon = 0.1);
+        assert_relative_eq!(new_position4, coord! { x: 67.7, y: 67.7 }, epsilon = 0.1);
     }
 
     pub fn test_elements() -> Vec<RailwayElement> {
