@@ -5,7 +5,7 @@ mod railway_element;
 use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
 use anyhow::Result;
 pub use coordinate::Coordinate;
-use geo_types::{coord, LineString};
+use geo::{coord, LineString};
 use geoutils::Location;
 use petgraph::graph::Graph;
 use petgraph::stable_graph::NodeIndex;

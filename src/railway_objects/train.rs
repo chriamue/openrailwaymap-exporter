@@ -1,4 +1,4 @@
-use geo_types::Coord;
+use geo::Coord;
 use std::any::Any;
 use std::collections::VecDeque;
 
@@ -115,7 +115,7 @@ impl Movable for Train {
 
 #[cfg(test)]
 mod tests {
-    use geo_types::coord;
+    use geo::coord;
 
     use super::*;
 

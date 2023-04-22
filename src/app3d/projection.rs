@@ -1,5 +1,5 @@
 use bevy::prelude::{Resource, Vec3};
-use geo_types::Coord;
+use geo::Coord;
 
 /// The `Projection` resource is responsible for converting geographical coordinates
 /// (latitude and longitude) to view coordinates, taking into account the view dimensions

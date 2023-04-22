@@ -68,7 +68,7 @@ impl DecisionAgent for ForwardUntilTargetAgent {
 
 #[cfg(test)]
 mod tests {
-    use geo_types::coord;
+    use geo::coord;
     use std::collections::VecDeque;
 
     use super::*;

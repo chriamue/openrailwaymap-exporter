@@ -1,6 +1,6 @@
 //! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
-use geo_types::Coord;
+use geo::Coord;
 use std::any::Any;
 use std::collections::VecDeque;
 mod train;

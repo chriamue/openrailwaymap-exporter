@@ -1,4 +1,4 @@
-use geo_types::{coord, Coord};
+use geo::{coord, Coord};
 use petgraph::visit::IntoNodeReferences;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
@@ -203,13 +203,11 @@ fn euclidean_distance(coord1: &Coord, coord2: &Coord) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use geo_types::coord;
-
-    use std::collections::HashMap;
-
     use crate::importer::overpass_importer::{
         from_railway_elements, Coordinate, ElementType, RailwayElement,
     };
+    use geo::coord;
+    use std::collections::HashMap;
 
     #[test]
     fn test_bounding_box() {

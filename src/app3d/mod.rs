@@ -16,7 +16,7 @@ use bevy_egui::EguiPlugin;
 use bevy_mod_picking::PickingEvent;
 use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
 use bevy_polyline::PolylinePlugin;
-use geo_types::coord;
+use geo::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 

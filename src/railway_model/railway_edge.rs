@@ -1,4 +1,4 @@
-use geo_types::{Coord, LineString};
+use geo::{Coord, LineString};
 
 use crate::types::NodeId;
 
@@ -8,7 +8,7 @@ use crate::types::NodeId;
 ///
 /// ```
 /// use openrailwaymap_exporter::prelude::RailwayEdge;
-/// use geo_types::{coord, LineString};
+/// use geo::{coord, LineString};
 ///
 /// let edge = RailwayEdge {
 ///     id: 1,
@@ -49,9 +49,8 @@ impl RailwayEdge {
 
 #[cfg(test)]
 mod tests {
-    use geo_types::coord;
-
     use super::*;
+    use geo::coord;
 
     #[test]
     fn test_railway_edge_creation() {
