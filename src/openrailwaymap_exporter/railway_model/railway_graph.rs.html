@@ -432,9 +432,7 @@
 <a href="#432" id="432">432</a>
 <a href="#433" id="433">433</a>
 <a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-</pre><pre class="rust"><code><span class="kw">use </span>geo_types::{coord, Coord};
+</pre><pre class="rust"><code><span class="kw">use </span>geo::{coord, Coord};
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 <span class="kw">use </span>std::collections::HashMap;
@@ -639,13 +637,11 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>geo_types::coord;
-
-    <span class="kw">use </span>std::collections::HashMap;
-
     <span class="kw">use </span><span class="kw">crate</span>::importer::overpass_importer::{
         from_railway_elements, Coordinate, ElementType, RailwayElement,
     };
+    <span class="kw">use </span>geo::coord;
+    <span class="kw">use </span>std::collections::HashMap;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_bounding_box() {
