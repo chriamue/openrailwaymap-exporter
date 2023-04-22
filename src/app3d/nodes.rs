@@ -56,7 +56,7 @@ pub fn select_node_system(
                 if let Some(simulation) = &app_resource.simulation {
                     let mut sim = simulation.lock().unwrap();
                     let id = create_train(Some(node_id), None, &mut sim);
-                    let mut train_agent = TrainAgent::on_node(id, node_id);
+                    let mut train_agent = TrainAgent::new(id);
                     if let Some(graph) = &app_resource.graph {
                         train_agent.train(graph, 100000);
                     }

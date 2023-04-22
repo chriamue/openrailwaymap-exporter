@@ -4,7 +4,7 @@
 )]
 
 use super::nodes::SelectedNode;
-use super::train_agent::TrainAgent;
+use super::train_agent::{clone_train_from_app, TrainAgent};
 use super::{display_graph, SelectedTrain};
 use super::{AppResource, Edge, Node, Projection};
 use super::{InteractionMode, InteractionModeResource};
@@ -14,7 +14,7 @@ use crate::prelude::RailwayApiClient;
 use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
-use crate::railway_objects::{Movable, NextTarget, RailwayObject};
+use crate::railway_objects::{Movable, NextTarget, RailwayObject, Train};
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
@@ -68,7 +68,9 @@ pub fn selection_ui_system(
         if let Some(train_agent_id) = selected_train.train_agent_id {
             for train_agent in q_train.iter() {
                 if train_agent_id == train_agent.id {
-                    display_selected_train_agent_info(ui, train_agent, &mut ui_update_timer);
+                    if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
+                        display_selected_train_agent_info(ui, &train, &mut ui_update_timer);
+                    }
                 }
             }
         }
@@ -161,21 +163,13 @@ pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_
 
 pub fn display_selected_train_agent_info(
     ui: &mut egui::Ui,
-    train_agent: &TrainAgent,
-    ui_update_timer: &mut UiUpdateTimer,
+    train: &Train,
+    _ui_update_timer: &mut UiUpdateTimer,
 ) {
-    ui.label(format!("ID: {}", train_agent.id));
-    ui.label(format!("Current: {:?}", train_agent.train.position()));
-    ui.label(format!("Target: {:?}", train_agent.train.next_target()));
-    ui.label(format!("Speed: {} km/h", train_agent.train.speed() * 3.6));
-    if ui_update_timer.time == 0.0 {
-        ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / 1000.0_f64;
-    }
-
-    ui.label(format!(
-        "Remaining: {:.3} km",
-        ui_update_timer.last_displayed_remaining
-    ));
+    ui.label(format!("ID: {}", train.id));
+    ui.label(format!("Current: {:?}", train.position()));
+    ui.label(format!("Target: {:?}", train.next_target()));
+    ui.label(format!("Speed: {} km/h", train.speed() * 3.6));
 }
 
 pub fn display_path_info(

@@ -10,8 +10,6 @@ mod path_finding;
 use crate::algorithms::points_in_front;
 use crate::prelude::{RailwayEdge, RailwayGraph};
 use geo::{Coord, HaversineDistance, Point};
-
-use geo::algorithm::euclidean_distance::EuclideanDistance;
 pub use path_finding::PathFinding;
 use petgraph::visit::Bfs;
 

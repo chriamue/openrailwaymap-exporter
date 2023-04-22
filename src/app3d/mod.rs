@@ -88,8 +88,8 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .add_system(nodes::select_node_system)
         .add_system(select_train_system)
         .add_system(edges::show_edges_on_path)
-        .add_system(train_agent::train_agent_system)
-        .add_system(train_agent::train_agent_line_system)
+        .add_system(train_agent::update_train_position_system)
+        .add_system(train_agent::update_train_agent_line_system)
         .add_system(update_simulation_system);
     ui::add_ui_systems_to_app(app);
 }

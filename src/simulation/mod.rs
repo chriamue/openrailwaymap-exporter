@@ -172,7 +172,11 @@ impl Simulation {
                 }
 
                 // Update speed based on the acceleration
-                object.set_speed(object.max_speed().min(object.speed() + delta_time.as_secs_f64() * object.acceleration()));
+                object.set_speed(
+                    object
+                        .max_speed()
+                        .min(object.speed() + delta_time.as_secs_f64() * object.acceleration()),
+                );
             }
         }
         self.update_object_position(id, delta_time);
