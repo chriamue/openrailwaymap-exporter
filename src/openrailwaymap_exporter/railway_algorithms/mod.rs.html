@@ -263,6 +263,18 @@
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
@@ -345,31 +357,44 @@
             geo::Closest::Indeterminate =&gt; p_current_position,
         };
         <span class="kw">let </span>current_distance = current_point.euclidean_distance(<span class="kw-2">&amp;</span>p_current_position);
-    
+
         <span class="kw">let </span>target_distance = current_distance + distance;
         <span class="kw">let </span><span class="kw-2">mut </span>remaining_distance = target_distance;
-    
+
         <span class="kw">let </span>points: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.path.points().collect();
         <span class="kw">let </span>_source_coord = <span class="self">self</span>.source_coordinate();
         <span class="kw">let </span>target_coord = <span class="self">self</span>.target_coordinate();
-    
-        <span class="kw">let </span>is_forward = direction_node.euclidean_distance(<span class="kw-2">&amp;</span>target_coord) &lt; current_position.euclidean_distance(<span class="kw-2">&amp;</span>target_coord);
-    
-        <span class="kw">let </span>starts: Vec&lt;<span class="kw">_</span>&gt; = <span class="kw">if </span>is_forward { points.iter().collect() } <span class="kw">else </span>{ points.iter().rev().collect() };
-        <span class="kw">let </span>ends: Vec&lt;<span class="kw">_</span>&gt; = <span class="kw">if </span>is_forward { points.iter().skip(<span class="number">1</span>).collect() } <span class="kw">else </span>{ points.iter().rev().skip(<span class="number">1</span>).collect() };
-    
-        <span class="kw">let </span>segments: Vec&lt;<span class="kw">_</span>&gt; = starts.iter().zip(ends.iter()).map(|(s, e)| (<span class="kw-2">*</span>s, <span class="kw-2">*</span>e)).collect();
-    
+
+        <span class="kw">let </span>is_forward = direction_node.euclidean_distance(<span class="kw-2">&amp;</span>target_coord)
+            &lt; current_position.euclidean_distance(<span class="kw-2">&amp;</span>target_coord);
+
+        <span class="kw">let </span>starts: Vec&lt;<span class="kw">_</span>&gt; = <span class="kw">if </span>is_forward {
+            points.iter().collect()
+        } <span class="kw">else </span>{
+            points.iter().rev().collect()
+        };
+        <span class="kw">let </span>ends: Vec&lt;<span class="kw">_</span>&gt; = <span class="kw">if </span>is_forward {
+            points.iter().skip(<span class="number">1</span>).collect()
+        } <span class="kw">else </span>{
+            points.iter().rev().skip(<span class="number">1</span>).collect()
+        };
+
+        <span class="kw">let </span>segments: Vec&lt;<span class="kw">_</span>&gt; = starts
+            .iter()
+            .zip(ends.iter())
+            .map(|(s, e)| (<span class="kw-2">*</span>s, <span class="kw-2">*</span>e))
+            .collect();
+
         <span class="kw">let </span><span class="kw-2">mut </span>previous_point = current_point;
-    
+
         <span class="kw">fn </span>normalize_vector(x: f64, y: f64) -&gt; (f64, f64) {
             <span class="kw">let </span>length = (x * x + y * y).sqrt();
             (x / length, y / length)
         }
-    
+
         <span class="kw">for </span>(start, end) <span class="kw">in </span>segments {
             <span class="kw">let </span>segment_length = start.euclidean_distance(end);
-    
+
             <span class="kw">if </span>remaining_distance &lt; segment_length {
                 <span class="kw">let </span>(dir_x, dir_y) = normalize_vector(end.x() - start.x(), end.y() - start.y());
                 <span class="kw">let </span>new_position = Point::new(
@@ -382,10 +407,9 @@
                 previous_point = <span class="kw-2">*</span>end;
             }
         }
-    
+
         direction_node
     }
-    
 }
 
 <span class="attr">#[cfg(test)]

@@ -186,6 +186,9 @@
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -353,26 +356,29 @@
                 <span class="kw">let </span>current_speed = object.speed();
                 <span class="kw">let </span>target = object.next_target();
                 <span class="kw">let </span>current_location = object.geo_location().unwrap();
-    
+
                 <span class="kw">let </span>graph = <span class="kw-2">&amp;</span><span class="self">self</span>.environment.graph;
                 <span class="kw">let </span>next_node = graph.get_next_node(current_position, target.unwrap_or_default());
-    
+
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(next_node) = next_node {
                     <span class="kw">let </span>edge = graph
                         .railway_edge(current_position, next_node)
                         .expect(<span class="string">&quot;Invalid edge&quot;</span>);
                     <span class="kw">let </span>direction_node = <span class="kw-2">&amp;</span>graph.graph[<span class="kw-2">*</span>graph.node_indices.get(<span class="kw-2">&amp;</span>next_node).unwrap()];
-    
+
                     <span class="kw">let </span>direction_coord = <span class="macro">coord! </span>{ x: direction_node.lon, y: direction_node.lat };
                     <span class="kw">let </span>distance_to_travel = current_speed * delta_time.as_secs_f64();
-                    <span class="kw">let </span>new_geo_location = edge.position_on_edge(current_location, distance_to_travel, direction_coord);
-    
+                    <span class="kw">let </span>new_geo_location = edge.position_on_edge(
+                        current_location,
+                        distance_to_travel,
+                        direction_coord,
+                    );
+
                     object.set_geo_location(<span class="prelude-val">Some</span>(new_geo_location));
                 }
             }
         }
     }
-    
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
