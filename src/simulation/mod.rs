@@ -12,8 +12,10 @@ use crate::{
 use std::collections::HashMap;
 use std::time::Duration;
 
-use self::agents::{DecisionAgent, RailMovableAction};
-
+use self::{
+    agents::{DecisionAgent, RailMovableAction},
+    environment::{ObservableEnvironment, ObservableEnvironmentRef},
+};
 pub mod agents;
 
 pub mod environment;
@@ -59,6 +61,21 @@ impl Simulation {
             object_agents: HashMap::new(),
             elapsed_time: Duration::default(),
         }
+    }
+
+    /// Returns a reference to the observable environment of the simulation.
+    ///
+    /// The observable environment allows external components to access the
+    /// state of the simulation without being able to modify it. This is useful
+    /// for agents to observe the simulation state and make decisions based on it.
+    ///
+    /// # Returns
+    ///
+    /// A reference to a trait object implementing the `ObservableEnvironment` trait,
+    /// which provides read-only access to the simulation environment.
+    ///
+    pub fn get_observable_environment(&self) -> &(dyn ObservableEnvironment + 'static) {
+        self.environment.as_observable_env()
     }
 
     /// Adds a moveable railway object to the simulation.

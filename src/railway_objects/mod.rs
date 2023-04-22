@@ -1,23 +1,53 @@
 //! The `railway_objects` module contains traits for different types of railway objects,
 //! their positions within an internal model, target management, and geographical locations.
 use geo_types::Coord;
+use std::any::Any;
 use std::collections::VecDeque;
-
 mod train;
 pub use train::Train;
 
 use crate::types::{NodeId, RailwayObjectId};
 
 /// The `RailwayObject` trait represents the basic properties of a railway object,
-/// including a unique identifier and a position within an internal model.
-pub trait RailwayObject: std::fmt::Debug {
+/// including a unique identifier and a position within an internal model. Objects
+/// implementing this trait can be used in a railway simulation.
+pub trait RailwayObject: std::fmt::Debug + Any {
     /// Returns the unique identifier of the railway object.
+    ///
+    /// # Returns
+    ///
+    /// A `RailwayObjectId` representing the unique identifier of the railway object.
+    ///
     fn id(&self) -> RailwayObjectId;
 
     /// Returns the position of the railway object within the internal model.
+    ///
+    /// # Returns
+    ///
+    /// An `Option<NodeId>` representing the position of the railway object in the
+    /// internal model. Returns `None` if the object has no position.
+    ///
     fn position(&self) -> Option<NodeId>;
-    /// sets the position of the rail object
+
+    /// Sets the position of the railway object within the internal model.
+    ///
+    /// # Arguments
+    ///
+    /// * `position` - An `Option<NodeId>` representing the new position of the railway
+    /// object in the internal model. Pass `None` to remove the object's position.
+    ///
     fn set_position(&mut self, position: Option<NodeId>);
+
+    /// Returns a reference to the `Any` trait for this object.
+    ///
+    /// This method is useful for downcasting the object to a concrete type
+    /// when working with trait objects.
+    ///
+    /// # Returns
+    ///
+    /// A reference to the `Any` trait for the object.
+    ///
+    fn as_any(&self) -> &dyn Any;
 }
 
 /// The `NextTarget` trait provides methods for managing a single target for a railway object.

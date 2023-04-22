@@ -1,7 +1,7 @@
 //! module with environment traits
 use std::collections::HashMap;
 
-use crate::prelude::RailwayGraph;
+use crate::{prelude::RailwayGraph, types::RailwayObjectId};
 
 use super::SimulationObject;
 
@@ -14,6 +14,9 @@ pub trait ObservableEnvironment {
 
     /// Returns a vector of references to the simulation objects.
     fn get_objects(&self) -> Vec<&dyn SimulationObject>;
+    /// This function takes a reference to self (which in this case is an ObservableEnvironment struct)
+    /// and a reference to a RailwayObjectId object.
+    fn get_object(&self, id: &RailwayObjectId) -> Option<&dyn SimulationObject>;
 }
 
 /// A trait representing a reference to an observable environment.
@@ -44,6 +47,10 @@ impl ObservableEnvironment for SimulationEnvironment {
             .map(|object| object.as_ref())
             .collect()
     }
+
+    fn get_object(&self, id: &RailwayObjectId) -> Option<&dyn SimulationObject> {
+        self.objects.get(id).map(|boxed| &**boxed)
+    }
 }
 
 impl ObservableEnvironmentRef for SimulationEnvironment {
@@ -68,5 +75,24 @@ mod tests {
         };
 
         assert_eq!(environment.graph, graph);
+    }
+
+    #[test]
+    fn test_get_objects() {
+        let graph = test_graph_vilbel();
+
+        let mut environment = SimulationEnvironment {
+            graph: graph.clone(),
+            objects: HashMap::<i64, Box<dyn SimulationObject>>::default(),
+        };
+        let objects = environment.get_objects();
+        assert_eq!(objects.len(), 0);
+
+        let train = crate::railway_objects::Train::default();
+
+        environment.objects.insert(0, Box::new(train));
+
+        let objects = environment.get_objects();
+        assert_eq!(objects.len(), 1);
     }
 }

@@ -1,8 +1,8 @@
+use geo_types::Coord;
+use std::any::Any;
 use std::collections::VecDeque;
 
-use geo_types::Coord;
-
-use crate::types::NodeId;
+use crate::types::{NodeId, RailwayObjectId};
 
 use super::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
 
@@ -27,7 +27,7 @@ pub struct Train {
 
 /// Implements the `RailwayObject` trait for the `Train` struct.
 impl RailwayObject for Train {
-    fn id(&self) -> i64 {
+    fn id(&self) -> RailwayObjectId {
         self.id
     }
 
@@ -37,6 +37,10 @@ impl RailwayObject for Train {
 
     fn set_position(&mut self, position: Option<NodeId>) {
         self.position = position;
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

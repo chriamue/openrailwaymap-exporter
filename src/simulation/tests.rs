@@ -71,3 +71,32 @@ fn test_simulation_with_agent() {
     // Test if the updated train's new geo_location is as expected
     assert_eq!(updated_train.geo_location().unwrap(), expected_new_location);
 }
+
+#[test]
+fn test_get_observable_environment() {
+    let graph = test_graph_1();
+    let train = Train {
+        id: 1,
+        position: Some(1),
+        geo_location: Some(coord! { x: 0.0, y: 0.0 }),
+        next_target: Some(2),
+        targets: VecDeque::from(vec![2, 10, 15]),
+        ..Default::default()
+    };
+
+    // Create a simulation with the railway graph
+    let mut simulation: Simulation = Simulation::new(graph);
+
+    // Create an agent for the train
+    let agent = ForwardUntilTargetAgent::new(train.id());
+
+    // Add the train and its agent to the simulation
+    simulation.add_object(Box::new(train.clone()), Some(Box::new(agent)));
+
+    let train = simulation.get_observable_environment().get_object(&1);
+    assert!(train.is_some());
+    let train = train.unwrap().as_any().downcast_ref::<Train>();
+
+    assert!(train.is_some());
+    assert_eq!(1, train.unwrap().id());
+}
