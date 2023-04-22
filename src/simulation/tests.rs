@@ -1,11 +1,9 @@
-use std::collections::VecDeque;
-
-use geo_types::coord;
-
 use super::*;
 use crate::railway_objects::Train;
 use crate::simulation::agents::ForwardUntilTargetAgent;
 use crate::tests::test_graph_1;
+use geo::coord;
+use std::collections::VecDeque;
 
 #[test]
 fn test_simulation_with_agent() {
@@ -41,12 +39,35 @@ fn test_simulation_with_agent() {
     // Test the expected outcome, e.g., check if the train's speed has increased
     assert_eq!(updated_train.speed(), 20.0); // Assuming the initial speed was 0
 
-    let expected_new_position = 1; // Calculate the expected new position based on the train's speed and delta_time
-    assert_eq!(updated_train.position().unwrap(), expected_new_position);
+    let current_location = train.geo_location().unwrap();
+    let current_speed = 20.0;
+    let next_node_id = simulation
+        .environment
+        .graph
+        .get_next_node(train.position().unwrap(), train.next_target().unwrap())
+        .unwrap();
+    let direction_node = &simulation.environment.graph.graph[*simulation
+        .environment
+        .graph
+        .node_indices
+        .get(&next_node_id)
+        .unwrap()];
+    let direction_coord = coord! { x: direction_node.lon, y: direction_node.lat };
+    let distance_to_travel = current_speed * delta_time.as_secs_f64();
+    let edge = simulation
+        .environment
+        .graph
+        .railway_edge(train.position().unwrap(), next_node_id)
+        .expect("Invalid edge");
+    let expected_new_location =
+        edge.position_on_edge(current_location, distance_to_travel, direction_coord);
 
-    // Check if the train's position has changed after the update
+    // Check if the train's geo_location has changed after the update
     assert_ne!(
         updated_train.geo_location().unwrap(),
         train.geo_location().unwrap()
     );
+
+    // Test if the updated train's new geo_location is as expected
+    assert_eq!(updated_train.geo_location().unwrap(), expected_new_location);
 }
