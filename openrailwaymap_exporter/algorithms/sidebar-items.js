@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["closest_point_in_linestring"]};

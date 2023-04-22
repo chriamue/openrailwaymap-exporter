@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["ai","app3d","export","importer","prelude","railway_algorithms","railway_api_client","railway_model","railway_objects","simulation","types"]};
+window.SIDEBAR_ITEMS = {"mod":["ai","algorithms","app3d","export","importer","prelude","railway_algorithms","railway_api_client","railway_model","railway_objects","simulation","types"]};
