@@ -1,10 +1,9 @@
+use super::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
+use crate::types::{NodeId, RailwayObjectId};
 use geo::Coord;
 use std::any::Any;
 use std::collections::VecDeque;
-
-use crate::types::{NodeId, RailwayObjectId};
-
-use super::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
+use uom::si::f64::{Acceleration, Velocity};
 
 /// A Train struct representing a train in the railway system.
 #[derive(Default, Debug, Clone, PartialEq)]
@@ -20,11 +19,11 @@ pub struct Train {
     /// A queue of target node IDs for the train to follow.
     pub targets: VecDeque<i64>,
     /// The current speed of the train
-    pub speed: f64,
+    pub speed: Velocity,
     /// The current speed of the train
-    pub max_speed: f64,
+    pub max_speed: Velocity,
     /// The current acceleration of the train
-    pub acceleration: f64,
+    pub acceleration: Acceleration,
 }
 
 /// Implements the `RailwayObject` trait for the `Train` struct.
@@ -88,34 +87,35 @@ impl GeoLocation for Train {
 }
 
 impl Movable for Train {
-    fn speed(&self) -> f64 {
-        self.speed
-    }
-
-    fn set_speed(&mut self, speed: f64) {
-        self.speed = speed;
-    }
-
-    fn acceleration(&self) -> f64 {
-        self.acceleration
-    }
-
-    fn set_acceleration(&mut self, acceleration: f64) {
-        self.acceleration = acceleration;
-    }
-
-    fn max_speed(&self) -> f64 {
+    fn max_speed(&self) -> Velocity {
         self.max_speed
     }
 
-    fn set_max_speed(&mut self, max_speed: f64) {
+    fn set_max_speed(&mut self, max_speed: Velocity) {
         self.max_speed = max_speed;
+    }
+
+    fn speed(&self) -> Velocity {
+        self.speed
+    }
+
+    fn set_speed(&mut self, speed: Velocity) {
+        self.speed = speed;
+    }
+
+    fn acceleration(&self) -> Acceleration {
+        self.acceleration
+    }
+
+    fn set_acceleration(&mut self, acceleration: Acceleration) {
+        self.acceleration = acceleration;
     }
 }
 
 #[cfg(test)]
 mod tests {
     use geo::coord;
+    use uom::si::{acceleration::meter_per_second_squared, velocity::kilometer_per_hour};
 
     use super::*;
 
@@ -155,15 +155,15 @@ mod tests {
             geo_location: Some(coord! { x:1.0, y: 2.0}),
             next_target: Some(2),
             targets: VecDeque::from(vec![2, 3, 4]),
-            max_speed: 80.0,
-            speed: 0.0,
-            acceleration: 0.0,
+            max_speed: Velocity::new::<kilometer_per_hour>(80.0),
+            speed: Velocity::new::<kilometer_per_hour>(0.0),
+            acceleration: Acceleration::new::<meter_per_second_squared>(0.0),
         };
 
-        assert_eq!(train.speed(), 0.0);
+        assert_eq!(train.speed(), Velocity::new::<kilometer_per_hour>(0.0));
 
-        train.set_speed(100.0);
-        assert_eq!(train.speed(), 100.0);
+        train.set_speed(Velocity::new::<kilometer_per_hour>(100.0));
+        assert_eq!(train.speed(), Velocity::new::<kilometer_per_hour>(100.0));
     }
 
     #[test]
@@ -174,14 +174,20 @@ mod tests {
             geo_location: Some(coord! { x:1.0, y: 2.0}),
             next_target: Some(2),
             targets: VecDeque::from(vec![2, 3, 4]),
-            max_speed: 80.0,
-            speed: 0.0,
-            acceleration: 0.0,
+            max_speed: Velocity::new::<kilometer_per_hour>(80.0),
+            speed: Velocity::new::<kilometer_per_hour>(0.0),
+            acceleration: Acceleration::new::<meter_per_second_squared>(0.0),
         };
 
-        assert_eq!(train.acceleration(), 0.0);
+        assert_eq!(
+            train.acceleration(),
+            Acceleration::new::<meter_per_second_squared>(0.0)
+        );
 
-        train.set_acceleration(1.5);
-        assert_eq!(train.acceleration(), 1.5);
+        train.set_acceleration(Acceleration::new::<meter_per_second_squared>(1.5));
+        assert_eq!(
+            train.acceleration(),
+            Acceleration::new::<meter_per_second_squared>(1.5)
+        );
     }
 }

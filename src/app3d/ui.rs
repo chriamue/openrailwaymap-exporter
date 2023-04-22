@@ -18,6 +18,7 @@ use crate::railway_objects::{Movable, NextTarget, RailwayObject, Train};
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
+use uom::si::velocity::kilometer_per_hour;
 
 #[derive(Default, Resource)]
 pub struct UiUpdateTimer {
@@ -169,7 +170,10 @@ pub fn display_selected_train_agent_info(
     ui.label(format!("ID: {}", train.id));
     ui.label(format!("Current: {:?}", train.position()));
     ui.label(format!("Target: {:?}", train.next_target()));
-    ui.label(format!("Speed: {} km/h", train.speed() * 3.6));
+    ui.label(format!(
+        "Speed: {} km/h",
+        train.speed().get::<kilometer_per_hour>()
+    ));
 }
 
 pub fn display_path_info(

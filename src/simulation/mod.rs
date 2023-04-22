@@ -24,6 +24,12 @@ use bevy::prelude::warn;
 pub use environment::SimulationEnvironment;
 use geo::coord;
 use rand::seq::SliceRandom;
+use uom::si::{
+    acceleration::{meter_per_second_squared, Acceleration},
+    f64::{Length, Time},
+    length::meter,
+    time::second,
+};
 
 #[cfg(test)]
 mod tests;
@@ -162,22 +168,25 @@ impl Simulation {
                 // Update the acceleration based on the action.
                 match action {
                     RailMovableAction::Stop => {
-                        object.set_acceleration(0.0);
+                        object.set_acceleration(Acceleration::new::<meter_per_second_squared>(0.0));
                     }
                     RailMovableAction::AccelerateForward { acceleration } => {
-                        object.set_acceleration(acceleration as f64);
+                        object.set_acceleration(Acceleration::new::<meter_per_second_squared>(
+                            acceleration as f64,
+                        ));
                     }
                     RailMovableAction::AccelerateBackward { acceleration } => {
-                        object.set_acceleration(-acceleration as f64);
+                        object.set_acceleration(Acceleration::new::<meter_per_second_squared>(
+                            -acceleration as f64,
+                        ));
                     }
                 }
 
                 // Update speed based on the acceleration
-                object.set_speed(
-                    object
-                        .max_speed()
-                        .min(object.speed() + delta_time.as_secs_f64() * object.acceleration()),
-                );
+                object.set_speed(object.max_speed().min(
+                    object.speed()
+                        + Time::new::<second>(delta_time.as_secs_f64()) * object.acceleration(),
+                ));
             }
         }
         self.update_object_position(id, delta_time);
@@ -202,7 +211,8 @@ impl Simulation {
                         let next_node = graph.get_node_by_id(next_node_id).unwrap();
 
                         let direction_coord = coord! { x: next_node.lon, y: next_node.lat };
-                        let distance_to_travel = current_speed * delta_time.as_secs_f64();
+                        let distance_to_travel =
+                            current_speed * Time::new::<second>(delta_time.as_secs_f64());
 
                         let new_geo_location = edge.position_on_edge(
                             current_location,
@@ -218,7 +228,7 @@ impl Simulation {
                             coord! {x: next_node.lon, y: next_node.lat},
                             new_geo_location,
                         ) || edge.distance_to_end(new_geo_location, direction_coord)
-                            < NEXT_NODE_DISTANCE_TOLERANCE
+                            < Length::new::<meter>(NEXT_NODE_DISTANCE_TOLERANCE)
                         {
                             object.set_position(Some(next_node_id));
                         }

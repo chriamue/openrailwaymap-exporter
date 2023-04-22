@@ -20,6 +20,7 @@ use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
 use rurel::strategy::terminate::FixedIterations;
 use rurel::AgentTrainer;
+use uom::si::velocity::millimeter_per_minute;
 
 /// Represents the state of a train agent in the simulation.
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -257,9 +258,10 @@ impl DecisionAgent for TrainAgentAI {
 
             let speed = object.speed();
 
-            agent_state.current_speed_mm_s = (speed / 1000.0) as i32;
-            agent_state.max_speed_percentage =
-                (100.0 * speed / self.agent_rl.max_speed_mm_s as f64) as i32;
+            agent_state.current_speed_mm_s = speed.get::<millimeter_per_minute>() as i32;
+            agent_state.max_speed_percentage = (100.0 * speed.get::<millimeter_per_minute>()
+                / self.agent_rl.max_speed_mm_s as f64)
+                as i32;
 
             self.agent_rl.state = agent_state;
         }

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_mod_picking::PickableBundle;
 use bevy_polyline::prelude::*;
 use geo::coord;
+use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
 use crate::{
@@ -83,8 +84,8 @@ pub fn create_train(
         geo_location,
         next_target: target,
         targets: VecDeque::new(),
-        max_speed: 80.0 / 3.6,
-        speed: 20.0,
+        max_speed: Velocity::new::<kilometer_per_hour>(80.0),
+        speed: Velocity::new::<meter_per_second>(20.0),
         ..Default::default()
     };
     let object: Box<dyn SimulationObject> = Box::new(train);

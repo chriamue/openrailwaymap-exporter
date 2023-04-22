@@ -12,6 +12,8 @@ use crate::prelude::{RailwayEdge, RailwayGraph};
 use geo::{Coord, HaversineDistance, Point};
 pub use path_finding::PathFinding;
 use petgraph::visit::Bfs;
+use uom::si::f64::Length;
+use uom::si::length::meter;
 
 impl RailwayGraph {
     /// Find all reachable nodes from the given start node in the railway graph.
@@ -68,13 +70,13 @@ impl RailwayEdge {
         &self,
         current_location: Coord<f64>,
         direction_coord: Coord<f64>,
-    ) -> f64 {
+    ) -> Length {
         // Get the points in front of the current_location in the direction of direction_coord
         let points_in_front = points_in_front(&self.path, current_location, direction_coord);
 
         // If there are no points in front, return 0.0
         if points_in_front.is_empty() {
-            return 0.0;
+            return Length::new::<meter>(0.0);
         }
 
         let mut total_distance = 0.0;
@@ -91,7 +93,7 @@ impl RailwayEdge {
             current_point = next_point;
         }
 
-        total_distance
+        Length::new::<meter>(total_distance)
     }
 
     /// Calculates a new position on the edge based on the given parameters.
@@ -109,7 +111,7 @@ impl RailwayEdge {
     pub fn position_on_edge(
         &self,
         current_location: Coord<f64>,
-        distance_to_travel: f64,
+        distance_to_travel: Length,
         direction_coord: Coord<f64>,
     ) -> Coord<f64> {
         // Get the points in front of the current_location in the direction of direction_coord
@@ -121,7 +123,7 @@ impl RailwayEdge {
         }
 
         // Calculate the remaining distance to travel
-        let mut remaining_distance = distance_to_travel;
+        let mut remaining_distance = distance_to_travel.get::<meter>();
 
         // Iterate through the points in front and find the point where the remaining_distance is reached
         let mut current_point = current_location;
@@ -176,14 +178,22 @@ pub mod tests {
         let current_position1 = coord! { x: 13.377054, y: 52.516250 }; // Brandenburg Gate, Berlin
         let direction1 = coord! { x: 13.378685, y: 52.520165 }; // Reichstag Building, Berlin
         let distance_to_end1 = edge.distance_to_end(current_position1, direction1);
-
-        assert_relative_eq!(distance_to_end1, 930.0, epsilon = 10.0); // Approx. distance between Brandenburg Gate and Berlin Central Station
+        let expected_distance1 = Length::new::<meter>(930.0); // Approx. distance between Brandenburg Gate and Berlin Central Station
+        assert_relative_eq!(
+            distance_to_end1.get::<meter>(),
+            expected_distance1.get::<meter>(),
+            epsilon = 10.0
+        );
 
         let current_position2 = coord! { x: 13.378685, y: 52.520165 }; // Reichstag Building, Berlin
         let direction2 = coord! { x: 13.384733, y: 52.522464 }; // Berlin Central Station
         let distance_to_end2 = edge.distance_to_end(current_position2, direction2);
-
-        assert_relative_eq!(distance_to_end2, 480.0, epsilon = 10.0); // Approx. distance between Reichstag Building and Berlin Central Station
+        let expected_distance2 = Length::new::<meter>(480.0); // Approx. distance between Reichstag Building and Berlin Central Station
+        assert_relative_eq!(
+            distance_to_end2.get::<meter>(),
+            expected_distance2.get::<meter>(),
+            epsilon = 10.0
+        );
     }
 
     #[test]
@@ -203,7 +213,7 @@ pub mod tests {
 
         let current_position1 = coord! { x: 8.6821, y: 50.1109 };
         let current_position2 = coord! { x: 8.6825, y: 50.1112 };
-        let distance1 = 15.0;
+        let distance1 = Length::new::<meter>(15.0);
         let direction1 = coord! { x: 8.6825, y: 50.1112 };
         let direction2 = coord! { x: 8.6835, y: 50.1118 };
 
@@ -216,8 +226,8 @@ pub mod tests {
         assert_relative_eq!(new_position2.y, 50.1115, epsilon = 0.001);
 
         let current_position3 = coord! { x: 8.6830, y: 50.1115 };
-        let distance2 = 25.0;
 
+        let distance2 = Length::new::<meter>(25.0);
         let new_position3 = edge.position_on_edge(current_position3, distance2, direction1);
         let new_position4 = edge.position_on_edge(current_position3, distance2, direction2);
 
@@ -227,7 +237,7 @@ pub mod tests {
         assert_relative_eq!(new_position4.y, 50.1116, epsilon = 0.0001);
 
         let current_position4 = coord! { x: 8.6830, y: 50.1115 };
-        let distance3 = 100.0;
+        let distance3 = Length::new::<meter>(100.0);
 
         let new_position5 = edge.position_on_edge(current_position4, distance3, direction2);
 

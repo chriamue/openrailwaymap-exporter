@@ -42,6 +42,7 @@ serde_json = { version = "1.0" }
 structopt = "0.3"
 svg = "0.13.1"
 thiserror = "1.0"
+uom = "0.34.0"
 url = "2.3.1"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
 

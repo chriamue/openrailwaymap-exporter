@@ -4,9 +4,9 @@ use geo::Coord;
 use std::any::Any;
 use std::collections::VecDeque;
 mod train;
-pub use train::Train;
-
 use crate::types::{NodeId, RailwayObjectId};
+pub use train::Train;
+use uom::si::f64::{Acceleration, Velocity};
 
 /// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model. Objects
@@ -92,21 +92,21 @@ pub trait GeoLocation {
 
 /// The Movable trait
 pub trait Movable {
-    /// Returns the max speed of the object in km/h.
-    fn max_speed(&self) -> f64;
+    /// Returns the max speed of the object as a Velocity.
+    fn max_speed(&self) -> Velocity;
 
-    /// Sets the max speed of the object in km/h.
-    fn set_max_speed(&mut self, max_speed: f64);
+    /// Sets the max speed of the object as a Velocity.
+    fn set_max_speed(&mut self, max_speed: Velocity);
 
-    /// Returns the current speed of the object in km/h.
-    fn speed(&self) -> f64;
+    /// Returns the current speed of the object as a Velocity.
+    fn speed(&self) -> Velocity;
 
-    /// Sets the speed of the object in km/h.
-    fn set_speed(&mut self, speed: f64);
+    /// Sets the speed of the object as a Velocity.
+    fn set_speed(&mut self, speed: Velocity);
 
-    /// Returns the current acceleration of the object in m/s^2.
-    fn acceleration(&self) -> f64;
+    /// Returns the current acceleration of the object as an Acceleration.
+    fn acceleration(&self) -> Acceleration;
 
-    /// Sets the acceleration of the object in m/s^2.
-    fn set_acceleration(&mut self, acceleration: f64);
+    /// Sets the acceleration of the object as an Acceleration.
+    fn set_acceleration(&mut self, acceleration: Acceleration);
 }

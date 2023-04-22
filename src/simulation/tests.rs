@@ -4,6 +4,10 @@ use crate::simulation::agents::ForwardUntilTargetAgent;
 use crate::tests::test_graph_1;
 use geo::coord;
 use std::collections::VecDeque;
+use uom::si::{
+    f64::Velocity,
+    velocity::{kilometer_per_hour, meter_per_second},
+};
 
 #[test]
 fn test_simulation_with_agent() {
@@ -17,7 +21,7 @@ fn test_simulation_with_agent() {
         geo_location: Some(coord! { x: 0.0, y: 0.0 }),
         next_target: Some(2),
         targets: VecDeque::from(vec![2, 10, 15]),
-        max_speed: 80.0,
+        max_speed: Velocity::new::<kilometer_per_hour>(80.0),
         ..Default::default()
     };
 
@@ -38,10 +42,13 @@ fn test_simulation_with_agent() {
     let updated_train = simulation.environment.objects.get(&1).unwrap();
 
     // Test the expected outcome, e.g., check if the train's speed has increased
-    assert_eq!(updated_train.speed(), 20.0); // Assuming the initial speed was 0
+    assert_eq!(
+        updated_train.speed(),
+        Velocity::new::<meter_per_second>(20.0)
+    ); // Assuming the initial speed was 0
 
     let current_location = train.geo_location().unwrap();
-    let current_speed = 20.0;
+    let current_speed = Velocity::new::<meter_per_second>(20.0);
     let next_node_id = simulation
         .environment
         .graph
@@ -54,7 +61,7 @@ fn test_simulation_with_agent() {
         .get(&next_node_id)
         .unwrap()];
     let direction_coord = coord! { x: direction_node.lon, y: direction_node.lat };
-    let distance_to_travel = current_speed * delta_time.as_secs_f64();
+    let distance_to_travel = current_speed * Time::new::<second>(delta_time.as_secs_f64());
     let edge = simulation
         .environment
         .graph

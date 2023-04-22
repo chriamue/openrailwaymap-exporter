@@ -1,6 +1,8 @@
 use cucumber::codegen::Regex;
 use cucumber::{gherkin::Step, given, then, when};
 use geo::Coord;
+use uom::si::f64::Length;
+use uom::si::length::meter;
 
 use crate::BddWorld;
 use approx::assert_relative_eq;
@@ -28,7 +30,7 @@ async fn given_railway_edge_with_properties(world: &mut BddWorld, step: &Step) {
     world.edge = Some(openrailwaymap_exporter::prelude::RailwayEdge {
         id,
         length,
-        path: geo_types::LineString::from(path_coordinates),
+        path: geo::LineString::from(path_coordinates),
         source,
         target,
     });
@@ -41,6 +43,7 @@ async fn given_current_location_at(world: &mut BddWorld, x: f64, y: f64) {
 
 #[given(regex = "a distance to travel of (\\d+\\.?\\d*) meters")]
 async fn given_distance_to_travel_of_meters(world: &mut BddWorld, distance: f64) {
+    let distance = Length::new::<meter>(distance);
     world.distance_to_travel = Some(distance);
 }
 

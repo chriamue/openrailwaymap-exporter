@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use geo::coord;
 use petgraph::{Graph, Undirected};
 use serde_json::Value;
+use uom::si::{f64::Length, length::meter};
 
 use crate::{
     importer::overpass_importer::{
@@ -85,7 +86,7 @@ fn test_vilbel_json() {
 
     let source_node = 662529467i64;
     let target_node = 662529466i64;
-    let distance_to_travel = 100.0;
+    let distance_to_travel = Length::new::<meter>(100.0);
     let current_location = coord! {x: 8.7674673, y: 50.1929356};
     let direction_coord = coord! { x: 8.7672898, y: 50.1929871 };
 

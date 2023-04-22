@@ -8,6 +8,7 @@ use openrailwaymap_exporter::{
 };
 use petgraph::stable_graph::NodeIndex;
 use std::collections::HashMap;
+use uom::si::{f64::Length, length::meter};
 
 fn railway_elements() -> Vec<RailwayElement> {
     let test_data = serde_json::from_slice(include_bytes!("../src/tests/res/vilbel.json"))
@@ -84,7 +85,7 @@ fn update_position_benchmark(c: &mut Criterion) {
     };
 
     let current_location = coord! { x: 10.0, y: 20.0 };
-    let distance_to_travel = 25.0;
+    let distance_to_travel = Length::new::<meter>(25.0);
     let direction_coord = coord! { x: 100.0, y: 100.0 };
 
     c.bench_function("update_position", |b| {

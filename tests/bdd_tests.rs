@@ -3,6 +3,7 @@ use geo::Coord;
 use serde_json::Value;
 use std::fs;
 use std::path::Path;
+use uom::si::f64::Length;
 
 use openrailwaymap_exporter::importer::overpass_importer::OverpassImporter;
 use openrailwaymap_exporter::importer::RailwayGraphImporter;
@@ -17,7 +18,7 @@ pub struct BddWorld {
     railway_graph: RailwayGraph,
     edge: Option<RailwayEdge>,
     current_location: Option<Coord<f64>>,
-    distance_to_travel: Option<f64>,
+    distance_to_travel: Option<Length>,
     direction_coord: Option<Coord<f64>>,
     new_position: Option<Coord<f64>>,
 }
