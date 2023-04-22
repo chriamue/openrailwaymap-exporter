@@ -70,10 +70,36 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
 </pre><pre class="rust"><code><span class="doccomment">//! module with environment traits
 </span><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
+<span class="kw">use crate</span>::{prelude::RailwayGraph, types::RailwayObjectId};
 
 <span class="kw">use </span><span class="kw">super</span>::SimulationObject;
 
@@ -86,6 +112,9 @@
 
     <span class="doccomment">/// Returns a vector of references to the simulation objects.
     </span><span class="kw">fn </span>get_objects(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SimulationObject&gt;;
+    <span class="doccomment">/// This function takes a reference to self (which in this case is an ObservableEnvironment struct)
+    /// and a reference to a RailwayObjectId object.
+    </span><span class="kw">fn </span>get_object(<span class="kw-2">&amp;</span><span class="self">self</span>, id: <span class="kw-2">&amp;</span>RailwayObjectId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SimulationObject&gt;;
 }
 
 <span class="doccomment">/// A trait representing a reference to an observable environment.
@@ -116,6 +145,10 @@
             .map(|object| object.as_ref())
             .collect()
     }
+
+    <span class="kw">fn </span>get_object(<span class="kw-2">&amp;</span><span class="self">self</span>, id: <span class="kw-2">&amp;</span>RailwayObjectId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="kw">dyn </span>SimulationObject&gt; {
+        <span class="self">self</span>.objects.get(id).map(|boxed| <span class="kw-2">&amp;**</span>boxed)
+    }
 }
 
 <span class="kw">impl </span>ObservableEnvironmentRef <span class="kw">for </span>SimulationEnvironment {
@@ -140,6 +173,25 @@
         };
 
         <span class="macro">assert_eq!</span>(environment.graph, graph);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_get_objects() {
+        <span class="kw">let </span>graph = test_graph_vilbel();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>environment = SimulationEnvironment {
+            graph: graph.clone(),
+            objects: HashMap::&lt;i64, Box&lt;<span class="kw">dyn </span>SimulationObject&gt;&gt;::default(),
+        };
+        <span class="kw">let </span>objects = environment.get_objects();
+        <span class="macro">assert_eq!</span>(objects.len(), <span class="number">0</span>);
+
+        <span class="kw">let </span>train = <span class="kw">crate</span>::railway_objects::Train::default();
+
+        environment.objects.insert(<span class="number">0</span>, Box::new(train));
+
+        <span class="kw">let </span>objects = environment.get_objects();
+        <span class="macro">assert_eq!</span>(objects.len(), <span class="number">1</span>);
     }
 }
 </code></pre></div>
