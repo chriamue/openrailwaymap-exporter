@@ -232,6 +232,10 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -406,7 +410,11 @@
                 }
 
                 <span class="comment">// Update speed based on the acceleration
-                </span>object.set_speed(object.max_speed().min(object.speed() + delta_time.as_secs_f64() * object.acceleration()));
+                </span>object.set_speed(
+                    object
+                        .max_speed()
+                        .min(object.speed() + delta_time.as_secs_f64() * object.acceleration()),
+                );
             }
         }
         <span class="self">self</span>.update_object_position(id, delta_time);

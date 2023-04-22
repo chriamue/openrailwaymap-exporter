@@ -199,19 +199,13 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
 )]
 
 </span><span class="kw">use </span><span class="kw">super</span>::nodes::SelectedNode;
-<span class="kw">use </span><span class="kw">super</span>::train_agent::TrainAgent;
+<span class="kw">use </span><span class="kw">super</span>::train_agent::{clone_train_from_app, TrainAgent};
 <span class="kw">use super</span>::{display_graph, SelectedTrain};
 <span class="kw">use super</span>::{AppResource, Edge, Node, Projection};
 <span class="kw">use super</span>::{InteractionMode, InteractionModeResource};
@@ -221,7 +215,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraphImporter;
 <span class="kw">use </span><span class="kw">crate</span>::railway_algorithms::PathFinding;
-<span class="kw">use </span><span class="kw">crate</span>::railway_objects::{Movable, NextTarget, RailwayObject};
+<span class="kw">use </span><span class="kw">crate</span>::railway_objects::{Movable, NextTarget, RailwayObject, Train};
 <span class="kw">use </span>bevy::prelude::Commands;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
@@ -275,7 +269,9 @@
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
             <span class="kw">for </span>train_agent <span class="kw">in </span>q_train.iter() {
                 <span class="kw">if </span>train_agent_id == train_agent.id {
-                    display_selected_train_agent_info(ui, train_agent, <span class="kw-2">&amp;mut </span>ui_update_timer);
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
+                        display_selected_train_agent_info(ui, <span class="kw-2">&amp;</span>train, <span class="kw-2">&amp;mut </span>ui_update_timer);
+                    }
                 }
             }
         }
@@ -368,21 +364,13 @@
 
 <span class="kw">pub fn </span>display_selected_train_agent_info(
     ui: <span class="kw-2">&amp;mut </span>egui::Ui,
-    train_agent: <span class="kw-2">&amp;</span>TrainAgent,
-    ui_update_timer: <span class="kw-2">&amp;mut </span>UiUpdateTimer,
+    train: <span class="kw-2">&amp;</span>Train,
+    _ui_update_timer: <span class="kw-2">&amp;mut </span>UiUpdateTimer,
 ) {
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;ID: {}&quot;</span>, train_agent.id));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Current: {:?}&quot;</span>, train_agent.train.position()));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Target: {:?}&quot;</span>, train_agent.train.next_target()));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {} km/h&quot;</span>, train_agent.train.speed() * <span class="number">3.6</span>));
-    <span class="kw">if </span>ui_update_timer.time == <span class="number">0.0 </span>{
-        ui_update_timer.last_displayed_remaining = train_agent.remaining_distance / <span class="number">1000.0_f64</span>;
-    }
-
-    ui.label(<span class="macro">format!</span>(
-        <span class="string">&quot;Remaining: {:.3} km&quot;</span>,
-        ui_update_timer.last_displayed_remaining
-    ));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;ID: {}&quot;</span>, train.id));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Current: {:?}&quot;</span>, train.position()));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Target: {:?}&quot;</span>, train.next_target()));
+    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {} km/h&quot;</span>, train.speed() * <span class="number">3.6</span>));
 }
 
 <span class="kw">pub fn </span>display_path_info(
