@@ -253,6 +253,74 @@
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
@@ -308,6 +376,47 @@
 }
 
 <span class="kw">impl </span>RailwayEdge {
+    <span class="doccomment">/// Calculates the distance between the current location and the last coordinate in the linestring.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_location` - A `Coord&lt;f64&gt;` representing the current location on the edge.
+    /// * `direction_coord` - A `Coord&lt;f64&gt;` representing the target direction along the edge.
+    ///
+    /// # Returns
+    ///
+    /// A `f64` representing the distance to the last coordinate in the linestring.
+    ///
+    </span><span class="kw">pub fn </span>distance_to_end(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        current_location: Coord&lt;f64&gt;,
+        direction_coord: Coord&lt;f64&gt;,
+    ) -&gt; f64 {
+        <span class="comment">// Get the points in front of the current_location in the direction of direction_coord
+        </span><span class="kw">let </span>points_in_front = points_in_front(<span class="kw-2">&amp;</span><span class="self">self</span>.path, current_location, direction_coord);
+
+        <span class="comment">// If there are no points in front, return 0.0
+        </span><span class="kw">if </span>points_in_front.is_empty() {
+            <span class="kw">return </span><span class="number">0.0</span>;
+        }
+
+        <span class="kw">let </span><span class="kw-2">mut </span>total_distance = <span class="number">0.0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>current_point = current_location;
+
+        <span class="kw">for </span>next_point <span class="kw">in </span>points_in_front {
+            <span class="kw">let </span>current_point_geo = Point::new(current_point.x, current_point.y);
+            <span class="kw">let </span>next_point_geo = Point::new(next_point.x, next_point.y);
+
+            <span class="comment">// Use haversine_distance to calculate distance between points
+            </span><span class="kw">let </span>segment_distance = current_point_geo.haversine_distance(<span class="kw-2">&amp;</span>next_point_geo);
+            total_distance += segment_distance;
+
+            current_point = next_point;
+        }
+
+        total_distance
+    }
+
     <span class="doccomment">/// Calculates a new position on the edge based on the given parameters.
     ///
     /// # Arguments
@@ -372,6 +481,33 @@
         from_railway_elements, Coordinate, ElementType, RailwayElement,
     };
     <span class="kw">use </span>std::collections::HashMap;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_distance_to_end() {
+        <span class="kw">let </span>edge = RailwayEdge {
+            id: <span class="number">1</span>,
+            length: <span class="number">1166.0</span>,
+            path: <span class="macro">line_string!</span>[
+                <span class="macro">coord! </span>{ x: <span class="number">13.377054</span>, y: <span class="number">52.516250 </span>}, <span class="comment">// Brandenburg Gate, Berlin
+                </span><span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}, <span class="comment">// Reichstag Building, Berlin
+                </span><span class="macro">coord! </span>{ x: <span class="number">13.384733</span>, y: <span class="number">52.522464 </span>}, <span class="comment">// Berlin Central Station
+            </span>],
+            source: <span class="number">1</span>,
+            target: <span class="number">2</span>,
+        };
+
+        <span class="kw">let </span>current_position1 = <span class="macro">coord! </span>{ x: <span class="number">13.377054</span>, y: <span class="number">52.516250 </span>}; <span class="comment">// Brandenburg Gate, Berlin
+        </span><span class="kw">let </span>direction1 = <span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}; <span class="comment">// Reichstag Building, Berlin
+        </span><span class="kw">let </span>distance_to_end1 = edge.distance_to_end(current_position1, direction1);
+
+        <span class="macro">assert_relative_eq!</span>(distance_to_end1, <span class="number">930.0</span>, epsilon = <span class="number">10.0</span>); <span class="comment">// Approx. distance between Brandenburg Gate and Berlin Central Station
+
+        </span><span class="kw">let </span>current_position2 = <span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}; <span class="comment">// Reichstag Building, Berlin
+        </span><span class="kw">let </span>direction2 = <span class="macro">coord! </span>{ x: <span class="number">13.384733</span>, y: <span class="number">52.522464 </span>}; <span class="comment">// Berlin Central Station
+        </span><span class="kw">let </span>distance_to_end2 = edge.distance_to_end(current_position2, direction2);
+
+        <span class="macro">assert_relative_eq!</span>(distance_to_end2, <span class="number">480.0</span>, epsilon = <span class="number">10.0</span>); <span class="comment">// Approx. distance between Reichstag Building and Berlin Central Station
+    </span>}
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_position_on_edge() {
