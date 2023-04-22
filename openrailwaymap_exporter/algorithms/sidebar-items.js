@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["closest_point_in_linestring"]};
+window.SIDEBAR_ITEMS = {"fn":["closest_point_in_linestring","points_in_front"]};

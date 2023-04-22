@@ -59,7 +59,87 @@
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
-</pre><pre class="rust"><code><span class="kw">use </span>geo::{coord, ClosestPoint, Coord, EuclideanDistance, LineString, Point};
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+</pre><pre class="rust"><code><span class="doccomment">//! A module containing algorithms for working with geographical data structures.
+//!
+</span><span class="kw">use </span>geo::{coord, Coord, EuclideanDistance, LineString, Point};
 
 <span class="doccomment">/// Returns the closest point of points in a given `LineString` to a given `Coord`.
 ///
@@ -101,23 +181,99 @@
     closest_position
 }
 
+<span class="doccomment">/// Returns the points in front of the current location in a given `LineString`.
+///
+/// # Examples
+///
+/// ```
+/// use geo::{line_string, coord};
+/// use openrailwaymap_exporter::algorithms::{closest_point_in_linestring, points_in_front};
+///
+/// let linestring = line_string![
+///     coord! { x: 0.0, y: 0.0 },
+///     coord! { x: 0.0, y: 10.0 },
+///     coord! { x: 50.0, y: 50.0 },
+///     coord! { x: 100.0, y: 100.0 },
+/// ];
+/// let current_location = coord! { x: 10.0, y: 20.0 };
+/// let target_direction = coord! { x: 100.0, y: 100.0 };
+///
+/// let points = points_in_front(&amp;linestring, current_location, target_direction);
+///
+/// assert_eq!(points, vec![coord! { x: 50.0, y: 50.0 }, coord! { x: 100.0, y: 100.0 }]);
+/// ```
+</span><span class="kw">pub fn </span>points_in_front(
+    linestring: <span class="kw-2">&amp;</span>LineString&lt;f64&gt;,
+    current_location: Coord&lt;f64&gt;,
+    target_direction: Coord&lt;f64&gt;,
+) -&gt; Vec&lt;Coord&lt;f64&gt;&gt; {
+    <span class="kw">let </span>closest_point = Point::new(
+        closest_point_in_linestring(current_location, linestring).x,
+        closest_point_in_linestring(current_location, linestring).y,
+    );
+    <span class="kw">let </span>current_location_point = Point::new(current_location.x, current_location.y);
+    <span class="kw">let </span>target_direction_point = Point::new(target_direction.x, target_direction.y);
+
+    <span class="kw">let </span>target_vector = target_direction_point - current_location_point;
+    <span class="kw">let </span><span class="kw-2">mut </span>points_in_front = Vec::new();
+
+    <span class="kw">for </span>p <span class="kw">in </span>linestring.points() {
+        <span class="kw">let </span>point_vector = p - closest_point;
+
+        <span class="kw">if </span>target_vector.dot(point_vector) &gt; <span class="number">0.0 </span>{
+            points_in_front.push(<span class="macro">coord! </span>{ x: p.x(), y: p.y() });
+        }
+    }
+
+    points_in_front
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>geo::{coord, line_string};
 
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">mod </span>tests {
+        <span class="kw">use super</span>::<span class="kw-2">*</span>;
+        <span class="kw">use </span>geo::{coord, line_string};
+
+        <span class="attr">#[test]
+        </span><span class="kw">fn </span>test_closest_point_in_linestring() {
+            <span class="kw">let </span>linestring = <span class="macro">line_string!</span>[
+                <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">0.0 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">10.0 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">50.0</span>, y: <span class="number">50.0 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">100.0</span>, y: <span class="number">100.0 </span>},
+            ];
+            <span class="kw">let </span>position = <span class="macro">coord! </span>{ x: <span class="number">10.0</span>, y: <span class="number">20.0 </span>};
+            <span class="kw">let </span>closest_position = closest_point_in_linestring(position, <span class="kw-2">&amp;</span>linestring);
+
+            <span class="macro">assert_eq!</span>(closest_position, <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">10.0 </span>});
+        }
+    }
+
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_closest_point_in_linestring() {
+    </span><span class="kw">fn </span>test_points_in_front() {
         <span class="kw">let </span>linestring = <span class="macro">line_string!</span>[
             <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">0.0 </span>},
-            <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">10.0 </span>},
-            <span class="macro">coord! </span>{ x: <span class="number">50.0</span>, y: <span class="number">50.0 </span>},
-            <span class="macro">coord! </span>{ x: <span class="number">100.0</span>, y: <span class="number">100.0 </span>},
+            <span class="macro">coord! </span>{ x: <span class="number">10.0</span>, y: <span class="number">10.0 </span>},
+            <span class="macro">coord! </span>{ x: <span class="number">20.0</span>, y: <span class="number">20.0 </span>},
+            <span class="macro">coord! </span>{ x: <span class="number">30.0</span>, y: <span class="number">30.0 </span>},
         ];
-        <span class="kw">let </span>position = <span class="macro">coord! </span>{ x: <span class="number">10.0</span>, y: <span class="number">20.0 </span>};
-        <span class="kw">let </span>closest_position = closest_point_in_linestring(position, <span class="kw-2">&amp;</span>linestring);
+        <span class="kw">let </span>current_location = <span class="macro">coord! </span>{ x: <span class="number">5.0</span>, y: <span class="number">5.0 </span>};
+        <span class="kw">let </span>target_direction = <span class="macro">coord! </span>{ x: <span class="number">25.0</span>, y: <span class="number">25.0 </span>};
 
-        <span class="macro">assert_eq!</span>(closest_position, <span class="macro">coord! </span>{ x: <span class="number">0.0</span>, y: <span class="number">10.0 </span>});
+        <span class="kw">let </span>points_in_front = points_in_front(<span class="kw-2">&amp;</span>linestring, current_location, target_direction);
+
+        <span class="macro">assert_eq!</span>(
+            points_in_front,
+            <span class="macro">vec!</span>[
+                <span class="macro">coord! </span>{ x: <span class="number">10.0</span>, y: <span class="number">10.0 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">20.0</span>, y: <span class="number">20.0 </span>},
+                <span class="macro">coord! </span>{ x: <span class="number">30.0</span>, y: <span class="number">30.0 </span>},
+            ]
+        );
     }
 }
 </code></pre></div>
