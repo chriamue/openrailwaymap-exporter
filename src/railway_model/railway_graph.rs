@@ -3,7 +3,7 @@ use petgraph::visit::IntoNodeReferences;
 use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
 use std::collections::HashMap;
 
-use crate::types::NodeId;
+use crate::types::{EdgeId, NodeId};
 
 use super::{RailwayEdge, RailwayNode};
 
@@ -43,13 +43,30 @@ impl RailwayGraph {
     ///
     /// An `Option<RailwayEdge>` that contains the edge if found, or `None` if not found.
     ///
-    pub fn get_edge_by_id(&self, id: i64) -> Option<RailwayEdge> {
+    pub fn get_edge_by_id(&self, id: EdgeId) -> Option<RailwayEdge> {
         for edge in self.graph.edge_references() {
             if edge.weight().id == id {
                 return Some(edge.weight().clone());
             }
         }
         None
+    }
+
+    /// Returns a reference to a RailwayNode with the specified NodeId if it exists in the graph.
+    ///
+    /// This method searches the railway graph for a node with the given NodeId. If the node is found,
+    /// it returns a reference to the RailwayNode. If the node is not found, it returns None.
+    ///
+    /// # Arguments
+    ///
+    /// * id - The NodeId of the node to be retrieved from the railway graph.
+    ///
+    /// # Returns
+    ///
+    /// An Option containing a reference to the RailwayNode if it exists, otherwise None.
+    pub fn get_node_by_id(&self, id: NodeId) -> Option<&RailwayNode> {
+        let node_index = *self.node_indices.get(&id)?;
+        Some(&self.graph[node_index])
     }
 
     /// Retrieve the railway edge between two nodes.

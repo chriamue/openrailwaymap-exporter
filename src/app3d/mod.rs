@@ -89,7 +89,8 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .add_system(select_train_system)
         .add_system(edges::show_edges_on_path)
         .add_system(train_agent::train_agent_system)
-        .add_system(train_agent::train_agent_line_system);
+        .add_system(train_agent::train_agent_line_system)
+        .add_system(update_simulation_system);
     ui::add_ui_systems_to_app(app);
 }
 
@@ -166,6 +167,12 @@ fn setup(mut commands: Commands) {
         },
         ..Default::default()
     });
+}
+
+fn update_simulation_system(app_resource: Res<AppResource>, time: Res<Time>) {
+    if let Some(simulation) = &app_resource.simulation {
+        simulation.lock().unwrap().update(time.delta())
+    }
 }
 
 fn update_look_at_position_system(

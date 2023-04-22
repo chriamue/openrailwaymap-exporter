@@ -6,7 +6,7 @@
 
 use crate::{
     prelude::RailwayGraph,
-    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject},
+    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     types::RailwayObjectId,
 };
 use std::collections::HashMap;
@@ -19,8 +19,10 @@ use self::{
 pub mod agents;
 
 pub mod environment;
+use bevy::prelude::warn;
 pub use environment::SimulationEnvironment;
 use geo::coord;
+use rand::seq::SliceRandom;
 
 #[cfg(test)]
 mod tests;
@@ -170,10 +172,11 @@ impl Simulation {
                 }
 
                 // Update speed based on the acceleration
-                object.set_speed(object.speed() + delta_time.as_secs_f64() * object.acceleration());
+                object.set_speed(object.max_speed().min(object.speed() + delta_time.as_secs_f64() * object.acceleration()));
             }
         }
         self.update_object_position(id, delta_time);
+        self.update_train_target(id);
     }
 
     fn update_object_position(&mut self, id: RailwayObjectId, delta_time: Duration) {
@@ -181,26 +184,49 @@ impl Simulation {
             if let Some(current_position) = object.position() {
                 let current_speed = object.speed();
                 let target = object.next_target();
-                let current_location = object.geo_location().unwrap();
+                if let Some(current_location) = object.geo_location() {
+                    let graph = &self.environment.graph;
+                    let next_node =
+                        graph.get_next_node(current_position, target.unwrap_or_default());
 
-                let graph = &self.environment.graph;
-                let next_node = graph.get_next_node(current_position, target.unwrap_or_default());
+                    if let Some(next_node) = next_node {
+                        let edge = graph
+                            .railway_edge(current_position, next_node)
+                            .expect("Invalid edge");
+                        let direction_node =
+                            &graph.graph[*graph.node_indices.get(&next_node).unwrap()];
 
-                if let Some(next_node) = next_node {
-                    let edge = graph
-                        .railway_edge(current_position, next_node)
-                        .expect("Invalid edge");
-                    let direction_node = &graph.graph[*graph.node_indices.get(&next_node).unwrap()];
+                        let direction_coord =
+                            coord! { x: direction_node.lon, y: direction_node.lat };
+                        let distance_to_travel = current_speed * delta_time.as_secs_f64();
 
-                    let direction_coord = coord! { x: direction_node.lon, y: direction_node.lat };
-                    let distance_to_travel = current_speed * delta_time.as_secs_f64();
-                    let new_geo_location = edge.position_on_edge(
-                        current_location,
-                        distance_to_travel,
-                        direction_coord,
-                    );
+                        let new_geo_location = edge.position_on_edge(
+                            current_location,
+                            distance_to_travel,
+                            direction_coord,
+                        );
 
-                    object.set_geo_location(Some(new_geo_location));
+                        object.set_geo_location(Some(new_geo_location));
+                    }
+                } else {
+                    warn!("object {} has no coordinates", object.id())
+                }
+            }
+        }
+    }
+
+    fn update_train_target(&mut self, id: RailwayObjectId) {
+        if let Some(object) = self.environment.objects.get_mut(&id) {
+            if let Some(train) = object.as_any_mut().downcast_mut::<Train>() {
+                if train.next_target().is_none() || train.position() == train.next_target() {
+                    let reachable_nodes = self
+                        .environment
+                        .graph
+                        .reachable_nodes(train.position().unwrap());
+                    if !reachable_nodes.is_empty() {
+                        let mut rng = rand::thread_rng();
+                        train.set_next_target(Some(*reachable_nodes.choose(&mut rng).unwrap()));
+                    }
                 }
             }
         }

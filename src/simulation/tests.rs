@@ -17,6 +17,7 @@ fn test_simulation_with_agent() {
         geo_location: Some(coord! { x: 0.0, y: 0.0 }),
         next_target: Some(2),
         targets: VecDeque::from(vec![2, 10, 15]),
+        max_speed: 80.0,
         ..Default::default()
     };
 

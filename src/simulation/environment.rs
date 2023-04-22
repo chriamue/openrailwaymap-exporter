@@ -61,9 +61,8 @@ impl ObservableEnvironmentRef for SimulationEnvironment {
 
 #[cfg(test)]
 mod tests {
-    use crate::tests::test_graph_vilbel;
-
     use super::*;
+    use crate::tests::test_graph_vilbel;
 
     #[test]
     fn test_environment() {

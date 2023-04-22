@@ -21,6 +21,8 @@ pub struct Train {
     pub targets: VecDeque<i64>,
     /// The current speed of the train
     pub speed: f64,
+    /// The current speed of the train
+    pub max_speed: f64,
     /// The current acceleration of the train
     pub acceleration: f64,
 }
@@ -40,6 +42,10 @@ impl RailwayObject for Train {
     }
 
     fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn as_any_mut(&mut self) -> &mut dyn Any {
         self
     }
 }
@@ -97,6 +103,14 @@ impl Movable for Train {
     fn set_acceleration(&mut self, acceleration: f64) {
         self.acceleration = acceleration;
     }
+
+    fn max_speed(&self) -> f64 {
+        self.max_speed
+    }
+
+    fn set_max_speed(&mut self, max_speed: f64) {
+        self.max_speed = max_speed;
+    }
 }
 
 #[cfg(test)]
@@ -141,6 +155,7 @@ mod tests {
             geo_location: Some(coord! { x:1.0, y: 2.0}),
             next_target: Some(2),
             targets: VecDeque::from(vec![2, 3, 4]),
+            max_speed: 80.0,
             speed: 0.0,
             acceleration: 0.0,
         };
@@ -159,6 +174,7 @@ mod tests {
             geo_location: Some(coord! { x:1.0, y: 2.0}),
             next_target: Some(2),
             targets: VecDeque::from(vec![2, 3, 4]),
+            max_speed: 80.0,
             speed: 0.0,
             acceleration: 0.0,
         };

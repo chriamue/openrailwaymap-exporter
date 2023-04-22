@@ -9,7 +9,7 @@
 mod path_finding;
 use crate::algorithms::points_in_front;
 use crate::prelude::{RailwayEdge, RailwayGraph};
-use geo::Coord;
+use geo::{Coord, HaversineDistance, Point};
 
 use geo::algorithm::euclidean_distance::EuclideanDistance;
 pub use path_finding::PathFinding;
@@ -89,17 +89,21 @@ impl RailwayEdge {
         let mut new_position = current_location;
 
         for next_point in points_in_front {
-            let segment_distance = current_point.euclidean_distance(&next_point);
+            let current_point_geo = Point::new(current_point.x, current_point.y);
+            let next_point_geo = Point::new(next_point.x, next_point.y);
 
+            // Use haversine_distance instead of euclidean_distance
+            let segment_distance = current_point_geo.haversine_distance(&next_point_geo);
+
+            let ratio = remaining_distance / segment_distance;
+            new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
+            new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
             if remaining_distance < segment_distance {
-                let ratio = remaining_distance / segment_distance;
-                new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
-                new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
                 break;
+            } else {
+                current_point = next_point;
+                remaining_distance -= segment_distance;
             }
-
-            current_point = next_point;
-            remaining_distance -= segment_distance;
         }
         new_position
     }
@@ -122,35 +126,47 @@ pub mod tests {
             id: 1,
             length: 100.0,
             path: line_string![
-                coord! { x: 0.0, y: 0.0 },
-                coord! { x: 0.0, y: 20.0 },
-                coord! { x: 50.0, y: 50.0 },
-                coord! { x: 100.0, y: 100.0 },
+                coord! { x: 8.6821, y: 50.1109 },
+                coord! { x: 8.6825, y: 50.1112 },
+                coord! { x: 8.6830, y: 50.1115 },
+                coord! { x: 8.6835, y: 50.1118 },
             ],
             source: 1,
             target: 2,
         };
 
-        let current_position1 = coord! { x: 0.0, y: 0.0 };
-        let current_position2 = coord! { x: 0.0, y: 20.0 };
+        let current_position1 = coord! { x: 8.6821, y: 50.1109 };
+        let current_position2 = coord! { x: 8.6825, y: 50.1112 };
         let distance1 = 15.0;
-        let direction1 = coord! { x: 0.0, y: 20.0 };
-        let direction2 = coord! { x: 100.0, y: 100.0 };
+        let direction1 = coord! { x: 8.6825, y: 50.1112 };
+        let direction2 = coord! { x: 8.6835, y: 50.1118 };
 
         let new_position1 = edge.position_on_edge(current_position1, distance1, direction1);
         let new_position2 = edge.position_on_edge(current_position2, distance1, direction2);
 
-        assert_eq!(new_position1, coord! { x: 0.0, y: 15.0 });
-        assert_relative_eq!(new_position2, coord! { x: 12.9, y: 27.7 }, epsilon = 0.1);
+        assert_relative_eq!(new_position1.x, 8.6823, epsilon = 0.001);
+        assert_relative_eq!(new_position1.y, 50.1111, epsilon = 0.001);
+        assert_relative_eq!(new_position2.x, 8.6830, epsilon = 0.001);
+        assert_relative_eq!(new_position2.y, 50.1115, epsilon = 0.001);
 
-        let current_position3 = coord! { x: 50.0, y: 50.0 };
+        let current_position3 = coord! { x: 8.6830, y: 50.1115 };
         let distance2 = 25.0;
 
         let new_position3 = edge.position_on_edge(current_position3, distance2, direction1);
         let new_position4 = edge.position_on_edge(current_position3, distance2, direction2);
 
-        assert_relative_eq!(new_position3, coord! { x: 32.3, y: 32.3 }, epsilon = 0.1);
-        assert_relative_eq!(new_position4, coord! { x: 67.7, y: 67.7 }, epsilon = 0.1);
+        assert_relative_eq!(new_position3.x, 8.6827, epsilon = 0.0001);
+        assert_relative_eq!(new_position3.y, 50.1113, epsilon = 0.0001);
+        assert_relative_eq!(new_position4.x, 8.6833, epsilon = 0.0001);
+        assert_relative_eq!(new_position4.y, 50.1116, epsilon = 0.0001);
+
+        let current_position4 = coord! { x: 8.6830, y: 50.1115 };
+        let distance3 = 100.0;
+
+        let new_position5 = edge.position_on_edge(current_position4, distance3, direction2);
+
+        assert_relative_eq!(new_position5.x, 8.6840, epsilon = 0.0001);
+        assert_relative_eq!(new_position5.y, 50.1121, epsilon = 0.0001);
     }
 
     pub fn test_elements() -> Vec<RailwayElement> {

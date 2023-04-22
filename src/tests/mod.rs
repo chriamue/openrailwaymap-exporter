@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use geo::coord;
 use petgraph::{Graph, Undirected};
 use serde_json::Value;
 
@@ -81,4 +82,19 @@ fn test_vilbel_json() {
     let railway_graph = from_railway_elements(&railway_elements);
     assert_eq!(railway_graph.graph.node_count(), 68);
     assert_eq!(railway_graph.graph.edge_count(), 68);
+
+    let source_node = 662529467i64;
+    let target_node = 662529466i64;
+    let distance_to_travel = 100.0;
+    let current_location = coord! {x: 8.7674673, y: 50.1929356};
+    let direction_coord = coord! { x: 8.7672898, y: 50.1929871 };
+
+    let edge = railway_graph
+        .railway_edge(source_node, target_node)
+        .expect("Invalid edge");
+
+    let new_geo_location =
+        edge.position_on_edge(current_location, distance_to_travel, direction_coord);
+
+    assert_ne!(current_location, new_geo_location);
 }

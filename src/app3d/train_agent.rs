@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_mod_picking::PickableBundle;
 use bevy_polyline::prelude::*;
-use geo_types::coord;
+use geo::coord;
 use rand::seq::SliceRandom;
 
 use super::{AppResource, Node};
@@ -9,7 +9,7 @@ use crate::{
     ai::{TrainAgentAI, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_algorithms::PathFinding,
-    railway_objects::{Movable, NextTarget, RailwayObject, Train},
+    railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     simulation::{
         agents::{ForwardUntilTargetAgent, RailMovableAction},
         Simulation, SimulationObject,
@@ -35,6 +35,7 @@ pub struct TrainAgentLine;
 #[derive(Component, Debug)]
 pub struct TrainAgent {
     pub id: RailwayObjectId,
+    #[deprecated(since = "0.1.0", note = "This field is no longer used.")]
     pub train: Train,
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
@@ -106,13 +107,23 @@ pub fn create_train(
     simulation: &mut Simulation,
 ) -> RailwayObjectId {
     let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
+
+    let geo_location = {
+        let node = simulation
+            .get_observable_environment()
+            .get_graph()
+            .get_node_by_id(position.unwrap());
+        Some(coord! { x: node.unwrap().lon, y: node.unwrap().lat})
+    };
+
     let agent = ForwardUntilTargetAgent::new(id);
     let train = Train {
         id,
         position,
-        geo_location: None,
+        geo_location,
         next_target: target,
         targets: VecDeque::new(),
+        max_speed: 80.0 / 3.6,
         speed: 20.0,
         ..Default::default()
     };
@@ -214,8 +225,6 @@ pub fn train_agent_system(
                         update_train_position(
                             &mut train_agent,
                             &mut transform,
-                            &edge,
-                            time.delta_seconds() as f64,
                             &projection,
                             &app_resource,
                         );
@@ -331,49 +340,21 @@ fn update_train_speed(train_agent: &mut TrainAgent, time: &Time) {
 fn update_train_position(
     train_agent: &mut TrainAgent,
     transform: &mut Transform,
-    edge: &RailwayEdge,
-    time_delta: f64,
     projection: &super::Projection,
     app_resource: &Res<AppResource>,
 ) {
-    if let (Some(start_coord), Some(end_coord)) =
-        (edge.path.coords().next(), edge.path.coords().last())
-    {
-        let edge_length = edge.length;
-
-        let distance = train_agent.train.speed() * time_delta;
-        let edge_progress = train_agent.edge_progress + distance;
-        if edge_progress < edge_length {
-            let progress_ratio = edge_progress / edge_length;
-            train_agent.edge_progress = progress_ratio;
-
-            let new_coord = coord! {
-                x: start_coord.x + (end_coord.x - start_coord.x) * progress_ratio,
-                y: start_coord.y + (end_coord.y - start_coord.y) * progress_ratio,
-            };
-
-            if let Some(view_coord) = projection.project(new_coord) {
+    if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
+        if let Some(location) = train.geo_location() {
+            if let Some(view_coord) = projection.project(location) {
                 transform.translation.x = view_coord.x;
                 transform.translation.y = view_coord.y;
             }
-        } else {
-            // The train has reached the end of the edge
-            if let Some(target_node_id) = train_agent.train.next_target() {
-                train_agent.train.position = Some(target_node_id);
-                train_agent.train.set_next_target(None);
-                train_agent.current_edge = None;
-                train_agent.edge_progress = 0.0;
-            }
-        }
-    }
-    if let Some(graph) = &app_resource.graph {
-        if let Some(distance) = train_agent.remaining_distance(graph) {
-            train_agent.remaining_distance = distance;
         }
     }
 }
 
 pub fn train_agent_line_system(
+    app_resource: Res<AppResource>,
     mut commands: Commands,
     train_agent_query: Query<(&TrainAgent, &Transform)>,
     node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
@@ -385,42 +366,59 @@ pub fn train_agent_line_system(
         commands.entity(entity).despawn();
     }
     for (train_agent, train_agent_transform) in train_agent_query.iter() {
-        if let (Some(current_node_id), Some(target_node_id)) = (
-            train_agent.train.position(),
-            train_agent.train.next_target(),
-        ) {
-            let current_node_transform = node_query
-                .iter()
-                .find(|(node, _)| node.id == current_node_id)
-                .map(|(_, transform)| transform);
-
-            let target_node_transform = node_query
-                .iter()
-                .find(|(node, _)| node.id == target_node_id)
-                .map(|(_, transform)| transform);
-
-            if let (Some(_current_node_transform), Some(target_node_transform)) =
-                (current_node_transform, target_node_transform)
+        if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
+            if let (Some(current_node_id), Some(target_node_id)) =
+                (train.position(), train.next_target())
             {
-                commands
-                    .spawn(PolylineBundle {
-                        polyline: polylines.add(Polyline {
-                            vertices: vec![
-                                train_agent_transform.translation,
-                                //current_node_transform.translation,
-                                target_node_transform.translation,
-                            ],
-                        }),
-                        material: polyline_materials.add(PolylineMaterial {
-                            width: 2.0,
-                            color: Color::RED,
-                            perspective: false,
+                let current_node_transform = node_query
+                    .iter()
+                    .find(|(node, _)| node.id == current_node_id)
+                    .map(|(_, transform)| transform);
+
+                let target_node_transform = node_query
+                    .iter()
+                    .find(|(node, _)| node.id == target_node_id)
+                    .map(|(_, transform)| transform);
+
+                if let (Some(_current_node_transform), Some(target_node_transform)) =
+                    (current_node_transform, target_node_transform)
+                {
+                    commands
+                        .spawn(PolylineBundle {
+                            polyline: polylines.add(Polyline {
+                                vertices: vec![
+                                    train_agent_transform.translation,
+                                    //current_node_transform.translation,
+                                    target_node_transform.translation,
+                                ],
+                            }),
+                            material: polyline_materials.add(PolylineMaterial {
+                                width: 2.0,
+                                color: Color::RED,
+                                perspective: false,
+                                ..default()
+                            }),
                             ..default()
-                        }),
-                        ..default()
-                    })
-                    .insert(TrainAgentLine);
+                        })
+                        .insert(TrainAgentLine);
+                }
             }
         }
     }
+}
+
+fn clone_train_from_app(train_agent: &TrainAgent, app_resource: &AppResource) -> Option<Train> {
+    if let Some(simulation) = &app_resource.simulation {
+        if let Ok(simulation) = simulation.try_lock() {
+            if let Some(object) = simulation
+                .get_observable_environment()
+                .get_object(&train_agent.id)
+            {
+                if let Some(train) = object.as_any().downcast_ref::<Train>() {
+                    return Some(train.clone());
+                }
+            }
+        }
+    }
+    None
 }

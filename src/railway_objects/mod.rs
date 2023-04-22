@@ -48,6 +48,17 @@ pub trait RailwayObject: std::fmt::Debug + Any {
     /// A reference to the `Any` trait for the object.
     ///
     fn as_any(&self) -> &dyn Any;
+
+    /// Returns a mutable reference to the `Any` trait for this object.
+    ///
+    /// This method is useful for downcasting the object to a concrete type
+    /// when working with trait objects.
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to the `Any` trait for the object.
+    ///
+    fn as_any_mut(&mut self) -> &mut dyn Any;
 }
 
 /// The `NextTarget` trait provides methods for managing a single target for a railway object.
@@ -81,6 +92,12 @@ pub trait GeoLocation {
 
 /// The Movable trait
 pub trait Movable {
+    /// Returns the max speed of the object in km/h.
+    fn max_speed(&self) -> f64;
+
+    /// Sets the max speed of the object in km/h.
+    fn set_max_speed(&mut self, max_speed: f64);
+
     /// Returns the current speed of the object in km/h.
     fn speed(&self) -> f64;
 
