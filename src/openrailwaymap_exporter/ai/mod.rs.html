@@ -314,6 +314,8 @@
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `ai` module provides a reinforcement learning agent that controls a train in a railway network simulation.
 //!
 //! The module defines the `TrainAgentState` struct, which represents the state of a train agent in the simulation,
@@ -336,6 +338,7 @@
 <span class="kw">use </span>rurel::strategy::learn::QLearning;
 <span class="kw">use </span>rurel::strategy::terminate::FixedIterations;
 <span class="kw">use </span>rurel::AgentTrainer;
+<span class="kw">use </span>uom::si::velocity::millimeter_per_minute;
 
 <span class="doccomment">/// Represents the state of a train agent in the simulation.
 </span><span class="attr">#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -573,9 +576,10 @@
 
             <span class="kw">let </span>speed = object.speed();
 
-            agent_state.current_speed_mm_s = (speed / <span class="number">1000.0</span>) <span class="kw">as </span>i32;
-            agent_state.max_speed_percentage =
-                (<span class="number">100.0 </span>* speed / <span class="self">self</span>.agent_rl.max_speed_mm_s <span class="kw">as </span>f64) <span class="kw">as </span>i32;
+            agent_state.current_speed_mm_s = speed.get::&lt;millimeter_per_minute&gt;() <span class="kw">as </span>i32;
+            agent_state.max_speed_percentage = (<span class="number">100.0 </span>* speed.get::&lt;millimeter_per_minute&gt;()
+                / <span class="self">self</span>.agent_rl.max_speed_mm_s <span class="kw">as </span>f64)
+                <span class="kw">as </span>i32;
 
             <span class="self">self</span>.agent_rl.state = agent_state;
         }

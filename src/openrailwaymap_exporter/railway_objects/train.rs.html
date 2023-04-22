@@ -185,13 +185,18 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
-</pre><pre class="rust"><code><span class="kw">use </span>geo::Coord;
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+</pre><pre class="rust"><code><span class="kw">use super</span>::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
+<span class="kw">use </span><span class="kw">crate</span>::types::{NodeId, RailwayObjectId};
+<span class="kw">use </span>geo::Coord;
 <span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::collections::VecDeque;
-
-<span class="kw">use </span><span class="kw">crate</span>::types::{NodeId, RailwayObjectId};
-
-<span class="kw">use super</span>::{GeoLocation, Movable, MultipleTargets, NextTarget, RailwayObject};
+<span class="kw">use </span>uom::si::f64::{Acceleration, Velocity};
 
 <span class="doccomment">/// A Train struct representing a train in the railway system.
 </span><span class="attr">#[derive(Default, Debug, Clone, PartialEq)]
@@ -207,11 +212,11 @@
     <span class="doccomment">/// A queue of target node IDs for the train to follow.
     </span><span class="kw">pub </span>targets: VecDeque&lt;i64&gt;,
     <span class="doccomment">/// The current speed of the train
-    </span><span class="kw">pub </span>speed: f64,
+    </span><span class="kw">pub </span>speed: Velocity,
     <span class="doccomment">/// The current speed of the train
-    </span><span class="kw">pub </span>max_speed: f64,
+    </span><span class="kw">pub </span>max_speed: Velocity,
     <span class="doccomment">/// The current acceleration of the train
-    </span><span class="kw">pub </span>acceleration: f64,
+    </span><span class="kw">pub </span>acceleration: Acceleration,
 }
 
 <span class="doccomment">/// Implements the `RailwayObject` trait for the `Train` struct.
@@ -275,34 +280,35 @@
 }
 
 <span class="kw">impl </span>Movable <span class="kw">for </span>Train {
-    <span class="kw">fn </span>speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
-        <span class="self">self</span>.speed
-    }
-
-    <span class="kw">fn </span>set_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, speed: f64) {
-        <span class="self">self</span>.speed = speed;
-    }
-
-    <span class="kw">fn </span>acceleration(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
-        <span class="self">self</span>.acceleration
-    }
-
-    <span class="kw">fn </span>set_acceleration(<span class="kw-2">&amp;mut </span><span class="self">self</span>, acceleration: f64) {
-        <span class="self">self</span>.acceleration = acceleration;
-    }
-
-    <span class="kw">fn </span>max_speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
+    <span class="kw">fn </span>max_speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Velocity {
         <span class="self">self</span>.max_speed
     }
 
-    <span class="kw">fn </span>set_max_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_speed: f64) {
+    <span class="kw">fn </span>set_max_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_speed: Velocity) {
         <span class="self">self</span>.max_speed = max_speed;
+    }
+
+    <span class="kw">fn </span>speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Velocity {
+        <span class="self">self</span>.speed
+    }
+
+    <span class="kw">fn </span>set_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, speed: Velocity) {
+        <span class="self">self</span>.speed = speed;
+    }
+
+    <span class="kw">fn </span>acceleration(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Acceleration {
+        <span class="self">self</span>.acceleration
+    }
+
+    <span class="kw">fn </span>set_acceleration(<span class="kw-2">&amp;mut </span><span class="self">self</span>, acceleration: Acceleration) {
+        <span class="self">self</span>.acceleration = acceleration;
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>geo::coord;
+    <span class="kw">use </span>uom::si::{acceleration::meter_per_second_squared, velocity::kilometer_per_hour};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
@@ -342,15 +348,15 @@
             geo_location: <span class="prelude-val">Some</span>(<span class="macro">coord! </span>{ x:<span class="number">1.0</span>, y: <span class="number">2.0</span>}),
             next_target: <span class="prelude-val">Some</span>(<span class="number">2</span>),
             targets: VecDeque::from(<span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]),
-            max_speed: <span class="number">80.0</span>,
-            speed: <span class="number">0.0</span>,
-            acceleration: <span class="number">0.0</span>,
+            max_speed: Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">80.0</span>),
+            speed: Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">0.0</span>),
+            acceleration: Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">0.0</span>),
         };
 
-        <span class="macro">assert_eq!</span>(train.speed(), <span class="number">0.0</span>);
+        <span class="macro">assert_eq!</span>(train.speed(), Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">0.0</span>));
 
-        train.set_speed(<span class="number">100.0</span>);
-        <span class="macro">assert_eq!</span>(train.speed(), <span class="number">100.0</span>);
+        train.set_speed(Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">100.0</span>));
+        <span class="macro">assert_eq!</span>(train.speed(), Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">100.0</span>));
     }
 
     <span class="attr">#[test]
@@ -361,15 +367,21 @@
             geo_location: <span class="prelude-val">Some</span>(<span class="macro">coord! </span>{ x:<span class="number">1.0</span>, y: <span class="number">2.0</span>}),
             next_target: <span class="prelude-val">Some</span>(<span class="number">2</span>),
             targets: VecDeque::from(<span class="macro">vec!</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]),
-            max_speed: <span class="number">80.0</span>,
-            speed: <span class="number">0.0</span>,
-            acceleration: <span class="number">0.0</span>,
+            max_speed: Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">80.0</span>),
+            speed: Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">0.0</span>),
+            acceleration: Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">0.0</span>),
         };
 
-        <span class="macro">assert_eq!</span>(train.acceleration(), <span class="number">0.0</span>);
+        <span class="macro">assert_eq!</span>(
+            train.acceleration(),
+            Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">0.0</span>)
+        );
 
-        train.set_acceleration(<span class="number">1.5</span>);
-        <span class="macro">assert_eq!</span>(train.acceleration(), <span class="number">1.5</span>);
+        train.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">1.5</span>));
+        <span class="macro">assert_eq!</span>(
+            train.acceleration(),
+            Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">1.5</span>)
+        );
     }
 }
 </code></pre></div>

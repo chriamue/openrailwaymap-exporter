@@ -248,6 +248,16 @@
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -274,6 +284,12 @@
 <span class="kw">pub use </span>environment::SimulationEnvironment;
 <span class="kw">use </span>geo::coord;
 <span class="kw">use </span>rand::seq::SliceRandom;
+<span class="kw">use </span>uom::si::{
+    acceleration::{meter_per_second_squared, Acceleration},
+    f64::{Length, Time},
+    length::meter,
+    time::second,
+};
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests;
@@ -412,22 +428,25 @@
                 <span class="comment">// Update the acceleration based on the action.
                 </span><span class="kw">match </span>action {
                     RailMovableAction::Stop =&gt; {
-                        object.set_acceleration(<span class="number">0.0</span>);
+                        object.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">0.0</span>));
                     }
                     RailMovableAction::AccelerateForward { acceleration } =&gt; {
-                        object.set_acceleration(acceleration <span class="kw">as </span>f64);
+                        object.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(
+                            acceleration <span class="kw">as </span>f64,
+                        ));
                     }
                     RailMovableAction::AccelerateBackward { acceleration } =&gt; {
-                        object.set_acceleration(-acceleration <span class="kw">as </span>f64);
+                        object.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(
+                            -acceleration <span class="kw">as </span>f64,
+                        ));
                     }
                 }
 
                 <span class="comment">// Update speed based on the acceleration
-                </span>object.set_speed(
-                    object
-                        .max_speed()
-                        .min(object.speed() + delta_time.as_secs_f64() * object.acceleration()),
-                );
+                </span>object.set_speed(object.max_speed().min(
+                    object.speed()
+                        + Time::new::&lt;second&gt;(delta_time.as_secs_f64()) * object.acceleration(),
+                ));
             }
         }
         <span class="self">self</span>.update_object_position(id, delta_time);
@@ -452,7 +471,8 @@
                         <span class="kw">let </span>next_node = graph.get_node_by_id(next_node_id).unwrap();
 
                         <span class="kw">let </span>direction_coord = <span class="macro">coord! </span>{ x: next_node.lon, y: next_node.lat };
-                        <span class="kw">let </span>distance_to_travel = current_speed * delta_time.as_secs_f64();
+                        <span class="kw">let </span>distance_to_travel =
+                            current_speed * Time::new::&lt;second&gt;(delta_time.as_secs_f64());
 
                         <span class="kw">let </span>new_geo_location = edge.position_on_edge(
                             current_location,
@@ -468,7 +488,7 @@
                             <span class="macro">coord! </span>{x: next_node.lon, y: next_node.lat},
                             new_geo_location,
                         ) || edge.distance_to_end(new_geo_location, direction_coord)
-                            &lt; NEXT_NODE_DISTANCE_TOLERANCE
+                            &lt; Length::new::&lt;meter&gt;(NEXT_NODE_DISTANCE_TOLERANCE)
                         {
                             object.set_position(<span class="prelude-val">Some</span>(next_node_id));
                         }

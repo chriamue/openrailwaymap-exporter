@@ -249,10 +249,12 @@
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>geo::coord;
+<span class="kw">use </span>uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 <span class="kw">use super</span>::{AppResource, Node};
 <span class="kw">use crate</span>::{
@@ -334,8 +336,8 @@
         geo_location,
         next_target: target,
         targets: VecDeque::new(),
-        max_speed: <span class="number">80.0 </span>/ <span class="number">3.6</span>,
-        speed: <span class="number">20.0</span>,
+        max_speed: Velocity::new::&lt;kilometer_per_hour&gt;(<span class="number">80.0</span>),
+        speed: Velocity::new::&lt;meter_per_second&gt;(<span class="number">20.0</span>),
         ..Default::default()
     };
     <span class="kw">let </span>object: Box&lt;<span class="kw">dyn </span>SimulationObject&gt; = Box::new(train);

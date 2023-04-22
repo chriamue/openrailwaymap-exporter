@@ -199,6 +199,10 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -219,6 +223,7 @@
 <span class="kw">use </span>bevy::prelude::Commands;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
+<span class="kw">use </span>uom::si::velocity::kilometer_per_hour;
 
 <span class="attr">#[derive(Default, Resource)]
 </span><span class="kw">pub struct </span>UiUpdateTimer {
@@ -370,7 +375,10 @@
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;ID: {}&quot;</span>, train.id));
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;Current: {:?}&quot;</span>, train.position()));
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;Target: {:?}&quot;</span>, train.next_target()));
-    ui.label(<span class="macro">format!</span>(<span class="string">&quot;Speed: {} km/h&quot;</span>, train.speed() * <span class="number">3.6</span>));
+    ui.label(<span class="macro">format!</span>(
+        <span class="string">&quot;Speed: {} km/h&quot;</span>,
+        train.speed().get::&lt;kilometer_per_hour&gt;()
+    ));
 }
 
 <span class="kw">pub fn </span>display_path_info(

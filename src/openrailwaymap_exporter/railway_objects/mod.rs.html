@@ -116,9 +116,9 @@
 <span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::collections::VecDeque;
 <span class="kw">mod </span>train;
-<span class="kw">pub use </span>train::Train;
-
 <span class="kw">use </span><span class="kw">crate</span>::types::{NodeId, RailwayObjectId};
+<span class="kw">pub use </span>train::Train;
+<span class="kw">use </span>uom::si::f64::{Acceleration, Velocity};
 
 <span class="doccomment">/// The `RailwayObject` trait represents the basic properties of a railway object,
 /// including a unique identifier and a position within an internal model. Objects
@@ -204,23 +204,23 @@
 
 <span class="doccomment">/// The Movable trait
 </span><span class="kw">pub trait </span>Movable {
-    <span class="doccomment">/// Returns the max speed of the object in km/h.
-    </span><span class="kw">fn </span>max_speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
+    <span class="doccomment">/// Returns the max speed of the object as a Velocity.
+    </span><span class="kw">fn </span>max_speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Velocity;
 
-    <span class="doccomment">/// Sets the max speed of the object in km/h.
-    </span><span class="kw">fn </span>set_max_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_speed: f64);
+    <span class="doccomment">/// Sets the max speed of the object as a Velocity.
+    </span><span class="kw">fn </span>set_max_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_speed: Velocity);
 
-    <span class="doccomment">/// Returns the current speed of the object in km/h.
-    </span><span class="kw">fn </span>speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
+    <span class="doccomment">/// Returns the current speed of the object as a Velocity.
+    </span><span class="kw">fn </span>speed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Velocity;
 
-    <span class="doccomment">/// Sets the speed of the object in km/h.
-    </span><span class="kw">fn </span>set_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, speed: f64);
+    <span class="doccomment">/// Sets the speed of the object as a Velocity.
+    </span><span class="kw">fn </span>set_speed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, speed: Velocity);
 
-    <span class="doccomment">/// Returns the current acceleration of the object in m/s^2.
-    </span><span class="kw">fn </span>acceleration(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
+    <span class="doccomment">/// Returns the current acceleration of the object as an Acceleration.
+    </span><span class="kw">fn </span>acceleration(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Acceleration;
 
-    <span class="doccomment">/// Sets the acceleration of the object in m/s^2.
-    </span><span class="kw">fn </span>set_acceleration(<span class="kw-2">&amp;mut </span><span class="self">self</span>, acceleration: f64);
+    <span class="doccomment">/// Sets the acceleration of the object as an Acceleration.
+    </span><span class="kw">fn </span>set_acceleration(<span class="kw-2">&amp;mut </span><span class="self">self</span>, acceleration: Acceleration);
 }
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>

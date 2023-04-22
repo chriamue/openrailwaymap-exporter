@@ -321,6 +321,16 @@
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
@@ -335,6 +345,8 @@
 <span class="kw">use </span>geo::{Coord, HaversineDistance, Point};
 <span class="kw">pub use </span>path_finding::PathFinding;
 <span class="kw">use </span>petgraph::visit::Bfs;
+<span class="kw">use </span>uom::si::f64::Length;
+<span class="kw">use </span>uom::si::length::meter;
 
 <span class="kw">impl </span>RailwayGraph {
     <span class="doccomment">/// Find all reachable nodes from the given start node in the railway graph.
@@ -391,13 +403,13 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         current_location: Coord&lt;f64&gt;,
         direction_coord: Coord&lt;f64&gt;,
-    ) -&gt; f64 {
+    ) -&gt; Length {
         <span class="comment">// Get the points in front of the current_location in the direction of direction_coord
         </span><span class="kw">let </span>points_in_front = points_in_front(<span class="kw-2">&amp;</span><span class="self">self</span>.path, current_location, direction_coord);
 
         <span class="comment">// If there are no points in front, return 0.0
         </span><span class="kw">if </span>points_in_front.is_empty() {
-            <span class="kw">return </span><span class="number">0.0</span>;
+            <span class="kw">return </span>Length::new::&lt;meter&gt;(<span class="number">0.0</span>);
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>total_distance = <span class="number">0.0</span>;
@@ -414,7 +426,7 @@
             current_point = next_point;
         }
 
-        total_distance
+        Length::new::&lt;meter&gt;(total_distance)
     }
 
     <span class="doccomment">/// Calculates a new position on the edge based on the given parameters.
@@ -432,7 +444,7 @@
     </span><span class="kw">pub fn </span>position_on_edge(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         current_location: Coord&lt;f64&gt;,
-        distance_to_travel: f64,
+        distance_to_travel: Length,
         direction_coord: Coord&lt;f64&gt;,
     ) -&gt; Coord&lt;f64&gt; {
         <span class="comment">// Get the points in front of the current_location in the direction of direction_coord
@@ -444,7 +456,7 @@
         }
 
         <span class="comment">// Calculate the remaining distance to travel
-        </span><span class="kw">let </span><span class="kw-2">mut </span>remaining_distance = distance_to_travel;
+        </span><span class="kw">let </span><span class="kw-2">mut </span>remaining_distance = distance_to_travel.get::&lt;meter&gt;();
 
         <span class="comment">// Iterate through the points in front and find the point where the remaining_distance is reached
         </span><span class="kw">let </span><span class="kw-2">mut </span>current_point = current_location;
@@ -499,15 +511,23 @@
         <span class="kw">let </span>current_position1 = <span class="macro">coord! </span>{ x: <span class="number">13.377054</span>, y: <span class="number">52.516250 </span>}; <span class="comment">// Brandenburg Gate, Berlin
         </span><span class="kw">let </span>direction1 = <span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}; <span class="comment">// Reichstag Building, Berlin
         </span><span class="kw">let </span>distance_to_end1 = edge.distance_to_end(current_position1, direction1);
+        <span class="kw">let </span>expected_distance1 = Length::new::&lt;meter&gt;(<span class="number">930.0</span>); <span class="comment">// Approx. distance between Brandenburg Gate and Berlin Central Station
+        </span><span class="macro">assert_relative_eq!</span>(
+            distance_to_end1.get::&lt;meter&gt;(),
+            expected_distance1.get::&lt;meter&gt;(),
+            epsilon = <span class="number">10.0
+        </span>);
 
-        <span class="macro">assert_relative_eq!</span>(distance_to_end1, <span class="number">930.0</span>, epsilon = <span class="number">10.0</span>); <span class="comment">// Approx. distance between Brandenburg Gate and Berlin Central Station
-
-        </span><span class="kw">let </span>current_position2 = <span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}; <span class="comment">// Reichstag Building, Berlin
+        <span class="kw">let </span>current_position2 = <span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}; <span class="comment">// Reichstag Building, Berlin
         </span><span class="kw">let </span>direction2 = <span class="macro">coord! </span>{ x: <span class="number">13.384733</span>, y: <span class="number">52.522464 </span>}; <span class="comment">// Berlin Central Station
         </span><span class="kw">let </span>distance_to_end2 = edge.distance_to_end(current_position2, direction2);
-
-        <span class="macro">assert_relative_eq!</span>(distance_to_end2, <span class="number">480.0</span>, epsilon = <span class="number">10.0</span>); <span class="comment">// Approx. distance between Reichstag Building and Berlin Central Station
-    </span>}
+        <span class="kw">let </span>expected_distance2 = Length::new::&lt;meter&gt;(<span class="number">480.0</span>); <span class="comment">// Approx. distance between Reichstag Building and Berlin Central Station
+        </span><span class="macro">assert_relative_eq!</span>(
+            distance_to_end2.get::&lt;meter&gt;(),
+            expected_distance2.get::&lt;meter&gt;(),
+            epsilon = <span class="number">10.0
+        </span>);
+    }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_position_on_edge() {
@@ -526,7 +546,7 @@
 
         <span class="kw">let </span>current_position1 = <span class="macro">coord! </span>{ x: <span class="number">8.6821</span>, y: <span class="number">50.1109 </span>};
         <span class="kw">let </span>current_position2 = <span class="macro">coord! </span>{ x: <span class="number">8.6825</span>, y: <span class="number">50.1112 </span>};
-        <span class="kw">let </span>distance1 = <span class="number">15.0</span>;
+        <span class="kw">let </span>distance1 = Length::new::&lt;meter&gt;(<span class="number">15.0</span>);
         <span class="kw">let </span>direction1 = <span class="macro">coord! </span>{ x: <span class="number">8.6825</span>, y: <span class="number">50.1112 </span>};
         <span class="kw">let </span>direction2 = <span class="macro">coord! </span>{ x: <span class="number">8.6835</span>, y: <span class="number">50.1118 </span>};
 
@@ -539,8 +559,8 @@
         <span class="macro">assert_relative_eq!</span>(new_position2.y, <span class="number">50.1115</span>, epsilon = <span class="number">0.001</span>);
 
         <span class="kw">let </span>current_position3 = <span class="macro">coord! </span>{ x: <span class="number">8.6830</span>, y: <span class="number">50.1115 </span>};
-        <span class="kw">let </span>distance2 = <span class="number">25.0</span>;
 
+        <span class="kw">let </span>distance2 = Length::new::&lt;meter&gt;(<span class="number">25.0</span>);
         <span class="kw">let </span>new_position3 = edge.position_on_edge(current_position3, distance2, direction1);
         <span class="kw">let </span>new_position4 = edge.position_on_edge(current_position3, distance2, direction2);
 
@@ -550,7 +570,7 @@
         <span class="macro">assert_relative_eq!</span>(new_position4.y, <span class="number">50.1116</span>, epsilon = <span class="number">0.0001</span>);
 
         <span class="kw">let </span>current_position4 = <span class="macro">coord! </span>{ x: <span class="number">8.6830</span>, y: <span class="number">50.1115 </span>};
-        <span class="kw">let </span>distance3 = <span class="number">100.0</span>;
+        <span class="kw">let </span>distance3 = Length::new::&lt;meter&gt;(<span class="number">100.0</span>);
 
         <span class="kw">let </span>new_position5 = edge.position_on_edge(current_position4, distance3, direction2);
 
