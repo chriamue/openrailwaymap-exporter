@@ -53,6 +53,47 @@ impl RailwayGraph {
 }
 
 impl RailwayEdge {
+    /// Calculates the distance between the current location and the last coordinate in the linestring.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_location` - A `Coord<f64>` representing the current location on the edge.
+    /// * `direction_coord` - A `Coord<f64>` representing the target direction along the edge.
+    ///
+    /// # Returns
+    ///
+    /// A `f64` representing the distance to the last coordinate in the linestring.
+    ///
+    pub fn distance_to_end(
+        &self,
+        current_location: Coord<f64>,
+        direction_coord: Coord<f64>,
+    ) -> f64 {
+        // Get the points in front of the current_location in the direction of direction_coord
+        let points_in_front = points_in_front(&self.path, current_location, direction_coord);
+
+        // If there are no points in front, return 0.0
+        if points_in_front.is_empty() {
+            return 0.0;
+        }
+
+        let mut total_distance = 0.0;
+        let mut current_point = current_location;
+
+        for next_point in points_in_front {
+            let current_point_geo = Point::new(current_point.x, current_point.y);
+            let next_point_geo = Point::new(next_point.x, next_point.y);
+
+            // Use haversine_distance to calculate distance between points
+            let segment_distance = current_point_geo.haversine_distance(&next_point_geo);
+            total_distance += segment_distance;
+
+            current_point = next_point;
+        }
+
+        total_distance
+    }
+
     /// Calculates a new position on the edge based on the given parameters.
     ///
     /// # Arguments
@@ -117,6 +158,33 @@ pub mod tests {
         from_railway_elements, Coordinate, ElementType, RailwayElement,
     };
     use std::collections::HashMap;
+
+    #[test]
+    fn test_distance_to_end() {
+        let edge = RailwayEdge {
+            id: 1,
+            length: 1166.0,
+            path: line_string![
+                coord! { x: 13.377054, y: 52.516250 }, // Brandenburg Gate, Berlin
+                coord! { x: 13.378685, y: 52.520165 }, // Reichstag Building, Berlin
+                coord! { x: 13.384733, y: 52.522464 }, // Berlin Central Station
+            ],
+            source: 1,
+            target: 2,
+        };
+
+        let current_position1 = coord! { x: 13.377054, y: 52.516250 }; // Brandenburg Gate, Berlin
+        let direction1 = coord! { x: 13.378685, y: 52.520165 }; // Reichstag Building, Berlin
+        let distance_to_end1 = edge.distance_to_end(current_position1, direction1);
+
+        assert_relative_eq!(distance_to_end1, 930.0, epsilon = 10.0); // Approx. distance between Brandenburg Gate and Berlin Central Station
+
+        let current_position2 = coord! { x: 13.378685, y: 52.520165 }; // Reichstag Building, Berlin
+        let direction2 = coord! { x: 13.384733, y: 52.522464 }; // Berlin Central Station
+        let distance_to_end2 = edge.distance_to_end(current_position2, direction2);
+
+        assert_relative_eq!(distance_to_end2, 480.0, epsilon = 10.0); // Approx. distance between Reichstag Building and Berlin Central Station
+    }
 
     #[test]
     fn test_position_on_edge() {

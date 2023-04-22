@@ -5,6 +5,7 @@
 //! provides a `Simulation` struct to manage the state of the simulation.
 
 use crate::{
+    algorithms::is_middle_coord_between,
     prelude::RailwayGraph,
     railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     types::RailwayObjectId,
@@ -184,6 +185,7 @@ impl Simulation {
     }
 
     fn update_object_position(&mut self, id: RailwayObjectId, delta_time: Duration) {
+        const NEXT_NODE_DISTANCE_TOLERANCE: f64 = 1.0;
         if let Some(object) = self.environment.objects.get_mut(&id) {
             if let Some(current_position) = object.position() {
                 let current_speed = object.speed();
@@ -193,15 +195,13 @@ impl Simulation {
                     let next_node =
                         graph.get_next_node(current_position, target.unwrap_or_default());
 
-                    if let Some(next_node) = next_node {
+                    if let Some(next_node_id) = next_node {
                         let edge = graph
-                            .railway_edge(current_position, next_node)
+                            .railway_edge(current_position, next_node_id)
                             .expect("Invalid edge");
-                        let direction_node =
-                            &graph.graph[*graph.node_indices.get(&next_node).unwrap()];
+                        let next_node = graph.get_node_by_id(next_node_id).unwrap();
 
-                        let direction_coord =
-                            coord! { x: direction_node.lon, y: direction_node.lat };
+                        let direction_coord = coord! { x: next_node.lon, y: next_node.lat };
                         let distance_to_travel = current_speed * delta_time.as_secs_f64();
 
                         let new_geo_location = edge.position_on_edge(
@@ -210,6 +210,18 @@ impl Simulation {
                             direction_coord,
                         );
 
+                        let current_node = graph.get_node_by_id(current_position).unwrap();
+
+                        // reached next node
+                        if is_middle_coord_between(
+                            coord! {x:current_node.lon, y: current_node.lat},
+                            coord! {x: next_node.lon, y: next_node.lat},
+                            new_geo_location,
+                        ) || edge.distance_to_end(new_geo_location, direction_coord)
+                            < NEXT_NODE_DISTANCE_TOLERANCE
+                        {
+                            object.set_position(Some(next_node_id));
+                        }
                         object.set_geo_location(Some(new_geo_location));
                     }
                 } else {

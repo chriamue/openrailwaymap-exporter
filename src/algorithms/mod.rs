@@ -89,6 +89,35 @@ pub fn points_in_front(
     points_in_front
 }
 
+/// Determines if the middle coordinate is between the start and end coordinates along both x and y axes.
+///
+/// This function assumes the three coordinates are collinear.
+///
+/// # Arguments
+///
+/// * `start_coord` - A `Coord<f64>` representing the start coordinate.
+/// * `middle_coord` - A `Coord<f64>` representing the middle coordinate.
+/// * `end_coord` - A `Coord<f64>` representing the end coordinate.
+///
+/// # Returns
+///
+/// A `bool` indicating whether `middle_coord` is between `start_coord` and `end_coord`.
+///
+pub fn is_middle_coord_between(
+    start_coord: Coord<f64>,
+    middle_coord: Coord<f64>,
+    end_coord: Coord<f64>,
+) -> bool {
+    let (x1, y1) = (start_coord.x, start_coord.y);
+    let (x2, y2) = (middle_coord.x, middle_coord.y);
+    let (x3, y3) = (end_coord.x, end_coord.y);
+
+    let between_x = (x2 >= x1 && x2 <= x3) || (x2 >= x3 && x2 <= x1);
+    let between_y = (y2 >= y1 && y2 <= y3) || (y2 >= y3 && y2 <= y1);
+
+    between_x && between_y
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -135,5 +164,26 @@ mod tests {
                 coord! { x: 30.0, y: 30.0 },
             ]
         );
+    }
+
+    #[test]
+    fn test_is_middle_coord_between() {
+        let start_coord = coord! { x: 10.0, y: 10.0 };
+        let middle_coord = coord! { x: 20.0, y: 20.0 };
+        let end_coord = coord! { x: 30.0, y: 30.0 };
+
+        assert!(is_middle_coord_between(
+            start_coord,
+            middle_coord,
+            end_coord
+        ));
+
+        let not_middle_coord = coord! { x: 40.0, y: 40.0 };
+
+        assert!(!is_middle_coord_between(
+            start_coord,
+            not_middle_coord,
+            end_coord
+        ));
     }
 }
