@@ -18,6 +18,8 @@
 #[cfg(target_arch = "wasm32")]
 pub mod app;
 
+pub mod algorithms;
+
 #[cfg(feature = "ai")]
 pub mod ai;
 
