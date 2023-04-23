@@ -175,7 +175,7 @@ impl Simulation {
             // Get the action from the decision agent.
             if let Some(agent) = self.object_agents.get_mut(&id) {
                 let action = agent.next_action(Some(Duration::from_secs(1)));
-                println!("{:?}", action);
+
                 // Update the acceleration based on the action.
                 match action {
                     RailMovableAction::Stop => {

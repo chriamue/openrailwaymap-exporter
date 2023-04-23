@@ -15,9 +15,11 @@ use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
 use crate::railway_objects::{Movable, NextTarget, RailwayObject, Train};
+use crate::statistics::path_length;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
+use uom::si::length::meter;
 use uom::si::velocity::kilometer_per_hour;
 
 #[derive(Default, Resource)]
@@ -70,7 +72,12 @@ pub fn selection_ui_system(
             for train_agent in q_train.iter() {
                 if train_agent_id == train_agent.id {
                     if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
-                        display_selected_train_agent_info(ui, &train, &mut ui_update_timer);
+                        display_selected_train_agent_info(
+                            ui,
+                            &app_resource,
+                            &train,
+                            &mut ui_update_timer,
+                        );
                     }
                 }
             }
@@ -164,6 +171,7 @@ pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_
 
 pub fn display_selected_train_agent_info(
     ui: &mut egui::Ui,
+    app_resource: &ResMut<AppResource>,
     train: &Train,
     _ui_update_timer: &mut UiUpdateTimer,
 ) {
@@ -171,9 +179,26 @@ pub fn display_selected_train_agent_info(
     ui.label(format!("Current: {:?}", train.position()));
     ui.label(format!("Target: {:?}", train.next_target()));
     ui.label(format!(
-        "Speed: {} km/h",
+        "Speed: {:.1} km/h",
         train.speed().get::<kilometer_per_hour>()
     ));
+
+    if let Some(simulation) = &app_resource.simulation {
+        if let Ok(simulation) = simulation.lock() {
+            let graph = simulation.get_observable_environment().get_graph();
+            if let Some(length) = path_length(
+                graph,
+                &graph
+                    .shortest_path_edges(
+                        train.position().unwrap_or_default(),
+                        train.next_target().unwrap_or_default(),
+                    )
+                    .unwrap_or_default(),
+            ) {
+                ui.label(format!("Remaining: {:.3} km", length.get::<meter>()));
+            }
+        }
+    }
 }
 
 pub fn display_path_info(
