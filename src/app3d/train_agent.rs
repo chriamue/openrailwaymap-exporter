@@ -98,9 +98,15 @@ pub fn create_train_agent_bundle(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) -> impl FnOnce(&mut ChildBuilder) {
+    let rotation_quat = Quat::from_rotation_y(-std::f32::consts::FRAC_PI_2);
+
     let main_body = PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Box::new(20.0, 10.0, 4.0))),
         material: materials.add(Color::rgb(0.0, 0.6, 0.0).into()),
+        transform: Transform {
+            rotation: rotation_quat,
+            ..Default::default()
+        },
         ..Default::default()
     };
 
@@ -141,7 +147,6 @@ pub fn create_train_agent_bundle(
         transform: Transform::from_xyz(8.0, -5.0, 1.0),
         ..Default::default()
     };
-
     move |builder: &mut ChildBuilder| {
         builder
             .spawn((main_body, PickableBundle::default()))
@@ -175,6 +180,35 @@ pub fn update_train_position_system(
                 if let Some(view_coord) = projection.project(location) {
                     transform.translation.x = view_coord.x;
                     transform.translation.y = view_coord.y;
+                    // Add next target information
+                    if let Some(target_node_id) = train.next_target() {
+                        if let Some(simulation) = &app_resource.simulation {
+                            if let Ok(simulation) = simulation.try_lock() {
+                                let graph = simulation.get_observable_environment().get_graph();
+                                if let Some(next_node_id) = graph.get_next_node(
+                                    train.position().unwrap_or_default(),
+                                    target_node_id,
+                                ) {
+                                    if let Some(next_node) = graph.get_node_by_id(next_node_id) {
+                                        let target_location =
+                                            coord! { x: next_node.lon, y: next_node.lat };
+                                        if let Some(target_view_coord) =
+                                            projection.project(target_location)
+                                        {
+                                            transform.look_at(
+                                                Vec3::new(
+                                                    target_view_coord.x,
+                                                    target_view_coord.y,
+                                                    0.0,
+                                                ),
+                                                Vec3::new(0.0, 0.0, 1.0),
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

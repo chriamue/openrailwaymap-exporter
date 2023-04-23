@@ -78,7 +78,7 @@ pub fn select_node_system(
                             Transform::from_xyz(
                                 transform.translation.x,
                                 transform.translation.y,
-                                transform.translation.z + 1.0,
+                                transform.translation.z + 5.0,
                             ),
                             GlobalTransform::default(),
                             ComputedVisibility::default(),
