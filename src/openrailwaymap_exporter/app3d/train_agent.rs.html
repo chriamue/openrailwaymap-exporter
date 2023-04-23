@@ -250,6 +250,40 @@
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
@@ -350,9 +384,15 @@
     <span class="kw-2">mut </span>meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
 ) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>ChildBuilder) {
+    <span class="kw">let </span>rotation_quat = Quat::from_rotation_y(-std::f32::consts::FRAC_PI_2);
+
     <span class="kw">let </span>main_body = PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">20.0</span>, <span class="number">10.0</span>, <span class="number">4.0</span>))),
         material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.6</span>, <span class="number">0.0</span>).into()),
+        transform: Transform {
+            rotation: rotation_quat,
+            ..Default::default()
+        },
         ..Default::default()
     };
 
@@ -393,7 +433,6 @@
         transform: Transform::from_xyz(<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">1.0</span>),
         ..Default::default()
     };
-
     <span class="kw">move </span>|builder: <span class="kw-2">&amp;mut </span>ChildBuilder| {
         builder
             .spawn((main_body, PickableBundle::default()))
@@ -427,6 +466,35 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(view_coord) = projection.project(location) {
                     transform.translation.x = view_coord.x;
                     transform.translation.y = view_coord.y;
+                    <span class="comment">// Add next target information
+                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train.next_target() {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
+                            <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.try_lock() {
+                                <span class="kw">let </span>graph = simulation.get_observable_environment().get_graph();
+                                <span class="kw">if let </span><span class="prelude-val">Some</span>(next_node_id) = graph.get_next_node(
+                                    train.position().unwrap_or_default(),
+                                    target_node_id,
+                                ) {
+                                    <span class="kw">if let </span><span class="prelude-val">Some</span>(next_node) = graph.get_node_by_id(next_node_id) {
+                                        <span class="kw">let </span>target_location =
+                                            <span class="macro">coord! </span>{ x: next_node.lon, y: next_node.lat };
+                                        <span class="kw">if let </span><span class="prelude-val">Some</span>(target_view_coord) =
+                                            projection.project(target_location)
+                                        {
+                                            transform.look_at(
+                                                Vec3::new(
+                                                    target_view_coord.x,
+                                                    target_view_coord.y,
+                                                    <span class="number">0.0</span>,
+                                                ),
+                                                Vec3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
