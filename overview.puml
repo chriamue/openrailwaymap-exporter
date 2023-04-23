@@ -2,6 +2,8 @@
 
 package "app" {
     class "Statistics" as Statistics
+    class "App3D" as App3D
+    class "Simulation" as Simulation
 }
 
 package "railway_api_client" {
@@ -10,18 +12,25 @@ package "railway_api_client" {
 }
 
 package "railway_model" {
-    class "RailwayEdge" as RailwayEdge
     class "RailwayGraphBuilder" as RailwayGraphBuilder
     class "RailwayGraph" as RailwayGraph
-    class "RailwayNode" as RailwayNode
+    interface "RailwayObject" as RailwayObject
+    class "Train" as Train
+}
+
+package "ai" {
+    class "AI" as AI
 }
 
 Statistics -down-> RailwayGraph : displays statistics
 RailwayApiClient <|.. OverpassApiClient : implements
-RailwayGraphBuilder -down-> RailwayEdge : builds
-RailwayGraphBuilder -down-> RailwayNode : builds
-RailwayGraphBuilder --> RailwayApiClient : retrieves data
-RailwayGraph -down-> RailwayEdge : contains
-RailwayGraph -down-> RailwayNode : contains
+RailwayGraphBuilder -up-> RailwayApiClient : retrieves data
+RailwayGraphBuilder ---> RailwayGraph : builds
+App3D --> RailwayGraph : displays 3D view
+Simulation --> RailwayGraph : simulates
+RailwayObject <|.. Train : implemented by
+Simulation --> RailwayObject : simulates
+App3D --> RailwayObject : visualizes
+AI --> RailwayObject : controls
 
 @enduml
