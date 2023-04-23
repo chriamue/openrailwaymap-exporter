@@ -47,6 +47,40 @@ impl RailwayGraph {
         }
     }
 
+    /// Find all reachable edges from the given start node in the railway graph.
+    ///
+    /// This function performs a breadth-first search from the given start node and returns a
+    /// vector of reachable edge IDs.
+    ///
+    /// # Arguments
+    ///
+    /// * `start_node_id` - The ID of the start node.
+    ///
+    /// # Returns
+    ///
+    /// A `Vec<i64>` containing the IDs of all edges reachable from the start node.
+    /// If the start node ID is not found in the graph, an empty vector is returned.
+    pub fn reachable_edges(&self, start_node_id: i64) -> Vec<i64> {
+        if let Some(start_index) = self.node_indices.get(&start_node_id) {
+            let mut reachable_edges = Vec::new();
+            let mut bfs = Bfs::new(&self.graph, *start_index);
+
+            while let Some(visited_node_index) = bfs.next(&self.graph) {
+                let visited_node_edges = self.graph.edges(visited_node_index);
+                for edge in visited_node_edges {
+                    let edge_id = edge.weight().id;
+                    if !reachable_edges.contains(&edge_id) {
+                        reachable_edges.push(edge_id);
+                    }
+                }
+            }
+
+            reachable_edges
+        } else {
+            vec![]
+        }
+    }
+
     /// Returns the next reachable node on the shortest path
     pub fn get_next_node(&self, current: i64, target: i64) -> Option<i64> {
         let path = self.shortest_path_nodes(current, target)?;
@@ -319,6 +353,15 @@ pub mod tests {
         let start_node_id = 1;
         let reachable_nodes = railway_graph.reachable_nodes(start_node_id);
         assert_eq!(reachable_nodes, vec![2, 3]);
+    }
+
+    #[test]
+    fn test_reachable_edges() {
+        let railway_graph = from_railway_elements(&test_elements());
+
+        let start_node_id = 1;
+        let reachable_edges = railway_graph.reachable_edges(start_node_id);
+        assert_eq!(reachable_edges, vec![4, 5]);
     }
 
     #[test]

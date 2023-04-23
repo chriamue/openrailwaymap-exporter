@@ -159,9 +159,9 @@ fn setup(mut commands: Commands) {
         brightness: 0.7,
     });
     commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(0.0, 500.0, 0.0),
+        transform: Transform::from_xyz(0.0, 500.0, 100.0),
         point_light: PointLight {
-            intensity: 10000.0,
+            intensity: 1000.0,
             range: 1000.0,
             ..Default::default()
         },
@@ -289,7 +289,7 @@ fn display_graph(
                         PbrBundle {
                             mesh: meshes.add(
                                 Mesh::try_from(shape::Icosphere {
-                                    radius: 5.0,
+                                    radius: 1.0,
                                     subdivisions: 2,
                                 })
                                 .unwrap(),

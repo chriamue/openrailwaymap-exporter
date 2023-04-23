@@ -48,9 +48,20 @@ pub fn select_node_system(
         // Check the current interaction mode
         match interaction_mode.mode {
             InteractionMode::SelectMode => {
-                println!("Selected node: {:?}", entity);
                 selected_node.end_node_id = selected_node.start_node_id;
                 selected_node.start_node_id = Some(node_id);
+                if let Some(graph) = &app_resource.graph {
+                    let edges = graph.get_edges_of_node(node_id);
+                    println!(
+                        "Selected node: {:?} {:?} {:?}",
+                        entity,
+                        graph.get_node_by_id(node_id),
+                        edges
+                            .iter()
+                            .map(|e| (e.id, e.source, e.target))
+                            .collect::<Vec<_>>()
+                    );
+                }
             }
             InteractionMode::PlaceTrain => {
                 if let Some(simulation) = &app_resource.simulation {

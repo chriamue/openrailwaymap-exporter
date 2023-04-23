@@ -20,8 +20,13 @@ pub fn show_edges_on_path(
         if let (Some(start_node_id), Some(end_node_id)) =
             (selected_node.start_node_id, selected_node.end_node_id)
         {
+            let path_edge_ids = if start_node_id == end_node_id {
+                Some(graph.reachable_edges(start_node_id))
+            } else {
+                graph.shortest_path_edges(start_node_id, end_node_id)
+            };
             // Use graph.shortest_path_edges to get the Vec of edge IDs
-            if let Some(path_edge_ids) = graph.shortest_path_edges(start_node_id, end_node_id) {
+            if let Some(path_edge_ids) = path_edge_ids {
                 // Iterate through the edges and set their color
                 for (edge, mut material_handle) in edge_query.iter_mut() {
                     let edge_data = edge;

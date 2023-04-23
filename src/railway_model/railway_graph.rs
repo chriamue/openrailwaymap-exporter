@@ -89,6 +89,25 @@ impl RailwayGraph {
         Some(&self.graph[edge_index])
     }
 
+    /// Retrieve the edges connected to a node by its ID.
+    ///
+    /// # Arguments
+    ///
+    /// * `node_id` - The ID of the node whose edges are to be retrieved.
+    ///
+    /// # Returns
+    ///
+    /// A `Vec<&RailwayEdge>` containing the edges connected to the node, or an empty vector if the node is not found.
+    ///
+    pub fn get_edges_of_node(&self, node_id: NodeId) -> Vec<&RailwayEdge> {
+        let node_index = match self.node_indices.get(&node_id) {
+            Some(index) => *index,
+            None => return Vec::new(),
+        };
+
+        self.graph.edges(node_index).map(|e| e.weight()).collect()
+    }
+
     /// Calculate the bounding box of the graph.
     ///
     /// The bounding box is represented as a tuple containing the minimum and maximum
@@ -372,6 +391,74 @@ mod tests {
         // Test for an invalid edge.
         let edge = railway_graph.railway_edge(1, 3);
         assert!(edge.is_none());
+    }
+
+    #[test]
+    fn test_get_edges_of_node() {
+        let mut tags = HashMap::new();
+        tags.insert("railway".to_string(), "station".to_string());
+        let elements = vec![
+            RailwayElement {
+                id: 1,
+                element_type: ElementType::Node,
+                lat: Some(50.1109),
+                lon: Some(8.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 2,
+                element_type: ElementType::Node,
+                lat: Some(51.1109),
+                lon: Some(9.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 3,
+                element_type: ElementType::Node,
+                lat: Some(49.1109),
+                lon: Some(7.6821),
+                tags: Some(tags.clone()),
+                nodes: None,
+                geometry: None,
+            },
+            RailwayElement {
+                id: 4,
+                element_type: ElementType::Way,
+                lat: None,
+                lon: None,
+                tags: Some(HashMap::new()),
+                nodes: Some(vec![1, 2]),
+                geometry: Some(vec![
+                    Coordinate {
+                        lat: 50.1109,
+                        lon: 8.6821,
+                    },
+                    Coordinate {
+                        lat: 51.1109,
+                        lon: 9.6821,
+                    },
+                ]),
+            },
+        ];
+
+        let railway_graph = from_railway_elements(&elements);
+
+        // Test for a node with edges.
+        let edges = railway_graph.get_edges_of_node(1);
+        assert_eq!(edges.len(), 1);
+        assert_eq!(edges[0].id, 3);
+
+        // Test for a node without edges.
+        let edges = railway_graph.get_edges_of_node(3);
+        assert_eq!(edges.len(), 0);
+
+        // Test for a non-existent node.
+        let edges = railway_graph.get_edges_of_node(999);
+        assert_eq!(edges.len(), 0);
     }
 
     #[test]
