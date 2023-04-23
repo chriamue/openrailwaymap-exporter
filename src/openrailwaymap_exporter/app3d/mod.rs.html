@@ -501,9 +501,9 @@
         brightness: <span class="number">0.7</span>,
     });
     commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(<span class="number">0.0</span>, <span class="number">500.0</span>, <span class="number">0.0</span>),
+        transform: Transform::from_xyz(<span class="number">0.0</span>, <span class="number">500.0</span>, <span class="number">100.0</span>),
         point_light: PointLight {
-            intensity: <span class="number">10000.0</span>,
+            intensity: <span class="number">1000.0</span>,
             range: <span class="number">1000.0</span>,
             ..Default::default()
         },
@@ -631,7 +631,7 @@
                         PbrBundle {
                             mesh: meshes.add(
                                 Mesh::try_from(shape::Icosphere {
-                                    radius: <span class="number">5.0</span>,
+                                    radius: <span class="number">1.0</span>,
                                     subdivisions: <span class="number">2</span>,
                                 })
                                 .unwrap(),
