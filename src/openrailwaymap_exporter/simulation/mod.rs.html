@@ -446,7 +446,7 @@
             <span class="comment">// Get the action from the decision agent.
             </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
                 <span class="kw">let </span>action = agent.next_action(<span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">1</span>)));
-                <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, action);
+
                 <span class="comment">// Update the acceleration based on the action.
                 </span><span class="kw">match </span>action {
                     RailMovableAction::Stop =&gt; {

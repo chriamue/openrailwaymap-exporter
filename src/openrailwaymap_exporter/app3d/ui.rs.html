@@ -203,6 +203,31 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -220,9 +245,11 @@
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraphImporter;
 <span class="kw">use </span><span class="kw">crate</span>::railway_algorithms::PathFinding;
 <span class="kw">use </span><span class="kw">crate</span>::railway_objects::{Movable, NextTarget, RailwayObject, Train};
+<span class="kw">use </span><span class="kw">crate</span>::statistics::path_length;
 <span class="kw">use </span>bevy::prelude::Commands;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
+<span class="kw">use </span>uom::si::length::meter;
 <span class="kw">use </span>uom::si::velocity::kilometer_per_hour;
 
 <span class="attr">#[derive(Default, Resource)]
@@ -275,7 +302,12 @@
             <span class="kw">for </span>train_agent <span class="kw">in </span>q_train.iter() {
                 <span class="kw">if </span>train_agent_id == train_agent.id {
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
-                        display_selected_train_agent_info(ui, <span class="kw-2">&amp;</span>train, <span class="kw-2">&amp;mut </span>ui_update_timer);
+                        display_selected_train_agent_info(
+                            ui,
+                            <span class="kw-2">&amp;</span>app_resource,
+                            <span class="kw-2">&amp;</span>train,
+                            <span class="kw-2">&amp;mut </span>ui_update_timer,
+                        );
                     }
                 }
             }
@@ -369,6 +401,7 @@
 
 <span class="kw">pub fn </span>display_selected_train_agent_info(
     ui: <span class="kw-2">&amp;mut </span>egui::Ui,
+    app_resource: <span class="kw-2">&amp;</span>ResMut&lt;AppResource&gt;,
     train: <span class="kw-2">&amp;</span>Train,
     _ui_update_timer: <span class="kw-2">&amp;mut </span>UiUpdateTimer,
 ) {
@@ -376,9 +409,26 @@
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;Current: {:?}&quot;</span>, train.position()));
     ui.label(<span class="macro">format!</span>(<span class="string">&quot;Target: {:?}&quot;</span>, train.next_target()));
     ui.label(<span class="macro">format!</span>(
-        <span class="string">&quot;Speed: {} km/h&quot;</span>,
+        <span class="string">&quot;Speed: {:.1} km/h&quot;</span>,
         train.speed().get::&lt;kilometer_per_hour&gt;()
     ));
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.lock() {
+            <span class="kw">let </span>graph = simulation.get_observable_environment().get_graph();
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(length) = path_length(
+                graph,
+                <span class="kw-2">&amp;</span>graph
+                    .shortest_path_edges(
+                        train.position().unwrap_or_default(),
+                        train.next_target().unwrap_or_default(),
+                    )
+                    .unwrap_or_default(),
+            ) {
+                ui.label(<span class="macro">format!</span>(<span class="string">&quot;Remaining: {:.3} km&quot;</span>, length.get::&lt;meter&gt;()));
+            }
+        }
+    }
 }
 
 <span class="kw">pub fn </span>display_path_info(
