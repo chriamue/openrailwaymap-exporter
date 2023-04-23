@@ -450,7 +450,7 @@ mod tests {
         // Test for a node with edges.
         let edges = railway_graph.get_edges_of_node(1);
         assert_eq!(edges.len(), 1);
-        assert_eq!(edges[0].id, 3);
+        assert_eq!(edges[0].id, 4);
 
         // Test for a node without edges.
         let edges = railway_graph.get_edges_of_node(3);

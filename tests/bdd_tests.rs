@@ -1,5 +1,6 @@
 use cucumber::{given, then, when, World};
 use geo::Coord;
+use openrailwaymap_exporter::types::NodeId;
 use serde_json::Value;
 use std::fs;
 use std::path::Path;
@@ -9,6 +10,7 @@ use openrailwaymap_exporter::importer::overpass_importer::OverpassImporter;
 use openrailwaymap_exporter::importer::RailwayGraphImporter;
 use openrailwaymap_exporter::prelude::RailwayEdge;
 use openrailwaymap_exporter::prelude::RailwayGraph;
+use openrailwaymap_exporter::simulation::{Simulation, SimulationExecutor};
 
 pub mod steps;
 
@@ -17,10 +19,13 @@ pub struct BddWorld {
     json: Value,
     railway_graph: RailwayGraph,
     edge: Option<RailwayEdge>,
+    start_node: Option<NodeId>,
     current_location: Option<Coord<f64>>,
     distance_to_travel: Option<Length>,
     direction_coord: Option<Coord<f64>>,
     new_position: Option<Coord<f64>>,
+    simulation: Option<Simulation>,
+    simulation_executor: Option<SimulationExecutor>,
 }
 
 impl std::default::Default for BddWorld {
@@ -29,10 +34,13 @@ impl std::default::Default for BddWorld {
             json: Value::Null,
             railway_graph: test_graph_vilbel(),
             edge: None,
+            start_node: None,
             current_location: None,
             distance_to_travel: None,
             direction_coord: None,
             new_position: None,
+            simulation: None,
+            simulation_executor: None,
         }
     }
 }

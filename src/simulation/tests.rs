@@ -10,6 +10,29 @@ use uom::si::{
 };
 
 #[test]
+fn test_debug_implementation() {
+    let graph = test_graph_1();
+
+    let mut simulation = Simulation::new(graph);
+
+    let train = Train {
+        id: 1,
+        position: Some(1),
+        geo_location: Some(coord! { x: 0.0, y: 0.0 }),
+        next_target: Some(2),
+        targets: VecDeque::from(vec![2, 10, 15]),
+        max_speed: Velocity::new::<kilometer_per_hour>(80.0),
+        ..Default::default()
+    };
+    simulation.add_object(Box::new(train), None);
+
+    let debug_output = format!("{:?}", simulation);
+
+    assert!(debug_output.contains("Simulation"));
+    assert!(debug_output.contains("railway_objects: 1"));
+}
+
+#[test]
 fn test_simulation_with_agent() {
     // Create a railway graph
     let graph = test_graph_1();

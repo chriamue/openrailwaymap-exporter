@@ -4,6 +4,10 @@
 //! list of movable railway objects, such as trains, within the simulation. The module
 //! provides a `Simulation` struct to manage the state of the simulation.
 
+use self::{
+    agents::{DecisionAgent, RailMovableAction},
+    environment::{ObservableEnvironment, ObservableEnvironmentRef},
+};
 use crate::{
     algorithms::is_middle_coord_between,
     prelude::RailwayGraph,
@@ -11,12 +15,8 @@ use crate::{
     types::RailwayObjectId,
 };
 use std::collections::HashMap;
+use std::fmt;
 use std::time::Duration;
-
-use self::{
-    agents::{DecisionAgent, RailMovableAction},
-    environment::{ObservableEnvironment, ObservableEnvironmentRef},
-};
 pub mod agents;
 
 pub mod environment;
@@ -30,6 +30,9 @@ use uom::si::{
     length::meter,
     time::second,
 };
+
+mod simulation_executor;
+pub use simulation_executor::SimulationExecutor;
 
 #[cfg(test)]
 mod tests;
@@ -48,6 +51,14 @@ pub struct Simulation {
     /// A list of agents
     pub object_agents: HashMap<RailwayObjectId, Box<dyn DecisionAgent<A = RailMovableAction>>>,
     elapsed_time: Duration,
+}
+
+impl fmt::Debug for Simulation {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Simulation")
+            .field("railway_objects", &self.environment.objects.len())
+            .finish()
+    }
 }
 
 impl Simulation {
