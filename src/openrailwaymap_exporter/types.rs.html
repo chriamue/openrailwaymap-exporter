@@ -8,6 +8,29 @@
 <a href="#8" id="8">8</a>
 <a href="#9" id="9">9</a>
 <a href="#10" id="10">10</a>
+<a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Types used throughout the project.
 //!
 /// A unique identifier for a node in a `RailwayGraph`.
@@ -18,5 +41,28 @@
 
 <span class="doccomment">/// A unique identifier for a railway object.
 </span><span class="kw">pub type </span>RailwayObjectId = i64;
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_node_id_creation_and_assignment() {
+        <span class="kw">let </span>node_id: NodeId = <span class="number">42</span>;
+        <span class="macro">assert_eq!</span>(node_id, <span class="number">42</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_edge_id_creation_and_assignment() {
+        <span class="kw">let </span>edge_id: EdgeId = <span class="number">24</span>;
+        <span class="macro">assert_eq!</span>(edge_id, <span class="number">24</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_railway_object_id_creation_and_assignment() {
+        <span class="kw">let </span>railway_object_id: RailwayObjectId = <span class="number">10</span>;
+        <span class="macro">assert_eq!</span>(railway_object_id, <span class="number">10</span>);
+    }
+}
 </code></pre></div>
 </section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
