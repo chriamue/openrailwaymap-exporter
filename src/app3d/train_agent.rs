@@ -7,7 +7,6 @@ use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 use super::{AppResource, Node};
 use crate::types::NodeId;
 use crate::{
-    ai::{TrainAgentAI, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
     railway_objects::{GeoLocation, NextTarget, RailwayObject, Train},
     simulation::{agents::ForwardUntilTargetAgent, Simulation, SimulationObject},
@@ -34,8 +33,11 @@ pub struct TrainAgent {
     pub id: RailwayObjectId,
     pub current_edge: Option<RailwayEdge>,
     pub edge_progress: f64,
-    pub remaining_distance: f64, // Distance in meters
-    pub ai_agent: Option<TrainAgentAI>,
+    pub remaining_distance: f64,
+}
+
+pub fn create_new_train_id() -> RailwayObjectId {
+    TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst)
 }
 
 impl TrainAgent {
@@ -45,31 +47,16 @@ impl TrainAgent {
             current_edge: None,
             edge_progress: 0.0,
             remaining_distance: 0.0,
-            ai_agent: None,
-        }
-    }
-
-    pub fn train(&mut self, railway_graph: &RailwayGraph, iterations: usize) {
-        let initial_state = TrainAgentState {
-            delta_distance_mm: 0,
-            current_speed_mm_s: 0,
-            max_speed_percentage: 0,
-        };
-        let ai_agent = TrainAgentAI::new(railway_graph.clone(), initial_state);
-        self.ai_agent = Some(ai_agent);
-        if let Some(ai_agent) = &mut self.ai_agent {
-            ai_agent.train(iterations);
         }
     }
 }
 
 pub fn create_train(
+    id: RailwayObjectId,
     position: Option<i64>,
     target: Option<i64>,
     simulation: &mut Simulation,
 ) -> RailwayObjectId {
-    let id = TRAIN_AGENT_ID.fetch_add(1, Ordering::SeqCst);
-
     let geo_location = {
         let node = simulation
             .get_observable_environment()

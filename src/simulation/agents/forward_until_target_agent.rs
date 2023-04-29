@@ -2,6 +2,7 @@ use crate::{
     simulation::{environment::ObservableEnvironment, SimulationEnvironment},
     types::RailwayObjectId,
 };
+use std::any::Any;
 
 use super::{DecisionAgent, RailMovableAction};
 
@@ -15,7 +16,7 @@ use std::time::Duration;
 /// * `T`: A type implementing the `RailwayObject`, `Movable`, and `NextTarget` traits.
 #[derive(Debug, Default)]
 pub struct ForwardUntilTargetAgent {
-    object_id: i64,
+    object_id: RailwayObjectId,
     position: Option<i64>,
     target: Option<i64>,
 }
@@ -63,6 +64,10 @@ impl DecisionAgent for ForwardUntilTargetAgent {
             self.position = object.position();
             self.target = object.next_target();
         }
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

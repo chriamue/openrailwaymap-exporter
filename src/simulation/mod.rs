@@ -30,7 +30,6 @@ use uom::si::{
     length::meter,
     time::second,
 };
-
 mod simulation_executor;
 pub use simulation_executor::SimulationExecutor;
 
@@ -116,10 +115,12 @@ impl Simulation {
         if let std::collections::hash_map::Entry::Vacant(e) =
             self.environment.objects.entry(object.id())
         {
-            if let Some(agent) = agent {
-                self.object_agents.insert(object.id(), agent);
-            }
+            let id = object.id();
             e.insert(object);
+
+            if let Some(agent) = agent {
+                self.add_agent_for_object(id, agent);
+            }
             true
         } else {
             false
@@ -138,6 +139,30 @@ impl Simulation {
     ///
     pub fn remove_object(&mut self, id: i64) -> bool {
         self.environment.objects.remove(&id).is_some()
+    }
+
+    /// Adds a decision agent for an object in the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `object_id` - The unique identifier of the object.
+    /// * `agent` - The decision agent to be added.
+    ///
+    /// # Returns
+    ///
+    /// A boolean indicating if the agent was successfully added.
+    ///
+    pub fn add_agent_for_object(
+        &mut self,
+        object_id: RailwayObjectId,
+        agent: Box<dyn DecisionAgent<A = RailMovableAction>>,
+    ) -> bool {
+        if self.environment.objects.contains_key(&object_id) {
+            self.object_agents.insert(object_id, agent);
+            true
+        } else {
+            false
+        }
     }
 
     /// Updates the simulation state based on the given delta time.
@@ -165,21 +190,27 @@ impl Simulation {
     /// * `delta_time` - The elapsed time since the last update.
     /// * `id` - The unique identifier of the moveable railway object to be updated.
     fn update_object(&mut self, delta_time: Duration, id: RailwayObjectId) {
-        // Get the agent.
         if let Some(agent) = self.object_agents.get_mut(&id) {
             // Observe the environment.
             agent.observe(&self.environment);
         }
-        // Get a mutable reference to the object to be updated.
         if let Some(object) = self.environment.objects.get_mut(&id) {
             // Get the action from the decision agent.
             if let Some(agent) = self.object_agents.get_mut(&id) {
-                let action = agent.next_action(Some(Duration::from_secs(1)));
-
+                let action = agent.next_action(Some(delta_time));
                 // Update the acceleration based on the action.
                 match action {
                     RailMovableAction::Stop => {
-                        object.set_acceleration(Acceleration::new::<meter_per_second_squared>(0.0));
+                        let speed = object.speed();
+                        if speed.is_sign_positive() {
+                            object.set_acceleration(-object.acceleration().abs());
+                        } else if speed.is_sign_negative() {
+                            object.set_acceleration(object.acceleration().abs());
+                        } else {
+                            object.set_acceleration(Acceleration::new::<meter_per_second_squared>(
+                                0.0,
+                            ));
+                        }
                     }
                     RailMovableAction::AccelerateForward { acceleration } => {
                         object.set_acceleration(Acceleration::new::<meter_per_second_squared>(

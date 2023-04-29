@@ -8,6 +8,8 @@ use super::train_agent::{clone_train_from_app, TrainAgent};
 use super::{display_graph, SelectedTrain};
 use super::{AppResource, Edge, Node, Projection};
 use super::{InteractionMode, InteractionModeResource};
+#[cfg(feature = "ai")]
+use crate::ai::TrainAgentAI;
 use crate::prelude::OverpassApiClient;
 use crate::prelude::OverpassImporter;
 use crate::prelude::RailwayApiClient;
@@ -15,6 +17,10 @@ use crate::prelude::RailwayGraph;
 use crate::prelude::RailwayGraphImporter;
 use crate::railway_algorithms::PathFinding;
 use crate::railway_objects::{Movable, NextTarget, RailwayObject, Train};
+use crate::simulation::agents::decision_agent_factory::{
+    DecisionAgentFactory, DecisionAgentOption,
+};
+use crate::simulation::agents::ForwardUntilTargetAgent;
 use crate::statistics::path_length;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
@@ -68,20 +74,20 @@ pub fn selection_ui_system(
             }
         }
         ui.add_space(15.0); // Add space
-        if let Some(train_agent_id) = selected_train.train_agent_id {
+        let selected_train = if let Some(train_agent_id) = selected_train.train_agent_id {
+            let mut selected_train: Option<Train> = None;
             for train_agent in q_train.iter() {
                 if train_agent_id == train_agent.id {
-                    if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
-                        display_selected_train_agent_info(
-                            ui,
-                            &app_resource,
-                            &train,
-                            &mut ui_update_timer,
-                        );
-                    }
+                    selected_train = clone_train_from_app(train_agent, &app_resource)
                 }
             }
-        }
+            selected_train
+        } else {
+            None
+        };
+        if let Some(train) = selected_train {
+            display_selected_train_agent_info(ui, app_resource, &train, &mut ui_update_timer);
+        };
 
         // Add radio buttons for click action modes
         ui.add_space(15.0); // Add space
@@ -171,7 +177,7 @@ pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_
 
 pub fn display_selected_train_agent_info(
     ui: &mut egui::Ui,
-    app_resource: &ResMut<AppResource>,
+    mut app_resource: ResMut<AppResource>,
     train: &Train,
     _ui_update_timer: &mut UiUpdateTimer,
 ) {
@@ -183,8 +189,8 @@ pub fn display_selected_train_agent_info(
         train.speed().get::<kilometer_per_hour>()
     ));
 
-    if let Some(simulation) = &app_resource.simulation {
-        if let Ok(simulation) = simulation.lock() {
+    if let Some(simulation) = &app_resource.simulation.as_mut() {
+        if let Ok(mut simulation) = simulation.lock() {
             let graph = simulation.get_observable_environment().get_graph();
             if let Some(length) = path_length(
                 graph,
@@ -196,6 +202,64 @@ pub fn display_selected_train_agent_info(
                     .unwrap_or_default(),
             ) {
                 ui.label(format!("Remaining: {:.3} km", length.get::<meter>()));
+            }
+
+            // Add decision agent dropdown menu
+            let selected_agent_option = {
+                if let Some(agent) = simulation.object_agents.get(&train.id) {
+                    if agent.as_any().is::<ForwardUntilTargetAgent>() {
+                        Some(DecisionAgentOption::ForwardUntilTargetAgent)
+                    } else {
+                        #[cfg(feature = "ai")]
+                        {
+                            if agent.as_any().is::<TrainAgentAI>() {
+                                Some(DecisionAgentOption::TrainAgentAI)
+                            } else {
+                                None
+                            }
+                        }
+                        #[cfg(not(feature = "ai"))]
+                        {
+                            None
+                        }
+                    }
+                } else {
+                    None
+                }
+            };
+            let mut selected_agent_option = selected_agent_option.unwrap_or_default();
+
+            let mut agent_changed = false;
+            egui::ComboBox::from_id_source("decision_agent_selector")
+                .selected_text(format!("{:?}", selected_agent_option))
+                .show_ui(ui, |ui| {
+                    agent_changed |= ui
+                        .selectable_value(
+                            &mut selected_agent_option,
+                            DecisionAgentOption::ForwardUntilTargetAgent,
+                            "Forward Until Target Agent",
+                        )
+                        .changed();
+
+                    #[cfg(feature = "ai")]
+                    {
+                        agent_changed |= ui
+                            .selectable_value(
+                                &mut selected_agent_option,
+                                DecisionAgentOption::TrainAgentAI,
+                                "Train Agent AI",
+                            )
+                            .changed();
+                    }
+                });
+
+            if agent_changed {
+                let new_agent = DecisionAgentFactory::create_decision_agent(
+                    selected_agent_option,
+                    train.id,
+                    &simulation.environment,
+                );
+                simulation.add_agent_for_object(train.id, new_agent);
             }
         }
     }

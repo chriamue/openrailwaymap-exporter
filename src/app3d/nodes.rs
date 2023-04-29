@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_mod_picking::{PickableBundle, PickingEvent};
 
-use crate::app3d::train_agent::{self, create_train, TrainAgent};
+use crate::app3d::train_agent::{self, create_new_train_id, create_train, TrainAgent};
 
 use super::{AppResource, InteractionMode, InteractionModeResource};
 
@@ -66,11 +66,9 @@ pub fn select_node_system(
             InteractionMode::PlaceTrain => {
                 if let Some(simulation) = &app_resource.simulation {
                     let mut sim = simulation.lock().unwrap();
-                    let id = create_train(Some(node_id), None, &mut sim);
-                    let mut train_agent = TrainAgent::new(id);
-                    if let Some(graph) = &app_resource.graph {
-                        train_agent.train(graph, 100000);
-                    }
+                    let id = create_new_train_id();
+                    let id = create_train(id, Some(node_id), None, &mut sim);
+                    let train_agent = TrainAgent::new(id);
 
                     println!("Placing train on node: {:?}", node_id);
                     commands

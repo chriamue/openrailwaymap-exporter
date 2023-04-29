@@ -7,6 +7,7 @@
 //! for the train agent. This struct handles the reinforcement learning process, updating the train agent's state
 //! based on the actions taken and the rewards received.
 //!
+use std::any::Any;
 use std::fmt;
 use std::sync::{Arc, Mutex};
 
@@ -20,7 +21,7 @@ use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
 use rurel::strategy::terminate::FixedIterations;
 use rurel::AgentTrainer;
-use uom::si::velocity::millimeter_per_minute;
+use uom::si::velocity::millimeter_per_second;
 
 /// Represents the state of a train agent in the simulation.
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -258,13 +259,17 @@ impl DecisionAgent for TrainAgentAI {
 
             let speed = object.speed();
 
-            agent_state.current_speed_mm_s = speed.get::<millimeter_per_minute>() as i32;
-            agent_state.max_speed_percentage = (100.0 * speed.get::<millimeter_per_minute>()
+            agent_state.current_speed_mm_s = speed.get::<millimeter_per_second>() as i32;
+            agent_state.max_speed_percentage = (100.0 * speed.get::<millimeter_per_second>()
                 / self.agent_rl.max_speed_mm_s as f64)
                 as i32;
 
             self.agent_rl.state = agent_state;
         }
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

@@ -3,11 +3,16 @@
 //! Decision agents are responsible for choosing the best action based on the current
 //! state of the simulation. They interact with movable objects on rail tracks, such as trains,
 //! to control their movement.
+use std::any::Any;
 use std::time::Duration;
 
+pub mod decision_agent_factory;
 mod forward_until_target_agent;
 use super::SimulationEnvironment;
 pub use forward_until_target_agent::ForwardUntilTargetAgent;
+
+#[cfg(feature = "ai")]
+pub use crate::ai::TrainAgentAI;
 
 /// Represents the possible actions a movable object on rail tracks can take in the simulation.
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -31,7 +36,7 @@ pub enum RailMovableAction {
 
 /// A trait that represents a decision agent responsible for choosing the best action
 /// based on the current state of the simulation.
-pub trait DecisionAgent: Send {
+pub trait DecisionAgent: Send + Any {
     /// The associated action type for this decision agent.
     type A;
 
@@ -48,6 +53,17 @@ pub trait DecisionAgent: Send {
     ///
     /// * `environment` - The current environment.
     fn observe(&mut self, environment: &SimulationEnvironment);
+
+    /// Returns a reference to the `Any` trait for this object.
+    ///
+    /// This method is useful for downcasting the object to a concrete type
+    /// when working with trait objects.
+    ///
+    /// # Returns
+    ///
+    /// A reference to the `Any` trait for the object.
+    ///
+    fn as_any(&self) -> &dyn Any;
 }
 
 #[cfg(test)]

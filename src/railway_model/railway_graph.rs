@@ -12,7 +12,7 @@ use super::{RailwayEdge, RailwayNode};
 /// The graph consists of nodes representing railway stations and junctions, and edges representing
 /// the railway segments between the nodes. It also stores the node indices as a HashMap for easy
 /// retrieval.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct RailwayGraph {
     /// The internal graph used to represent the railway network.
     ///
