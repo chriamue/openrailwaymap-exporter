@@ -49,8 +49,8 @@ it returns a reference to the RailwayNode. If the node is not found, it returns 
 <p>An Option containing a reference to the RailwayNode if it exists, otherwise None.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.railway_edge" class="method"><a class="srclink rightside" href="../../../src/openrailwaymap_exporter/railway_model/railway_graph.rs.html#84-90">source</a><h4 class="code-header">pub fn <a href="#method.railway_edge" class="fn">railway_edge</a>(
     &amp;self,
-    start_node_id: <a class="primitive" href="https://doc.rust-lang.org/1.69.0/std/primitive.i64.html">i64</a>,
-    end_node_id: <a class="primitive" href="https://doc.rust-lang.org/1.69.0/std/primitive.i64.html">i64</a>
+    start_node_id: <a class="type" href="../../types/type.NodeId.html" title="type openrailwaymap_exporter::types::NodeId">NodeId</a>,
+    end_node_id: <a class="type" href="../../types/type.NodeId.html" title="type openrailwaymap_exporter::types::NodeId">NodeId</a>
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.69.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;<a class="struct" href="../struct.RailwayEdge.html" title="struct openrailwaymap_exporter::railway_model::RailwayEdge">RailwayEdge</a>&gt;</h4></section></summary><div class="docblock"><p>Retrieve the railway edge between two nodes.</p>
 <h5 id="arguments-4"><a href="#arguments-4">Arguments</a></h5>
 <ul>
@@ -79,7 +79,7 @@ of the bounding box of the graph.</p>
 <p>A <code>f64</code> value representing the total length of the railway network in meters.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.nearest_node" class="method"><a class="srclink rightside" href="../../../src/openrailwaymap_exporter/railway_model/railway_graph.rs.html#169-214">source</a><h4 class="code-header">pub fn <a href="#method.nearest_node" class="fn">nearest_node</a>(
     &amp;self,
-    edge_id: <a class="primitive" href="https://doc.rust-lang.org/1.69.0/std/primitive.i64.html">i64</a>,
+    edge_id: <a class="type" href="../../types/type.EdgeId.html" title="type openrailwaymap_exporter::types::EdgeId">EdgeId</a>,
     position_on_edge: <a class="primitive" href="https://doc.rust-lang.org/1.69.0/std/primitive.f64.html">f64</a>,
     current_node_id: <a class="enum" href="https://doc.rust-lang.org/1.69.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../../types/type.NodeId.html" title="type openrailwaymap_exporter::types::NodeId">NodeId</a>&gt;
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.69.0/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../../types/type.NodeId.html" title="type openrailwaymap_exporter::types::NodeId">NodeId</a>&gt;</h4></section></summary><div class="docblock"><p>Returns the nearest node to the given position on the specified edge.</p>

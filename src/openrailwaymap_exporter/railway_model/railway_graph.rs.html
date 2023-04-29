@@ -602,7 +602,7 @@
     /// An `Option&lt;&amp;RailwayEdge&gt;` that contains the railway edge connecting the two nodes if it exists,
     /// or `None` if no such edge exists.
     ///
-    </span><span class="kw">pub fn </span>railway_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: i64, end_node_id: i64) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt; {
+    </span><span class="kw">pub fn </span>railway_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId, end_node_id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt; {
         <span class="kw">let </span>start_node_index = <span class="kw-2">*</span><span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>start_node_id)<span class="question-mark">?</span>;
         <span class="kw">let </span>end_node_index = <span class="kw-2">*</span><span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>end_node_id)<span class="question-mark">?</span>;
 
@@ -689,7 +689,7 @@
     /// An `Option&lt;NodeId&gt;` containing the ID of the nearest node if found, or `None` if the edge is not found.
     </span><span class="kw">pub fn </span>nearest_node(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        edge_id: i64,
+        edge_id: EdgeId,
         position_on_edge: f64,
         current_node_id: <span class="prelude-ty">Option</span>&lt;NodeId&gt;,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt; {
@@ -723,7 +723,7 @@
         <span class="kw">for </span>node_index <span class="kw">in </span><span class="self">self</span>.graph.node_indices() {
             <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.graph[node_index];
             <span class="kw">let </span>coord = <span class="macro">coord! </span>{x: node.lon, y: node.lat};
-            <span class="kw">let </span>distance = euclidean_distance(<span class="kw-2">&amp;</span>point_on_edge, <span class="kw-2">&amp;</span>coord);
+            <span class="kw">let </span>distance = point_distance(<span class="kw-2">&amp;</span>point_on_edge, <span class="kw-2">&amp;</span>coord);
 
             <span class="kw">if </span>distance &lt; nearest_distance {
                 nearest_node_index = <span class="prelude-val">Some</span>(node_index);
@@ -735,7 +735,7 @@
     }
 }
 
-<span class="kw">fn </span>euclidean_distance(coord1: <span class="kw-2">&amp;</span>Coord, coord2: <span class="kw-2">&amp;</span>Coord) -&gt; f64 {
+<span class="kw">fn </span>point_distance(coord1: <span class="kw-2">&amp;</span>Coord, coord2: <span class="kw-2">&amp;</span>Coord) -&gt; f64 {
     <span class="kw">let </span>dx = coord1.x - coord2.x;
     <span class="kw">let </span>dy = coord1.y - coord2.y;
     (dx * dx + dy * dy).sqrt()
