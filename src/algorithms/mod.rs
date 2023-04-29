@@ -1,6 +1,10 @@
 //! A module containing algorithms for working with geographical data structures.
 //!
-use geo::{coord, Coord, EuclideanDistance, LineString, Point};
+use crate::algorithms::distance::Distance;
+use geo::{coord, Coord, LineString, Point};
+use uom::si::length::meter;
+
+mod distance;
 
 /// Returns the closest point of points in a given `LineString` to a given `Coord`.
 ///
@@ -25,17 +29,16 @@ pub fn closest_point_in_linestring(
     position: Coord<f64>,
     linestring: &LineString<f64>,
 ) -> Coord<f64> {
-    let position_point = Point::new(position.x, position.y);
-
     let mut min_distance = f64::MAX;
     let mut closest_position = position;
 
     for p in linestring.points() {
-        let distance = p.euclidean_distance(&position_point);
+        let p = coord! { x: p.x(), y: p.y() };
+        let distance = p.distance(&position);
 
-        if distance < min_distance {
-            min_distance = distance;
-            closest_position = coord! { x: p.x(), y: p.y() };
+        if distance.get::<meter>() < min_distance {
+            min_distance = distance.get::<meter>();
+            closest_position = p;
         }
     }
 
@@ -68,10 +71,6 @@ pub fn points_in_front(
     current_location: Coord<f64>,
     target_direction: Coord<f64>,
 ) -> Vec<Coord<f64>> {
-    let closest_point = Point::new(
-        closest_point_in_linestring(current_location, linestring).x,
-        closest_point_in_linestring(current_location, linestring).y,
-    );
     let current_location_point = Point::new(current_location.x, current_location.y);
     let target_direction_point = Point::new(target_direction.x, target_direction.y);
 
@@ -79,9 +78,9 @@ pub fn points_in_front(
     let mut points_in_front = Vec::new();
 
     for p in linestring.points() {
-        let point_vector = p - closest_point;
+        let point_vector = p - current_location_point;
 
-        if target_vector.dot(point_vector) > 0.0 {
+        if target_vector.dot(point_vector) >= 0.0 {
             points_in_front.push(coord! { x: p.x(), y: p.y() });
         }
     }
@@ -108,14 +107,11 @@ pub fn is_middle_coord_between(
     middle_coord: Coord<f64>,
     end_coord: Coord<f64>,
 ) -> bool {
-    let (x1, y1) = (start_coord.x, start_coord.y);
-    let (x2, y2) = (middle_coord.x, middle_coord.y);
-    let (x3, y3) = (end_coord.x, end_coord.y);
+    let distance_start_end = start_coord.distance(&end_coord);
+    let distance_start_middle = start_coord.distance(&middle_coord);
+    let distance_middle_end = middle_coord.distance(&end_coord);
 
-    let between_x = (x2 >= x1 && x2 <= x3) || (x2 >= x3 && x2 <= x1);
-    let between_y = (y2 >= y1 && y2 <= y3) || (y2 >= y3 && y2 <= y1);
-
-    between_x && between_y
+    distance_start_end > distance_start_middle && distance_start_end > distance_middle_end
 }
 
 #[cfg(test)]
@@ -123,24 +119,29 @@ mod tests {
     use super::*;
     use geo::{coord, line_string};
 
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-        use geo::{coord, line_string};
+    #[test]
+    fn test_closest_point_in_linestring() {
+        let linestring = line_string![
+            coord! { x: 0.0, y: 0.0 },
+            coord! { x: 0.0, y: 10.0 },
+            coord! { x: 50.0, y: 50.0 },
+            coord! { x: 100.0, y: 100.0 },
+        ];
+        let position = coord! { x: 10.0, y: 20.0 };
+        let closest_position = closest_point_in_linestring(position, &linestring);
 
-        #[test]
-        fn test_closest_point_in_linestring() {
-            let linestring = line_string![
-                coord! { x: 0.0, y: 0.0 },
-                coord! { x: 0.0, y: 10.0 },
-                coord! { x: 50.0, y: 50.0 },
-                coord! { x: 100.0, y: 100.0 },
-            ];
-            let position = coord! { x: 10.0, y: 20.0 };
-            let closest_position = closest_point_in_linestring(position, &linestring);
+        assert_eq!(closest_position, coord! { x: 0.0, y: 10.0 });
 
-            assert_eq!(closest_position, coord! { x: 0.0, y: 10.0 });
-        }
+        let linestring = line_string![
+            coord! { x: 0.0, y: 0.0 },
+            coord! { x: 10.0, y: 10.0 },
+            coord! { x: 20.0, y: 20.0 },
+            coord! { x: 30.0, y: 30.0 },
+        ];
+        let current_location = coord! { x: 5.0, y: 5.0 };
+        let closest_position = closest_point_in_linestring(current_location, &linestring);
+
+        assert_eq!(closest_position, coord! { x: 10.0, y: 10.0 });
     }
 
     #[test]
@@ -154,10 +155,11 @@ mod tests {
         let current_location = coord! { x: 5.0, y: 5.0 };
         let target_direction = coord! { x: 25.0, y: 25.0 };
 
-        let points_in_front = points_in_front(&linestring, current_location, target_direction);
+        let calculated_points_in_front =
+            points_in_front(&linestring, current_location, target_direction);
 
         assert_eq!(
-            points_in_front,
+            calculated_points_in_front,
             vec![
                 coord! { x: 10.0, y: 10.0 },
                 coord! { x: 20.0, y: 20.0 },
@@ -175,7 +177,7 @@ mod tests {
         assert!(is_middle_coord_between(
             start_coord,
             middle_coord,
-            end_coord
+            end_coord,
         ));
 
         let not_middle_coord = coord! { x: 40.0, y: 40.0 };
@@ -183,7 +185,7 @@ mod tests {
         assert!(!is_middle_coord_between(
             start_coord,
             not_middle_coord,
-            end_coord
+            end_coord,
         ));
     }
 }

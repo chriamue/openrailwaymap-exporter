@@ -81,7 +81,7 @@ impl RailwayGraph {
     /// An `Option<&RailwayEdge>` that contains the railway edge connecting the two nodes if it exists,
     /// or `None` if no such edge exists.
     ///
-    pub fn railway_edge(&self, start_node_id: i64, end_node_id: i64) -> Option<&RailwayEdge> {
+    pub fn railway_edge(&self, start_node_id: NodeId, end_node_id: NodeId) -> Option<&RailwayEdge> {
         let start_node_index = *self.node_indices.get(&start_node_id)?;
         let end_node_index = *self.node_indices.get(&end_node_id)?;
 
@@ -168,7 +168,7 @@ impl RailwayGraph {
     /// An `Option<NodeId>` containing the ID of the nearest node if found, or `None` if the edge is not found.
     pub fn nearest_node(
         &self,
-        edge_id: i64,
+        edge_id: EdgeId,
         position_on_edge: f64,
         current_node_id: Option<NodeId>,
     ) -> Option<NodeId> {
@@ -202,7 +202,7 @@ impl RailwayGraph {
         for node_index in self.graph.node_indices() {
             let node = &self.graph[node_index];
             let coord = coord! {x: node.lon, y: node.lat};
-            let distance = euclidean_distance(&point_on_edge, &coord);
+            let distance = point_distance(&point_on_edge, &coord);
 
             if distance < nearest_distance {
                 nearest_node_index = Some(node_index);
@@ -214,7 +214,7 @@ impl RailwayGraph {
     }
 }
 
-fn euclidean_distance(coord1: &Coord, coord2: &Coord) -> f64 {
+fn point_distance(coord1: &Coord, coord2: &Coord) -> f64 {
     let dx = coord1.x - coord2.x;
     let dy = coord1.y - coord2.y;
     (dx * dx + dy * dy).sqrt()

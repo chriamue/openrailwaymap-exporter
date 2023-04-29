@@ -5,6 +5,7 @@ use geo::coord;
 use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
+use crate::types::NodeId;
 use crate::{
     ai::{TrainAgentAI, TrainAgentState},
     prelude::{RailwayEdge, RailwayGraph},
@@ -177,7 +178,7 @@ pub fn update_train_position_system(
     for (train_agent, mut transform) in train_agent_query.iter_mut() {
         if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
             if let Some(location) = train.geo_location() {
-                if let Some(view_coord) = projection.project(location) {
+                if let Some(view_coord) = &projection.project(location) {
                     transform.translation.x = view_coord.x;
                     transform.translation.y = view_coord.y;
                     // Add next target information
@@ -189,28 +190,30 @@ pub fn update_train_position_system(
                                     train.position().unwrap_or_default(),
                                     target_node_id,
                                 ) {
-                                    if let Some(next_node) = graph.get_node_by_id(next_node_id) {
-                                        let target_location =
-                                            coord! { x: next_node.lon, y: next_node.lat };
-                                        if let Some(target_view_coord) =
-                                            projection.project(target_location)
-                                        {
-                                            transform.look_at(
-                                                Vec3::new(
-                                                    target_view_coord.x,
-                                                    target_view_coord.y,
-                                                    0.0,
-                                                ),
-                                                Vec3::new(0.0, 0.0, 1.0),
-                                            );
-                                        }
-                                    }
+                                    update_look_at(&projection, &mut transform, graph, next_node_id)
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+fn update_look_at(
+    projection: &Res<super::Projection>,
+    transform: &mut Mut<Transform>,
+    graph: &RailwayGraph,
+    next_node_id: NodeId,
+) {
+    if let Some(next_node) = graph.get_node_by_id(next_node_id) {
+        let target_location = coord! { x: next_node.lon, y: next_node.lat };
+        if let Some(target_view_coord) = projection.project(target_location) {
+            transform.look_at(
+                Vec3::new(target_view_coord.x, target_view_coord.y, 1.0),
+                Vec3::new(0.0, 0.0, 1.0),
+            );
         }
     }
 }
