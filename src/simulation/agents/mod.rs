@@ -4,8 +4,8 @@
 //! state of the simulation. They interact with movable objects on rail tracks, such as trains,
 //! to control their movement.
 use std::any::Any;
+use std::fmt;
 use std::time::Duration;
-
 pub mod decision_agent_factory;
 mod forward_until_target_agent;
 use super::SimulationEnvironment;
@@ -32,6 +32,16 @@ pub enum RailMovableAction {
         /// Acceleration in millimeters per second squared (mm/s²).
         acceleration: i32,
     },
+}
+
+impl fmt::Display for RailMovableAction {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            RailMovableAction::AccelerateForward { .. } => write!(f, "AccelerateForward"),
+            RailMovableAction::AccelerateBackward { .. } => write!(f, "AccelerateBackward"),
+            RailMovableAction::Stop => write!(f, "Stop"),
+        }
+    }
 }
 
 /// A trait that represents a decision agent responsible for choosing the best action

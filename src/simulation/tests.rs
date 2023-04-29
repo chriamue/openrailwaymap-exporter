@@ -131,3 +131,36 @@ fn test_get_observable_environment() {
     assert!(train.is_some());
     assert_eq!(1, train.unwrap().id());
 }
+
+#[test]
+fn test_metrics_count_stop_actions() {
+    let graph = test_graph_1();
+
+    let mut simulation = Simulation::new(graph);
+
+    let train = Train {
+        id: 1,
+        position: Some(1),
+        geo_location: Some(coord! { x: 0.0, y: 0.0 }),
+        next_target: Some(2),
+        targets: VecDeque::from(vec![2, 10, 15]),
+        max_speed: Velocity::new::<kilometer_per_hour>(80.0),
+        ..Default::default()
+    };
+    let agent = ForwardUntilTargetAgent::new(train.id());
+    simulation.add_object(Box::new(train), Some(Box::new(agent)));
+
+    let action_count_handler = ActionCountHandler::new();
+    simulation.register_metrics_handler(Box::new(action_count_handler));
+
+    let total_steps = 10;
+
+    for _ in 0..total_steps {
+        simulation.update(Duration::from_secs(1));
+    }
+
+    let stop_count = simulation.metrics_handlers.get(0).unwrap().get_value();
+
+    let expected_stop_count = 10.0;
+    assert_eq!(stop_count, expected_stop_count);
+}

@@ -31,8 +31,12 @@ use uom::si::{
     time::second,
 };
 mod simulation_executor;
+use crate::simulation::events::{RailMovableEvent, SimulationEvent, TargetReachedEvent};
+use crate::simulation::metrics::{ActionCountHandler, MetricsHandler, TargetReachedHandler};
 pub use simulation_executor::SimulationExecutor;
 
+pub mod events;
+pub mod metrics;
 #[cfg(test)]
 mod tests;
 
@@ -49,6 +53,7 @@ pub struct Simulation {
     pub environment: SimulationEnvironment,
     /// A list of agents
     pub object_agents: HashMap<RailwayObjectId, Box<dyn DecisionAgent<A = RailMovableAction>>>,
+    pub metrics_handlers: Vec<Box<dyn MetricsHandler>>,
     elapsed_time: Duration,
 }
 
@@ -72,12 +77,17 @@ impl Simulation {
     /// A new `Simulation` instance.
     ///
     pub fn new(graph: RailwayGraph) -> Self {
+        let mut default_metrics_handler: Vec<Box<dyn MetricsHandler>> = vec![];
+        default_metrics_handler.push(Box::new(ActionCountHandler::new()));
+        default_metrics_handler.push(Box::new(TargetReachedHandler::new()));
+
         Self {
             environment: SimulationEnvironment {
                 graph,
                 objects: HashMap::new(),
             },
             object_agents: HashMap::new(),
+            metrics_handlers: default_metrics_handler,
             elapsed_time: Duration::default(),
         }
     }
@@ -165,6 +175,16 @@ impl Simulation {
         }
     }
 
+    pub fn register_metrics_handler(&mut self, handler: Box<dyn MetricsHandler>) {
+        self.metrics_handlers.push(handler);
+    }
+
+    fn handle_event(&mut self, event: &dyn SimulationEvent) {
+        for handler in &mut self.metrics_handlers {
+            handler.handle(event);
+        }
+    }
+
     /// Updates the simulation state based on the given delta time.
     ///
     /// # Arguments
@@ -194,9 +214,10 @@ impl Simulation {
             // Observe the environment.
             agent.observe(&self.environment);
         }
+        let mut event = None;
         if let Some(object) = self.environment.objects.get_mut(&id) {
             // Get the action from the decision agent.
-            if let Some(agent) = self.object_agents.get_mut(&id) {
+            if let Some(agent) = self.object_agents.get(&id) {
                 let action = agent.next_action(Some(delta_time));
                 // Update the acceleration based on the action.
                 match action {
@@ -224,6 +245,8 @@ impl Simulation {
                     }
                 }
 
+                event = Some(RailMovableEvent { action });
+
                 // Update speed based on the acceleration
                 object.set_speed(object.max_speed().min(
                     object.speed()
@@ -231,6 +254,10 @@ impl Simulation {
                 ));
             }
         }
+        if let Some(event) = event {
+            self.handle_event(&event);
+        }
+
         self.update_object_position(id, delta_time);
         self.update_train_target(id);
     }
@@ -284,6 +311,7 @@ impl Simulation {
     }
 
     fn update_train_target(&mut self, id: RailwayObjectId) {
+        let mut event = None;
         if let Some(object) = self.environment.objects.get_mut(&id) {
             if let Some(train) = object.as_any_mut().downcast_mut::<Train>() {
                 if train.next_target().is_none() || train.position() == train.next_target() {
@@ -292,11 +320,15 @@ impl Simulation {
                         .graph
                         .reachable_nodes(train.position().unwrap());
                     if !reachable_nodes.is_empty() {
+                        event = Some(TargetReachedEvent {});
                         let mut rng = rand::thread_rng();
                         train.set_next_target(Some(*reachable_nodes.choose(&mut rng).unwrap()));
                     }
                 }
             }
+        }
+        if let Some(event) = event {
+            self.handle_event(&event);
         }
     }
 }
