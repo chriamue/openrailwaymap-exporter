@@ -300,6 +300,38 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -333,8 +365,12 @@
     time::second,
 };
 <span class="kw">mod </span>simulation_executor;
+<span class="kw">use </span><span class="kw">crate</span>::simulation::events::{RailMovableEvent, SimulationEvent, TargetReachedEvent};
+<span class="kw">use </span><span class="kw">crate</span>::simulation::metrics::{ActionCountHandler, MetricsHandler, TargetReachedHandler};
 <span class="kw">pub use </span>simulation_executor::SimulationExecutor;
 
+<span class="kw">pub mod </span>events;
+<span class="kw">pub mod </span>metrics;
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests;
 
@@ -351,6 +387,7 @@
     </span><span class="kw">pub </span>environment: SimulationEnvironment,
     <span class="doccomment">/// A list of agents
     </span><span class="kw">pub </span>object_agents: HashMap&lt;RailwayObjectId, Box&lt;<span class="kw">dyn </span>DecisionAgent&lt;A = RailMovableAction&gt;&gt;&gt;,
+    <span class="kw">pub </span>metrics_handlers: Vec&lt;Box&lt;<span class="kw">dyn </span>MetricsHandler&gt;&gt;,
     elapsed_time: Duration,
 }
 
@@ -374,12 +411,17 @@
     /// A new `Simulation` instance.
     ///
     </span><span class="kw">pub fn </span>new(graph: RailwayGraph) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>default_metrics_handler: Vec&lt;Box&lt;<span class="kw">dyn </span>MetricsHandler&gt;&gt; = <span class="macro">vec!</span>[];
+        default_metrics_handler.push(Box::new(ActionCountHandler::new()));
+        default_metrics_handler.push(Box::new(TargetReachedHandler::new()));
+
         <span class="self">Self </span>{
             environment: SimulationEnvironment {
                 graph,
                 objects: HashMap::new(),
             },
             object_agents: HashMap::new(),
+            metrics_handlers: default_metrics_handler,
             elapsed_time: Duration::default(),
         }
     }
@@ -467,6 +509,16 @@
         </span>}
     }
 
+    <span class="kw">pub fn </span>register_metrics_handler(<span class="kw-2">&amp;mut </span><span class="self">self</span>, handler: Box&lt;<span class="kw">dyn </span>MetricsHandler&gt;) {
+        <span class="self">self</span>.metrics_handlers.push(handler);
+    }
+
+    <span class="kw">fn </span>handle_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: <span class="kw-2">&amp;</span><span class="kw">dyn </span>SimulationEvent) {
+        <span class="kw">for </span>handler <span class="kw">in </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.metrics_handlers {
+            handler.handle(event);
+        }
+    }
+
     <span class="doccomment">/// Updates the simulation state based on the given delta time.
     ///
     /// # Arguments
@@ -496,9 +548,10 @@
             <span class="comment">// Observe the environment.
             </span>agent.observe(<span class="kw-2">&amp;</span><span class="self">self</span>.environment);
         }
+        <span class="kw">let </span><span class="kw-2">mut </span>event = <span class="prelude-val">None</span>;
         <span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.environment.objects.get_mut(<span class="kw-2">&amp;</span>id) {
             <span class="comment">// Get the action from the decision agent.
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get(<span class="kw-2">&amp;</span>id) {
                 <span class="kw">let </span>action = agent.next_action(<span class="prelude-val">Some</span>(delta_time));
                 <span class="comment">// Update the acceleration based on the action.
                 </span><span class="kw">match </span>action {
@@ -526,6 +579,8 @@
                     }
                 }
 
+                event = <span class="prelude-val">Some</span>(RailMovableEvent { action });
+
                 <span class="comment">// Update speed based on the acceleration
                 </span>object.set_speed(object.max_speed().min(
                     object.speed()
@@ -533,6 +588,10 @@
                 ));
             }
         }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = event {
+            <span class="self">self</span>.handle_event(<span class="kw-2">&amp;</span>event);
+        }
+
         <span class="self">self</span>.update_object_position(id, delta_time);
         <span class="self">self</span>.update_train_target(id);
     }
@@ -586,6 +645,7 @@
     }
 
     <span class="kw">fn </span>update_train_target(<span class="kw-2">&amp;mut </span><span class="self">self</span>, id: RailwayObjectId) {
+        <span class="kw">let </span><span class="kw-2">mut </span>event = <span class="prelude-val">None</span>;
         <span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.environment.objects.get_mut(<span class="kw-2">&amp;</span>id) {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = object.as_any_mut().downcast_mut::&lt;Train&gt;() {
                 <span class="kw">if </span>train.next_target().is_none() || train.position() == train.next_target() {
@@ -594,11 +654,15 @@
                         .graph
                         .reachable_nodes(train.position().unwrap());
                     <span class="kw">if </span>!reachable_nodes.is_empty() {
+                        event = <span class="prelude-val">Some</span>(TargetReachedEvent {});
                         <span class="kw">let </span><span class="kw-2">mut </span>rng = rand::thread_rng();
                         train.set_next_target(<span class="prelude-val">Some</span>(<span class="kw-2">*</span>reachable_nodes.choose(<span class="kw-2">&amp;mut </span>rng).unwrap()));
                     }
                 }
             }
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = event {
+            <span class="self">self</span>.handle_event(<span class="kw-2">&amp;</span>event);
         }
     }
 }

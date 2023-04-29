@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["agents","environment"],"struct":["Simulation","SimulationExecutor"],"trait":["SimulationObject"]};
+window.SIDEBAR_ITEMS = {"mod":["agents","environment","events","metrics"],"struct":["Simulation","SimulationExecutor"],"trait":["SimulationObject"]};

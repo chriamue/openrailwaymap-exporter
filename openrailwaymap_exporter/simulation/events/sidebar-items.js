@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["RailMovableEvent","TargetReachedEvent"],"trait":["SimulationEvent"]};
