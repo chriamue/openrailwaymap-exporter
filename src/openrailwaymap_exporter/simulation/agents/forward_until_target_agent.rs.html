@@ -104,10 +104,16 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
 </pre><pre class="rust"><code><span class="kw">use crate</span>::{
     simulation::{environment::ObservableEnvironment, SimulationEnvironment},
     types::RailwayObjectId,
 };
+<span class="kw">use </span>std::any::Any;
 
 <span class="kw">use super</span>::{DecisionAgent, RailMovableAction};
 
@@ -121,7 +127,7 @@
 /// * `T`: A type implementing the `RailwayObject`, `Movable`, and `NextTarget` traits.
 </span><span class="attr">#[derive(Debug, Default)]
 </span><span class="kw">pub struct </span>ForwardUntilTargetAgent {
-    object_id: i64,
+    object_id: RailwayObjectId,
     position: <span class="prelude-ty">Option</span>&lt;i64&gt;,
     target: <span class="prelude-ty">Option</span>&lt;i64&gt;,
 }
@@ -170,6 +176,10 @@
             <span class="self">self</span>.target = object.next_target();
         }
     }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
+        <span class="self">self
+    </span>}
 }
 
 <span class="attr">#[cfg(test)]

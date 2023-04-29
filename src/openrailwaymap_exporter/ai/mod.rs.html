@@ -316,6 +316,11 @@
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `ai` module provides a reinforcement learning agent that controls a train in a railway network simulation.
 //!
 //! The module defines the `TrainAgentState` struct, which represents the state of a train agent in the simulation,
@@ -325,7 +330,8 @@
 //! for the train agent. This struct handles the reinforcement learning process, updating the train agent&#39;s state
 //! based on the actions taken and the rewards received.
 //!
-</span><span class="kw">use </span>std::fmt;
+</span><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::fmt;
 <span class="kw">use </span>std::sync::{Arc, Mutex};
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
@@ -338,7 +344,7 @@
 <span class="kw">use </span>rurel::strategy::learn::QLearning;
 <span class="kw">use </span>rurel::strategy::terminate::FixedIterations;
 <span class="kw">use </span>rurel::AgentTrainer;
-<span class="kw">use </span>uom::si::velocity::millimeter_per_minute;
+<span class="kw">use </span>uom::si::velocity::millimeter_per_second;
 
 <span class="doccomment">/// Represents the state of a train agent in the simulation.
 </span><span class="attr">#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -576,14 +582,18 @@
 
             <span class="kw">let </span>speed = object.speed();
 
-            agent_state.current_speed_mm_s = speed.get::&lt;millimeter_per_minute&gt;() <span class="kw">as </span>i32;
-            agent_state.max_speed_percentage = (<span class="number">100.0 </span>* speed.get::&lt;millimeter_per_minute&gt;()
+            agent_state.current_speed_mm_s = speed.get::&lt;millimeter_per_second&gt;() <span class="kw">as </span>i32;
+            agent_state.max_speed_percentage = (<span class="number">100.0 </span>* speed.get::&lt;millimeter_per_second&gt;()
                 / <span class="self">self</span>.agent_rl.max_speed_mm_s <span class="kw">as </span>f64)
                 <span class="kw">as </span>i32;
 
             <span class="self">self</span>.agent_rl.state = agent_state;
         }
     }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any {
+        <span class="self">self
+    </span>}
 }
 
 <span class="attr">#[cfg(test)]

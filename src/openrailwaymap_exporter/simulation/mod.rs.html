@@ -269,6 +269,37 @@
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -301,7 +332,6 @@
     length::meter,
     time::second,
 };
-
 <span class="kw">mod </span>simulation_executor;
 <span class="kw">pub use </span>simulation_executor::SimulationExecutor;
 
@@ -387,10 +417,12 @@
         <span class="kw">if let </span>std::collections::hash_map::Entry::Vacant(e) =
             <span class="self">self</span>.environment.objects.entry(object.id())
         {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = agent {
-                <span class="self">self</span>.object_agents.insert(object.id(), agent);
-            }
+            <span class="kw">let </span>id = object.id();
             e.insert(object);
+
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = agent {
+                <span class="self">self</span>.add_agent_for_object(id, agent);
+            }
             <span class="bool-val">true
         </span>} <span class="kw">else </span>{
             <span class="bool-val">false
@@ -409,6 +441,30 @@
     ///
     </span><span class="kw">pub fn </span>remove_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, id: i64) -&gt; bool {
         <span class="self">self</span>.environment.objects.remove(<span class="kw-2">&amp;</span>id).is_some()
+    }
+
+    <span class="doccomment">/// Adds a decision agent for an object in the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `object_id` - The unique identifier of the object.
+    /// * `agent` - The decision agent to be added.
+    ///
+    /// # Returns
+    ///
+    /// A boolean indicating if the agent was successfully added.
+    ///
+    </span><span class="kw">pub fn </span>add_agent_for_object(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        object_id: RailwayObjectId,
+        agent: Box&lt;<span class="kw">dyn </span>DecisionAgent&lt;A = RailMovableAction&gt;&gt;,
+    ) -&gt; bool {
+        <span class="kw">if </span><span class="self">self</span>.environment.objects.contains_key(<span class="kw-2">&amp;</span>object_id) {
+            <span class="self">self</span>.object_agents.insert(object_id, agent);
+            <span class="bool-val">true
+        </span>} <span class="kw">else </span>{
+            <span class="bool-val">false
+        </span>}
     }
 
     <span class="doccomment">/// Updates the simulation state based on the given delta time.
@@ -436,21 +492,27 @@
     /// * `delta_time` - The elapsed time since the last update.
     /// * `id` - The unique identifier of the moveable railway object to be updated.
     </span><span class="kw">fn </span>update_object(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delta_time: Duration, id: RailwayObjectId) {
-        <span class="comment">// Get the agent.
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
             <span class="comment">// Observe the environment.
             </span>agent.observe(<span class="kw-2">&amp;</span><span class="self">self</span>.environment);
         }
-        <span class="comment">// Get a mutable reference to the object to be updated.
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.environment.objects.get_mut(<span class="kw-2">&amp;</span>id) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(object) = <span class="self">self</span>.environment.objects.get_mut(<span class="kw-2">&amp;</span>id) {
             <span class="comment">// Get the action from the decision agent.
             </span><span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = <span class="self">self</span>.object_agents.get_mut(<span class="kw-2">&amp;</span>id) {
-                <span class="kw">let </span>action = agent.next_action(<span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">1</span>)));
-
+                <span class="kw">let </span>action = agent.next_action(<span class="prelude-val">Some</span>(delta_time));
                 <span class="comment">// Update the acceleration based on the action.
                 </span><span class="kw">match </span>action {
                     RailMovableAction::Stop =&gt; {
-                        object.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(<span class="number">0.0</span>));
+                        <span class="kw">let </span>speed = object.speed();
+                        <span class="kw">if </span>speed.is_sign_positive() {
+                            object.set_acceleration(-object.acceleration().abs());
+                        } <span class="kw">else if </span>speed.is_sign_negative() {
+                            object.set_acceleration(object.acceleration().abs());
+                        } <span class="kw">else </span>{
+                            object.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(
+                                <span class="number">0.0</span>,
+                            ));
+                        }
                     }
                     RailMovableAction::AccelerateForward { acceleration } =&gt; {
                         object.set_acceleration(Acceleration::new::&lt;meter_per_second_squared&gt;(

@@ -81,16 +81,37 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types and traits related to decision agents.
 //!
 //! Decision agents are responsible for choosing the best action based on the current
 //! state of the simulation. They interact with movable objects on rail tracks, such as trains,
 //! to control their movement.
-</span><span class="kw">use </span>std::time::Duration;
+</span><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::time::Duration;
 
+<span class="kw">pub mod </span>decision_agent_factory;
 <span class="kw">mod </span>forward_until_target_agent;
 <span class="kw">use </span><span class="kw">super</span>::SimulationEnvironment;
 <span class="kw">pub use </span>forward_until_target_agent::ForwardUntilTargetAgent;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;ai&quot;</span>)]
+</span><span class="kw">pub use </span><span class="kw">crate</span>::ai::TrainAgentAI;
 
 <span class="doccomment">/// Represents the possible actions a movable object on rail tracks can take in the simulation.
 </span><span class="attr">#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
@@ -114,7 +135,7 @@
 
 <span class="doccomment">/// A trait that represents a decision agent responsible for choosing the best action
 /// based on the current state of the simulation.
-</span><span class="kw">pub trait </span>DecisionAgent: Send {
+</span><span class="kw">pub trait </span>DecisionAgent: Send + Any {
     <span class="doccomment">/// The associated action type for this decision agent.
     </span><span class="kw">type </span>A;
 
@@ -131,6 +152,17 @@
     ///
     /// * `environment` - The current environment.
     </span><span class="kw">fn </span>observe(<span class="kw-2">&amp;mut </span><span class="self">self</span>, environment: <span class="kw-2">&amp;</span>SimulationEnvironment);
+
+    <span class="doccomment">/// Returns a reference to the `Any` trait for this object.
+    ///
+    /// This method is useful for downcasting the object to a concrete type
+    /// when working with trait objects.
+    ///
+    /// # Returns
+    ///
+    /// A reference to the `Any` trait for the object.
+    ///
+    </span><span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any;
 }
 
 <span class="attr">#[cfg(test)]

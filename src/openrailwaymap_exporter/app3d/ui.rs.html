@@ -228,6 +228,70 @@
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -238,6 +302,8 @@
 <span class="kw">use super</span>::{display_graph, SelectedTrain};
 <span class="kw">use super</span>::{AppResource, Edge, Node, Projection};
 <span class="kw">use super</span>::{InteractionMode, InteractionModeResource};
+<span class="attr">#[cfg(feature = <span class="string">&quot;ai&quot;</span>)]
+</span><span class="kw">use </span><span class="kw">crate</span>::ai::TrainAgentAI;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassApiClient;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::OverpassImporter;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayApiClient;
@@ -245,6 +311,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraphImporter;
 <span class="kw">use </span><span class="kw">crate</span>::railway_algorithms::PathFinding;
 <span class="kw">use </span><span class="kw">crate</span>::railway_objects::{Movable, NextTarget, RailwayObject, Train};
+<span class="kw">use </span><span class="kw">crate</span>::simulation::agents::decision_agent_factory::{
+    DecisionAgentFactory, DecisionAgentOption,
+};
+<span class="kw">use </span><span class="kw">crate</span>::simulation::agents::ForwardUntilTargetAgent;
 <span class="kw">use </span><span class="kw">crate</span>::statistics::path_length;
 <span class="kw">use </span>bevy::prelude::Commands;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
@@ -298,20 +368,20 @@
             }
         }
         ui.add_space(<span class="number">15.0</span>); <span class="comment">// Add space
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
+        </span><span class="kw">let </span>selected_train = <span class="kw">if let </span><span class="prelude-val">Some</span>(train_agent_id) = selected_train.train_agent_id {
+            <span class="kw">let </span><span class="kw-2">mut </span>selected_train: <span class="prelude-ty">Option</span>&lt;Train&gt; = <span class="prelude-val">None</span>;
             <span class="kw">for </span>train_agent <span class="kw">in </span>q_train.iter() {
                 <span class="kw">if </span>train_agent_id == train_agent.id {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
-                        display_selected_train_agent_info(
-                            ui,
-                            <span class="kw-2">&amp;</span>app_resource,
-                            <span class="kw-2">&amp;</span>train,
-                            <span class="kw-2">&amp;mut </span>ui_update_timer,
-                        );
-                    }
+                    selected_train = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource)
                 }
             }
-        }
+            selected_train
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>};
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = selected_train {
+            display_selected_train_agent_info(ui, app_resource, <span class="kw-2">&amp;</span>train, <span class="kw-2">&amp;mut </span>ui_update_timer);
+        };
 
         <span class="comment">// Add radio buttons for click action modes
         </span>ui.add_space(<span class="number">15.0</span>); <span class="comment">// Add space
@@ -401,7 +471,7 @@
 
 <span class="kw">pub fn </span>display_selected_train_agent_info(
     ui: <span class="kw-2">&amp;mut </span>egui::Ui,
-    app_resource: <span class="kw-2">&amp;</span>ResMut&lt;AppResource&gt;,
+    <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
     train: <span class="kw-2">&amp;</span>Train,
     _ui_update_timer: <span class="kw-2">&amp;mut </span>UiUpdateTimer,
 ) {
@@ -413,8 +483,8 @@
         train.speed().get::&lt;kilometer_per_hour&gt;()
     ));
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.lock() {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
             <span class="kw">let </span>graph = simulation.get_observable_environment().get_graph();
             <span class="kw">if let </span><span class="prelude-val">Some</span>(length) = path_length(
                 graph,
@@ -426,6 +496,64 @@
                     .unwrap_or_default(),
             ) {
                 ui.label(<span class="macro">format!</span>(<span class="string">&quot;Remaining: {:.3} km&quot;</span>, length.get::&lt;meter&gt;()));
+            }
+
+            <span class="comment">// Add decision agent dropdown menu
+            </span><span class="kw">let </span>selected_agent_option = {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(agent) = simulation.object_agents.get(<span class="kw-2">&amp;</span>train.id) {
+                    <span class="kw">if </span>agent.as_any().is::&lt;ForwardUntilTargetAgent&gt;() {
+                        <span class="prelude-val">Some</span>(DecisionAgentOption::ForwardUntilTargetAgent)
+                    } <span class="kw">else </span>{
+                        <span class="attr">#[cfg(feature = <span class="string">&quot;ai&quot;</span>)]
+                        </span>{
+                            <span class="kw">if </span>agent.as_any().is::&lt;TrainAgentAI&gt;() {
+                                <span class="prelude-val">Some</span>(DecisionAgentOption::TrainAgentAI)
+                            } <span class="kw">else </span>{
+                                <span class="prelude-val">None
+                            </span>}
+                        }
+                        <span class="attr">#[cfg(not(feature = <span class="string">&quot;ai&quot;</span>))]
+                        </span>{
+                            <span class="prelude-val">None
+                        </span>}
+                    }
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">None
+                </span>}
+            };
+            <span class="kw">let </span><span class="kw-2">mut </span>selected_agent_option = selected_agent_option.unwrap_or_default();
+
+            <span class="kw">let </span><span class="kw-2">mut </span>agent_changed = <span class="bool-val">false</span>;
+            egui::ComboBox::from_id_source(<span class="string">&quot;decision_agent_selector&quot;</span>)
+                .selected_text(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, selected_agent_option))
+                .show_ui(ui, |ui| {
+                    agent_changed |= ui
+                        .selectable_value(
+                            <span class="kw-2">&amp;mut </span>selected_agent_option,
+                            DecisionAgentOption::ForwardUntilTargetAgent,
+                            <span class="string">&quot;Forward Until Target Agent&quot;</span>,
+                        )
+                        .changed();
+
+                    <span class="attr">#[cfg(feature = <span class="string">&quot;ai&quot;</span>)]
+                    </span>{
+                        agent_changed |= ui
+                            .selectable_value(
+                                <span class="kw-2">&amp;mut </span>selected_agent_option,
+                                DecisionAgentOption::TrainAgentAI,
+                                <span class="string">&quot;Train Agent AI&quot;</span>,
+                            )
+                            .changed();
+                    }
+                });
+
+            <span class="kw">if </span>agent_changed {
+                <span class="kw">let </span>new_agent = DecisionAgentFactory::create_decision_agent(
+                    selected_agent_option,
+                    train.id,
+                    <span class="kw-2">&amp;</span>simulation.environment,
+                );
+                simulation.add_agent_for_object(train.id, new_agent);
             }
         }
     }
