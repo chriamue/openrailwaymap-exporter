@@ -76,3 +76,78 @@ impl RailwayApiClient for OverpassApiClient {
         Ok(response)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tests::test_json_vilbel;
+    use mockito::{mock, server_url};
+
+    #[tokio::test]
+    async fn test_connect() {
+        let mock = mock("GET", "/").with_status(200).create();
+
+        let mut client = OverpassApiClient::new();
+        let result = client.connect(&server_url()).await;
+
+        mock.assert();
+        assert!(result.is_ok());
+    }
+    #[tokio::test]
+    async fn test_fetch_by_area_name() {
+        let test_json = test_json_vilbel();
+        let query = r#"[out:json];area[name="Bad Vilbel"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];);out geom;"#;
+        let mock = mock("POST", "/api/interpreter")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(&serde_json::to_string(&test_json).unwrap())
+            .match_header("content-type", "application/x-www-form-urlencoded")
+            .match_body(mockito::Matcher::UrlEncoded(
+                "data".to_string(),
+                query.to_string(),
+            ))
+            .create();
+
+        let mut client = OverpassApiClient::new();
+        client
+            .connect(&format!("{}/api/interpreter", server_url()))
+            .await
+            .unwrap();
+        let result = client.fetch_by_area_name("Bad Vilbel").await;
+
+        mock.assert();
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), test_json);
+    }
+
+    #[tokio::test]
+    async fn test_fetch_by_bbox() {
+        let test_json = test_json_vilbel();
+        let bbox = "1,2,3,4";
+        let query = format!(
+            r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];);out geom;"#,
+            bbox, bbox
+        );
+        let mock = mock("POST", "/api/interpreter")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(&serde_json::to_string(&test_json).unwrap())
+            .match_header("content-type", "application/x-www-form-urlencoded")
+            .match_body(mockito::Matcher::UrlEncoded(
+                "data".to_string(),
+                query.to_string(),
+            ))
+            .create();
+
+        let mut client = OverpassApiClient::new();
+        client
+            .connect(&format!("{}/api/interpreter", server_url()))
+            .await
+            .unwrap();
+        let result = client.fetch_by_bbox(bbox).await;
+
+        mock.assert();
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), test_json);
+    }
+}

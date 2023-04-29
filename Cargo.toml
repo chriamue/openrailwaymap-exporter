@@ -64,11 +64,13 @@ console_error_panic_hook = "0.1"
 
 [dev-dependencies]
 approx = "0.5.1"
-cucumber = { version = "0.19.1" }
-tokio = { version = "1.13", features = ["rt", "macros"] }
 criterion = { version = "0.4", default-features = false }
+cucumber = { version = "0.19.1" }
+mockito = "0.29"
+tokio = { version = "1.13", features = ["rt", "macros"] }
 wasm-bindgen-test = "0.3.33"
 yew = { version = "0.20.0", features = ["csr", "ssr"] }
+
 
 [[bench]]
 name = "railway_graph"
