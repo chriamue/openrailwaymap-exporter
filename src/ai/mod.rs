@@ -16,109 +16,17 @@ use crate::simulation::agents::{DecisionAgent, RailMovableAction};
 use crate::simulation::environment::ObservableEnvironment;
 use crate::simulation::SimulationEnvironment;
 use crate::types::RailwayObjectId;
-use rurel::mdp::{Agent, State};
 use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
 use rurel::strategy::terminate::FixedIterations;
 use rurel::AgentTrainer;
 use uom::si::velocity::millimeter_per_second;
 
-/// Represents the state of a train agent in the simulation.
-#[derive(PartialEq, Eq, Hash, Clone, Debug, Default)]
-pub struct TrainAgentState {
-    /// The remaining distance in millimeters the train agent needs to travel.
-    pub delta_distance_mm: i32,
-    /// The current speed of the train agent in millimeters per second (mm/s).
-    pub current_speed_mm_s: i32,
-    /// The maximum speed percentage the train agent can reach (e.g., 100 for 100% of the maximum speed).
-    pub max_speed_percentage: i32,
-}
+mod train_agent_state;
+pub use train_agent_state::TrainAgentState;
 
-impl TrainAgentState {
-    const MAX_ACCELERATION: i32 = 1000; // 1000 mm/s², approximately 1 m/s²
-    const ACCELERATION_STEP: i32 = 20;
-
-    fn speed_reward(&self) -> f64 {
-        (self.max_speed_percentage as f64 / 100.0).powi(2)
-    }
-
-    fn distance_reward(&self) -> f64 {
-        self.delta_distance_mm as f64
-    }
-}
-
-impl State for TrainAgentState {
-    type A = RailMovableAction;
-
-    fn reward(&self) -> f64 {
-        20.0 * self.speed_reward() + self.distance_reward()
-    }
-
-    fn actions(&self) -> Vec<Self::A> {
-        let mut actions = vec![Self::A::Stop];
-        for acceleration in 1..=(Self::MAX_ACCELERATION / Self::ACCELERATION_STEP) {
-            actions.push(Self::A::AccelerateForward {
-                acceleration: acceleration * Self::ACCELERATION_STEP,
-            });
-            actions.push(Self::A::AccelerateBackward {
-                acceleration: acceleration * Self::ACCELERATION_STEP,
-            });
-        }
-        actions
-    }
-
-    fn random_action(&self) -> Self::A {
-        let actions = self.actions();
-        let a_t = rand::random::<usize>() % actions.len();
-        actions[a_t].clone()
-    }
-}
-
-/// Reinforcement Learning Agent for controlling a train in the simulation.
-#[derive(Default, Clone, Debug)]
-pub struct TrainAgentRL {
-    /// The current state of the train agent.
-    pub state: TrainAgentState,
-    /// The maximum speed the train agent can reach in millimeters per second (mm/s).
-    pub max_speed_mm_s: i32,
-}
-
-impl TrainAgentRL {
-    const TIME_DELTA_MS: u32 = 1000;
-}
-
-impl Agent<TrainAgentState> for TrainAgentRL {
-    fn current_state(&self) -> &TrainAgentState {
-        &self.state
-    }
-
-    fn take_action(&mut self, action: &RailMovableAction) {
-        match action {
-            RailMovableAction::Stop => {
-                self.state.current_speed_mm_s = 0;
-            }
-            RailMovableAction::AccelerateForward { acceleration } => {
-                self.state.current_speed_mm_s += acceleration * Self::TIME_DELTA_MS as i32 / 1000;
-                self.state.delta_distance_mm =
-                    self.state.current_speed_mm_s * Self::TIME_DELTA_MS as i32 / 1000;
-            }
-            RailMovableAction::AccelerateBackward { acceleration } => {
-                self.state.current_speed_mm_s -= acceleration * Self::TIME_DELTA_MS as i32 / 1000;
-                self.state.delta_distance_mm =
-                    self.state.current_speed_mm_s * Self::TIME_DELTA_MS as i32 / 1000;
-            }
-        }
-        self.state.max_speed_percentage =
-            (((self.state.current_speed_mm_s as f64 / self.max_speed_mm_s as f64) * 100.0) as i32)
-                .abs();
-    }
-
-    fn pick_random_action(&mut self) -> <TrainAgentState as State>::A {
-        let action = self.current_state().random_action();
-        self.take_action(&action);
-        action
-    }
-}
+mod train_agent_rl;
+pub use train_agent_rl::TrainAgentRL;
 
 /// A reinforcement learning agent that controls a train in the simulation.
 #[derive(Default, Clone)]
@@ -276,48 +184,26 @@ impl DecisionAgent for TrainAgentAI {
 #[cfg(test)]
 mod tests {
     use super::*;
-
+    use crate::tests::test_graph_vilbel;
     #[test]
-    fn test_train_agent_state() {
+    fn test_train_agent_ai() {
+        let graph = test_graph_vilbel();
+
+        let mut train_agent_ai = TrainAgentAI::new(graph, Default::default());
+
+        let source_node = 662529467i64;
+        let target_node = 662529466i64;
+
+        train_agent_ai.observe(source_node, Some(target_node), Some(1000), Some(1000));
+        train_agent_ai.train(10000);
+
         let state = TrainAgentState {
             delta_distance_mm: 1000,
-            current_speed_mm_s: 0,
-            max_speed_percentage: 0,
+            current_speed_mm_s: 1000,
+            max_speed_percentage: 20,
         };
 
-        assert_eq!(state.delta_distance_mm, 1000);
-        assert_eq!(state.current_speed_mm_s, 0);
-        assert_eq!(state.max_speed_percentage, 0);
-    }
-
-    #[test]
-    fn test_take_action() {
-        let mut agent = TrainAgentRL {
-            state: TrainAgentState {
-                delta_distance_mm: 1000,
-                current_speed_mm_s: 0,
-                max_speed_percentage: 0,
-            },
-            max_speed_mm_s: (160.0 / (3.6 * 1000.0)) as i32,
-        };
-
-        // Test AccelerateForward action
-        agent.take_action(&RailMovableAction::AccelerateForward { acceleration: 1000 });
-        assert_eq!(agent.state.current_speed_mm_s, 1000);
-        assert_eq!(agent.state.delta_distance_mm, 1000);
-
-        // Test AccelerateForward action
-        agent.take_action(&RailMovableAction::AccelerateForward { acceleration: 500 });
-        assert_eq!(agent.state.current_speed_mm_s, 1500);
-        assert_eq!(agent.state.delta_distance_mm, 1500);
-
-        // Test AccelerateBackward action
-        agent.take_action(&RailMovableAction::AccelerateBackward { acceleration: 500 });
-        assert_eq!(agent.state.current_speed_mm_s, 1000);
-        assert_eq!(agent.state.delta_distance_mm, 1000);
-
-        // Test Stop action
-        agent.take_action(&RailMovableAction::Stop);
-        assert_eq!(agent.state.current_speed_mm_s, 0);
+        let action = train_agent_ai.best_action(&state);
+        assert_ne!(action, None);
     }
 }
