@@ -50,6 +50,14 @@
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
 </pre><pre class="rust"><code><span class="doccomment">//! # OpenRailwayMap Exporter
 //!
 //! A library to fetch railway infrastructure data from an API, process it, and export the results.
@@ -68,7 +76,10 @@
 </span><span class="attr">#![warn(missing_docs)]
 #![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../README.md&quot;</span>)]
 
-#[cfg(target_arch = <span class="string">&quot;wasm32&quot;</span>)]
+#[cfg(feature = <span class="string">&quot;python&quot;</span>)]
+</span><span class="kw">use </span>pyo3::prelude::<span class="kw-2">*</span>;
+
+<span class="attr">#[cfg(target_arch = <span class="string">&quot;wasm32&quot;</span>)]
 </span><span class="kw">pub mod </span>app;
 
 <span class="kw">pub mod </span>algorithms;
@@ -88,6 +99,11 @@
 <span class="kw">pub mod </span>simulation;
 <span class="kw">pub mod </span>statistics;
 <span class="kw">pub mod </span>types;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;python&quot;</span>)]
+</span><span class="kw">pub mod </span>python;
+<span class="attr">#[cfg(feature = <span class="string">&quot;python&quot;</span>)]
+</span><span class="kw">pub use </span><span class="self">self</span>::python::<span class="kw-2">*</span>;
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">pub mod </span>tests;

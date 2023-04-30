@@ -57,6 +57,7 @@
 <a href="#57" id="57">57</a>
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to simulation events in railway simulations.
 //!
 //! Simulation events are used to represent specific occurrences during the execution of a simulation, such as a train
@@ -78,7 +79,8 @@
 
 <span class="doccomment">/// A `RailMovableEvent` represents a change in a `RailMovableAction` during a simulation.
 </span><span class="kw">pub struct </span>RailMovableEvent {
-    <span class="kw">pub </span>action: RailMovableAction,
+    <span class="doccomment">/// The `RailMovableAction` associated
+    </span><span class="kw">pub </span>action: RailMovableAction,
 }
 
 <span class="kw">impl </span>SimulationEvent <span class="kw">for </span>RailMovableEvent {

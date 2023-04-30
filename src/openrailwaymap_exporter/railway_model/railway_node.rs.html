@@ -51,7 +51,11 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
-</pre><pre class="rust"><code><span class="doccomment">/// Represents a railway node with a unique ID and geographic coordinates (latitude and longitude).
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+</pre><pre class="rust"><code><span class="kw">use </span>serde::{Serialize, Deserialize};
+
+<span class="doccomment">/// Represents a railway node with a unique ID and geographic coordinates (latitude and longitude).
 ///
 /// # Examples
 ///
@@ -65,7 +69,7 @@
 /// };
 /// assert_eq!(node.id, 1);
 /// ```
-</span><span class="attr">#[derive(Debug, Clone, PartialEq)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>RailwayNode {
     <span class="doccomment">/// The unique identifier of the railway node.
     </span><span class="kw">pub </span>id: i64,

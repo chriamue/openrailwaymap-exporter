@@ -53,6 +53,7 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::MetricsHandler;
 <span class="kw">use </span><span class="kw">crate</span>::simulation::events::{SimulationEvent, TargetReachedEvent};
 
@@ -75,7 +76,8 @@
 }
 
 <span class="kw">impl </span>TargetReachedHandler {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Creates a new TargetReachedHandler
+    </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             target_reached_count: <span class="number">0</span>,
         }
