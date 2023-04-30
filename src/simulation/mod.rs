@@ -207,7 +207,6 @@ impl Simulation {
         }
     }
 
-
     /// Updates the simulation state based on the given delta time.
     ///
     /// # Arguments

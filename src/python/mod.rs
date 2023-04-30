@@ -1,23 +1,21 @@
 use pyo3::prelude::*;
 
 use crate::importer::overpass_importer::OverpassImporter;
-use crate::railway_model::RailwayGraph;
 use crate::importer::RailwayGraphImporter;
+use crate::railway_model::RailwayGraph;
 
 mod overpass_api_client;
 
 /// A Python wrapper for the OverpassImporter struct.
 #[pyclass]
-pub struct PyOverpassImporter {
-}
+pub struct PyOverpassImporter {}
 
 #[pymethods]
 impl PyOverpassImporter {
     /// Create a new PyOverpassImporter instance.
     #[new]
     fn new() -> Self {
-        PyOverpassImporter {
-        }
+        PyOverpassImporter {}
     }
 
     /// Import railway graph data from a JSON string.
@@ -33,11 +31,12 @@ impl PyOverpassImporter {
         let json_value: serde_json::Value = serde_json::from_str(input)
             .map_err(|err| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", err)))?;
 
-        let railway_graph = OverpassImporter::import(&json_value).map_err(|err| {
-            PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", err))
-        })?;
+        let railway_graph = OverpassImporter::import(&json_value)
+            .map_err(|err| PyErr::new::<pyo3::exceptions::PyValueError, _>(format!("{}", err)))?;
 
-        Ok(PyRailwayGraph { inner: railway_graph })
+        Ok(PyRailwayGraph {
+            inner: railway_graph,
+        })
     }
 }
 

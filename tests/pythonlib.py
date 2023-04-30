@@ -1,4 +1,5 @@
 import asyncio
+import json
 import openrailwaymap_exporter
 
 def test_openrailwaymap_exporter():
@@ -60,7 +61,7 @@ def test_openrailwaymap_exporter():
 async def fetch_graph(area):
     input_json = await openrailwaymap_exporter.fetch_by_area_name(area)
     importer = openrailwaymap_exporter.PyOverpassImporter()
-    railway_graph = importer.import_graph(input_json)
+    railway_graph = importer.import_graph(json.dumps(input_json))
     print(area, "nodes and edges:")
     print(railway_graph.node_count())
     print(railway_graph.edge_count())

@@ -17,7 +17,7 @@ default = ["app3d", "ai", "python"]
 ai = ["rurel"]
 app3d = ["ai", "bevy", "bevy_egui", "bevy_mod_picking", "bevy_panorbit_camera", "bevy_polyline"]
 cucumber = []
-python = ["pyo3", "pyo3-asyncio"]
+python = ["pyo3", "pyo3-asyncio", "pythonize"]
 
 [dependencies]
 anyhow = "1.0"
@@ -38,6 +38,7 @@ geo = "0.24.1"
 petgraph = "0.6.3"
 pyo3 = { version = "0.18.3", features = ["serde"], optional = true }
 pyo3-asyncio = { version = "0.18", features = ["tokio-runtime"], optional = true }
+pythonize = { version = "0.18.0", optional = true }
 rand = "0.8.4"
 rurel = { version = "0.4.0", optional = true }
 serde = { version = "1.0", features = ["derive"] }
