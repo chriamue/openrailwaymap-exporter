@@ -13,7 +13,7 @@ name = "openrailwaymap_exporter"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["app3d", "ai", "python"]
+default = ["app3d", "ai"]
 ai = ["rurel"]
 app3d = ["ai", "bevy", "bevy_console", "bevy_egui", "bevy_mod_picking", "bevy_panorbit_camera", "bevy_polyline"]
 cucumber = []
