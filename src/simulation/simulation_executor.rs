@@ -1,3 +1,4 @@
+use crate::simulation::commands::SimulationCommand;
 use crate::simulation::Simulation;
 use std::time::{Duration, Instant};
 
@@ -41,22 +42,49 @@ impl SimulationExecutor {
         let frame_duration = Duration::from_secs_f64(1.0 / self.fps as f64);
 
         while self.elapsed_time < self.run_time {
-            let frame_start_time = Instant::now();
-
-            if self.sleep_enabled {
-                simulation.update(frame_duration);
-
-                let frame_elapsed = frame_start_time.elapsed();
-                if frame_duration > frame_elapsed {
-                    std::thread::sleep(frame_duration - frame_elapsed);
-                }
-
-                self.elapsed_time = start_time.elapsed();
-            } else {
-                simulation.update(frame_duration);
-                self.elapsed_time += frame_duration;
-            }
+            self.update_simulation_frame(simulation, frame_duration);
+            self.elapsed_time = start_time.elapsed();
         }
+    }
+
+    /// Updates the simulation for a single frame.
+    ///
+    /// # Arguments
+    ///
+    /// * `simulation` - A mutable reference to the `Simulation` instance to be updated.
+    /// * `frame_duration` - The duration of the frame to update.
+    fn update_simulation_frame(&mut self, simulation: &mut Simulation, frame_duration: Duration) {
+        let frame_start_time = Instant::now();
+
+        if self.sleep_enabled {
+            simulation.update(frame_duration);
+
+            let frame_elapsed = frame_start_time.elapsed();
+            if frame_duration > frame_elapsed {
+                std::thread::sleep(frame_duration - frame_elapsed);
+            }
+        } else {
+            simulation.update(frame_duration);
+            self.elapsed_time += frame_duration;
+        }
+    }
+
+    /// Processes a command for the given simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `simulation` - A mutable reference to the `Simulation` instance.
+    /// * `command` - A reference to a command that implements the `Command` trait.
+    ///
+    /// # Returns
+    ///
+    /// * An optional `String` containing a message or any other relevant information about the changes made.
+    pub fn process_command(
+        &self,
+        simulation: &mut Simulation,
+        command: &dyn SimulationCommand,
+    ) -> Option<String> {
+        command.execute(simulation)
     }
 }
 

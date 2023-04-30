@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Represents a railway node with a unique ID and geographic coordinates (latitude and longitude).
 ///

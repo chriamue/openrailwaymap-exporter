@@ -1,6 +1,6 @@
-use geo::{Coord, LineString};
-use serde::{Serialize, Deserialize};
 use crate::types::NodeId;
+use geo::{Coord, LineString};
+use serde::{Deserialize, Serialize};
 
 /// Represents a railway edge with a unique ID, a length, and a path.
 ///

@@ -2,7 +2,7 @@ use pyo3::prelude::*;
 
 use crate::importer::overpass_importer::OverpassImporter;
 use crate::importer::RailwayGraphImporter;
-use crate::railway_model::{RailwayGraph, RailwayNode, RailwayEdge};
+use crate::railway_model::RailwayGraph;
 use crate::types::{EdgeId, NodeId};
 
 use pythonize::pythonize;
@@ -79,7 +79,9 @@ impl PyRailwayGraph {
     /// * An optional `RailwayNode` instance if the node with the specified ID is found.
     fn get_node_by_id(&self, node_id: NodeId) -> Option<PyObject> {
         Some(Python::with_gil(|py| {
-            pythonize(py, &self.inner.get_node_by_id(node_id)).unwrap().to_object(py)
+            pythonize(py, &self.inner.get_node_by_id(node_id))
+                .unwrap()
+                .to_object(py)
         }))
     }
 
@@ -94,7 +96,9 @@ impl PyRailwayGraph {
     /// * An optional `RailwayEdge` instance if the edge with the specified ID is found.
     fn get_edge_by_id(&self, edge_id: EdgeId) -> Option<PyObject> {
         Some(Python::with_gil(|py| {
-            pythonize(py, &self.inner.get_edge_by_id(edge_id)).unwrap().to_object(py)
+            pythonize(py, &self.inner.get_edge_by_id(edge_id))
+                .unwrap()
+                .to_object(py)
         }))
     }
 }

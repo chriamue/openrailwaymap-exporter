@@ -16,9 +16,6 @@
 #![warn(missing_docs)]
 #![doc = include_str!("../README.md")]
 
-#[cfg(feature = "python")]
-use pyo3::prelude::*;
-
 #[cfg(target_arch = "wasm32")]
 pub mod app;
 

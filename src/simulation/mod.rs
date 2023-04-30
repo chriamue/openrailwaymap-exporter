@@ -35,6 +35,7 @@ use crate::simulation::events::{RailMovableEvent, SimulationEvent, TargetReached
 use crate::simulation::metrics::{ActionCountHandler, MetricsHandler, TargetReachedHandler};
 pub use simulation_executor::SimulationExecutor;
 
+mod commands;
 pub mod events;
 pub mod metrics;
 #[cfg(test)]
@@ -55,7 +56,10 @@ pub struct Simulation {
     pub object_agents: HashMap<RailwayObjectId, Box<dyn DecisionAgent<A = RailMovableAction>>>,
     /// A list of metrics handlers
     pub metrics_handlers: Vec<Box<dyn MetricsHandler>>,
+    /// Elapsed time of simulation
     elapsed_time: Duration,
+    /// simulation pause state
+    pub is_paused: bool,
 }
 
 impl fmt::Debug for Simulation {
@@ -90,6 +94,7 @@ impl Simulation {
             object_agents: HashMap::new(),
             metrics_handlers: default_metrics_handler,
             elapsed_time: Duration::default(),
+            is_paused: false,
         }
     }
 
@@ -213,15 +218,17 @@ impl Simulation {
     ///
     /// * `delta_time` - The elapsed time since the last update.
     pub fn update(&mut self, delta_time: Duration) {
-        // Update the total elapsed time.
-        self.elapsed_time += delta_time;
+        if !self.is_paused {
+            // Update the total elapsed time.
+            self.elapsed_time += delta_time;
 
-        // Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
-        let object_ids: Vec<_> = self.environment.objects.keys().cloned().collect();
+            // Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
+            let object_ids: Vec<_> = self.environment.objects.keys().cloned().collect();
 
-        // Iterate over each object in the simulation and update its state based on the delta time.
-        for id in object_ids {
-            self.update_object(delta_time, id);
+            // Iterate over each object in the simulation and update its state based on the delta time.
+            for id in object_ids {
+                self.update_object(delta_time, id);
+            }
         }
     }
 
