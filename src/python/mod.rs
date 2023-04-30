@@ -4,6 +4,8 @@ use crate::importer::overpass_importer::OverpassImporter;
 use crate::railway_model::RailwayGraph;
 use crate::importer::RailwayGraphImporter;
 
+mod overpass_api_client;
+
 /// A Python wrapper for the OverpassImporter struct.
 #[pyclass]
 pub struct PyOverpassImporter {
@@ -80,5 +82,6 @@ impl PyRailwayGraph {
 fn openrailwaymap_exporter(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyOverpassImporter>()?;
     m.add_class::<PyRailwayGraph>()?;
+    overpass_api_client::init_overpass_api_client(py, m)?;
     Ok(())
 }

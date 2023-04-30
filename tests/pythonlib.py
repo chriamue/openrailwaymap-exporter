@@ -1,3 +1,4 @@
+import asyncio
 import openrailwaymap_exporter
 
 def test_openrailwaymap_exporter():
@@ -56,6 +57,18 @@ def test_openrailwaymap_exporter():
     assert railway_graph.node_count() == 2
     assert railway_graph.edge_count() == 1
 
+async def fetch_graph(area):
+    input_json = await openrailwaymap_exporter.fetch_by_area_name(area)
+    importer = openrailwaymap_exporter.PyOverpassImporter()
+    railway_graph = importer.import_graph(input_json)
+    print(area, "nodes and edges:")
+    print(railway_graph.node_count())
+    print(railway_graph.edge_count())
+    assert railway_graph.node_count() > 2
+    assert railway_graph.edge_count() > 1
+
 if __name__ == '__main__':
     test_openrailwaymap_exporter()
     print("All tests passed.")
+    
+    asyncio.run(fetch_graph("Bad Vilbel"))
