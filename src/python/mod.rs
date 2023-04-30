@@ -1,11 +1,13 @@
+//! This module provides Python bindings for importing and interacting with railway graphs.
+//!
 use pyo3::prelude::*;
+use pythonize::pythonize;
 
 use crate::importer::overpass_importer::OverpassImporter;
 use crate::importer::RailwayGraphImporter;
 use crate::railway_model::RailwayGraph;
 use crate::types::{EdgeId, NodeId};
 
-use pythonize::pythonize;
 mod overpass_api_client;
 
 /// A Python wrapper for the OverpassImporter struct.

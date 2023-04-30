@@ -35,7 +35,7 @@ use crate::simulation::events::{RailMovableEvent, SimulationEvent, TargetReached
 use crate::simulation::metrics::{ActionCountHandler, MetricsHandler, TargetReachedHandler};
 pub use simulation_executor::SimulationExecutor;
 
-mod commands;
+pub mod commands;
 pub mod events;
 pub mod metrics;
 #[cfg(test)]

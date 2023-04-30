@@ -1,3 +1,7 @@
+//! This module provides a set of commands that can be used to manipulate a `Simulation` instance.
+//! Each command implements the `SimulationCommand` trait, which provides the `execute` method to
+//! apply the command on a given simulation instance.
+//!
 use crate::simulation::Simulation;
 use clap::Parser;
 
@@ -18,7 +22,7 @@ pub trait SimulationCommand {
 /// A command that toggles the pause state of a simulation.
 #[derive(Parser, Debug)]
 #[command(name = "pause")]
-struct PauseCommand {}
+pub struct PauseCommand {}
 
 impl SimulationCommand for PauseCommand {
     fn execute(&self, simulation: &mut Simulation) -> Option<String> {

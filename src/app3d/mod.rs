@@ -32,7 +32,9 @@ use nodes::Node;
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
+mod console;
 mod projection;
+
 pub use projection::Projection;
 
 use self::train_agent::SelectedTrain;
@@ -92,6 +94,7 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .add_system(train_agent::update_train_agent_line_system)
         .add_system(update_simulation_system);
     ui::add_ui_systems_to_app(app);
+    console::add_console_to_app(app);
 }
 
 /// Initializes the Bevy application with a given `RailwayGraph`.
