@@ -16,6 +16,9 @@
 #![warn(missing_docs)]
 #![doc = include_str!("../README.md")]
 
+#[cfg(feature = "python")]
+use pyo3::prelude::*;
+
 #[cfg(target_arch = "wasm32")]
 pub mod app;
 
@@ -36,6 +39,11 @@ pub mod railway_objects;
 pub mod simulation;
 pub mod statistics;
 pub mod types;
+
+#[cfg(feature = "python")]
+pub mod python;
+#[cfg(feature = "python")]
+pub use self::python::*;
 
 #[cfg(test)]
 pub mod tests;

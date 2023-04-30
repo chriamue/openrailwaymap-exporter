@@ -1,5 +1,5 @@
 [package]
-name = "openrailwaymap-exporter"
+name = "openrailwaymap_exporter"
 version = "0.1.0"
 edition = "2021"
 description = "OpenRailwayMap Exporter is a Rust project that downloads railway data from the OpenRailwayMap API"
@@ -9,6 +9,7 @@ readme = "README.md"
 repository = "https://github.com/chriamue/openrailwaymap-exporter"
 
 [lib]
+name = "openrailwaymap_exporter"
 crate-type = ["cdylib", "rlib"]
 
 [features]
@@ -16,7 +17,7 @@ default = ["app3d", "ai"]
 ai = ["rurel"]
 app3d = ["ai", "bevy", "bevy_egui", "bevy_mod_picking", "bevy_panorbit_camera", "bevy_polyline"]
 cucumber = []
-
+python = ["pyo3"]
 
 [dependencies]
 anyhow = "1.0"
@@ -35,6 +36,7 @@ bevy_polyline = { version = "0.6.0", optional = true }
 geoutils = "0.5.1"
 geo = "0.24.1"
 petgraph = "0.6.3"
+pyo3 = { version = "0.18.3", optional=true }
 rand = "0.8.4"
 rurel = { version = "0.4.0", optional = true }
 serde = { version = "1.0", features = ["derive"] }
@@ -66,11 +68,10 @@ console_error_panic_hook = "0.1"
 approx = "0.5.1"
 criterion = { version = "0.4", default-features = false }
 cucumber = { version = "0.19.1" }
-mockito = "0.29"
+mockito = "0.29.0"
 tokio = { version = "1.13", features = ["rt", "macros"] }
 wasm-bindgen-test = "0.3.33"
 yew = { version = "0.20.0", features = ["csr", "ssr"] }
-
 
 [[bench]]
 name = "railway_graph"

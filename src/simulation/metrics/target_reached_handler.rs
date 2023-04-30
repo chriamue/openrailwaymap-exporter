@@ -20,6 +20,7 @@ pub struct TargetReachedHandler {
 }
 
 impl TargetReachedHandler {
+    /// Creates a new TargetReachedHandler
     pub fn new() -> Self {
         Self {
             target_reached_count: 0,

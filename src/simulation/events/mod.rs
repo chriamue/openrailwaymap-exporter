@@ -19,6 +19,7 @@ pub trait SimulationEvent {
 
 /// A `RailMovableEvent` represents a change in a `RailMovableAction` during a simulation.
 pub struct RailMovableEvent {
+    /// The `RailMovableAction` associated
     pub action: RailMovableAction,
 }
 

@@ -53,6 +53,7 @@ pub struct Simulation {
     pub environment: SimulationEnvironment,
     /// A list of agents
     pub object_agents: HashMap<RailwayObjectId, Box<dyn DecisionAgent<A = RailMovableAction>>>,
+    /// A list of metrics handlers
     pub metrics_handlers: Vec<Box<dyn MetricsHandler>>,
     elapsed_time: Duration,
 }
@@ -175,15 +176,37 @@ impl Simulation {
         }
     }
 
+    /// Registers a metrics handler for the simulation.
+    ///
+    /// This function adds a new metrics handler to the simulation. The metrics handler
+    /// will be used to process events and gather metrics during the simulation run.
+    ///
+    /// # Arguments
+    ///
+    /// * `handler` - A boxed metrics handler that implements the `MetricsHandler` trait.
+    ///
     pub fn register_metrics_handler(&mut self, handler: Box<dyn MetricsHandler>) {
         self.metrics_handlers.push(handler);
     }
 
+    /// Handles a simulation event by passing it to all registered metrics handlers.
+    ///
+    /// This function is called internally by the simulation engine whenever a simulation
+    /// event occurs. It iterates through all registered metrics handlers and calls their
+    /// `handle` function with the event as an argument.
+    ///
+    /// # Arguments
+    ///
+    /// * `event` - A reference to a simulation event that implements the `SimulationEvent` trait.
+    ///
+    /// This function is not meant to be called directly by the user. It is called internally
+    /// by the simulation engine.
     fn handle_event(&mut self, event: &dyn SimulationEvent) {
         for handler in &mut self.metrics_handlers {
             handler.handle(event);
         }
     }
+
 
     /// Updates the simulation state based on the given delta time.
     ///
