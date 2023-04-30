@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 /// Represents a railway node with a unique ID and geographic coordinates (latitude and longitude).
 ///
 /// # Examples
@@ -12,7 +14,7 @@
 /// };
 /// assert_eq!(node.id, 1);
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RailwayNode {
     /// The unique identifier of the railway node.
     pub id: i64,

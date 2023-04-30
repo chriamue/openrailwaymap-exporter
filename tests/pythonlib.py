@@ -67,6 +67,7 @@ async def fetch_graph(area):
     print(railway_graph.edge_count())
     assert railway_graph.node_count() > 2
     assert railway_graph.edge_count() > 1
+    print(railway_graph.get_node_by_id(1257927251))
 
 if __name__ == '__main__':
     test_openrailwaymap_exporter()

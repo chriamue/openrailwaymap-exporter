@@ -1,5 +1,5 @@
 use geo::{Coord, LineString};
-
+use serde::{Serialize, Deserialize};
 use crate::types::NodeId;
 
 /// Represents a railway edge with a unique ID, a length, and a path.
@@ -22,7 +22,7 @@ use crate::types::NodeId;
 /// };
 /// assert_eq!(edge.id, 1);
 /// ```
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RailwayEdge {
     /// The ID of the edge, typically corresponding to the ID of the underlying `RailwayElement` (e.g., way).
     pub id: i64,
