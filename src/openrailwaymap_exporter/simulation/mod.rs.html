@@ -354,6 +354,13 @@
 <a href="#354" id="354">354</a>
 <a href="#355" id="355">355</a>
 <a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -391,6 +398,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::simulation::metrics::{ActionCountHandler, MetricsHandler, TargetReachedHandler};
 <span class="kw">pub use </span>simulation_executor::SimulationExecutor;
 
+<span class="kw">pub mod </span>commands;
 <span class="kw">pub mod </span>events;
 <span class="kw">pub mod </span>metrics;
 <span class="attr">#[cfg(test)]
@@ -411,7 +419,10 @@
     </span><span class="kw">pub </span>object_agents: HashMap&lt;RailwayObjectId, Box&lt;<span class="kw">dyn </span>DecisionAgent&lt;A = RailMovableAction&gt;&gt;&gt;,
     <span class="doccomment">/// A list of metrics handlers
     </span><span class="kw">pub </span>metrics_handlers: Vec&lt;Box&lt;<span class="kw">dyn </span>MetricsHandler&gt;&gt;,
-    elapsed_time: Duration,
+    <span class="doccomment">/// Elapsed time of simulation
+    </span>elapsed_time: Duration,
+    <span class="doccomment">/// simulation pause state
+    </span><span class="kw">pub </span>is_paused: bool,
 }
 
 <span class="kw">impl </span>fmt::Debug <span class="kw">for </span>Simulation {
@@ -446,6 +457,7 @@
             object_agents: HashMap::new(),
             metrics_handlers: default_metrics_handler,
             elapsed_time: Duration::default(),
+            is_paused: <span class="bool-val">false</span>,
         }
     }
 
@@ -569,15 +581,17 @@
     ///
     /// * `delta_time` - The elapsed time since the last update.
     </span><span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delta_time: Duration) {
-        <span class="comment">// Update the total elapsed time.
-        </span><span class="self">self</span>.elapsed_time += delta_time;
+        <span class="kw">if </span>!<span class="self">self</span>.is_paused {
+            <span class="comment">// Update the total elapsed time.
+            </span><span class="self">self</span>.elapsed_time += delta_time;
 
-        <span class="comment">// Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
-        </span><span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.environment.objects.keys().cloned().collect();
+            <span class="comment">// Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
+            </span><span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.environment.objects.keys().cloned().collect();
 
-        <span class="comment">// Iterate over each object in the simulation and update its state based on the delta time.
-        </span><span class="kw">for </span>id <span class="kw">in </span>object_ids {
-            <span class="self">self</span>.update_object(delta_time, id);
+            <span class="comment">// Iterate over each object in the simulation and update its state based on the delta time.
+            </span><span class="kw">for </span>id <span class="kw">in </span>object_ids {
+                <span class="self">self</span>.update_object(delta_time, id);
+            }
         }
     }
 

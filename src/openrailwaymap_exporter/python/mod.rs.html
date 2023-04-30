@@ -116,14 +116,22 @@
 <a href="#116" id="116">116</a>
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
-</pre><pre class="rust"><code><span class="kw">use </span>pyo3::prelude::<span class="kw-2">*</span>;
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+</pre><pre class="rust"><code><span class="doccomment">//! This module provides Python bindings for importing and interacting with railway graphs.
+//!
+</span><span class="kw">use </span>pyo3::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>pythonize::pythonize;
 
 <span class="kw">use </span><span class="kw">crate</span>::importer::overpass_importer::OverpassImporter;
 <span class="kw">use </span><span class="kw">crate</span>::importer::RailwayGraphImporter;
-<span class="kw">use </span><span class="kw">crate</span>::railway_model::{RailwayGraph, RailwayNode, RailwayEdge};
+<span class="kw">use </span><span class="kw">crate</span>::railway_model::RailwayGraph;
 <span class="kw">use </span><span class="kw">crate</span>::types::{EdgeId, NodeId};
 
-<span class="kw">use </span>pythonize::pythonize;
 <span class="kw">mod </span>overpass_api_client;
 
 <span class="doccomment">/// A Python wrapper for the OverpassImporter struct.
@@ -197,7 +205,9 @@
     /// * An optional `RailwayNode` instance if the node with the specified ID is found.
     </span><span class="kw">fn </span>get_node_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, node_id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;PyObject&gt; {
         <span class="prelude-val">Some</span>(Python::with_gil(|py| {
-            pythonize(py, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.get_node_by_id(node_id)).unwrap().to_object(py)
+            pythonize(py, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.get_node_by_id(node_id))
+                .unwrap()
+                .to_object(py)
         }))
     }
 
@@ -212,7 +222,9 @@
     /// * An optional `RailwayEdge` instance if the edge with the specified ID is found.
     </span><span class="kw">fn </span>get_edge_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, edge_id: EdgeId) -&gt; <span class="prelude-ty">Option</span>&lt;PyObject&gt; {
         <span class="prelude-val">Some</span>(Python::with_gil(|py| {
-            pythonize(py, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.get_edge_by_id(edge_id)).unwrap().to_object(py)
+            pythonize(py, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.get_edge_by_id(edge_id))
+                .unwrap()
+                .to_object(py)
         }))
     }
 }
