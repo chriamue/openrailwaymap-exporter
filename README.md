@@ -112,6 +112,38 @@ cargo flamegraph --dev --example vilbel
 
 This will generate a flamegraph.svg for the vilbel example.
 
+
+## Python Bindings
+
+This project includes Python bindings using PyO3 and Maturin. To use the Python bindings, follow these steps:
+
+1. Install the bindings in a virtual environment:
+
+    ```sh
+    pip install .
+    ```
+
+2. Run the test file:
+
+    ```sh
+    python tests/pythonlib.py
+    ```
+
+### Python API
+
+The Python bindings provide a `PyOverpassImporter` class for importing railway graph data from a JSON string and a `PyRailwayGraph` class for working with the imported railway graph data. Here's a brief overview of the available methods:
+
+#### `PyOverpassImporter`
+
+- `new()`: Create a new PyOverpassImporter instance.
+- `import_graph(input: str) -> PyResult<PyRailwayGraph>`: Import railway graph data from a JSON string and return a `PyRailwayGraph` instance containing the imported data.
+
+#### `PyRailwayGraph`
+
+- `node_count() -> usize`: Get the number of nodes in the railway graph.
+- `edge_count() -> usize`: Get the number of edges in the railway graph.
+
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
