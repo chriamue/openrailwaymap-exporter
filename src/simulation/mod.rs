@@ -84,9 +84,10 @@ impl Simulation {
     /// A new `Simulation` instance.
     ///
     pub fn new(graph: RailwayGraph) -> Self {
-        let mut default_metrics_handler: Vec<Box<dyn MetricsHandler>> = vec![];
-        default_metrics_handler.push(Box::new(ActionCountHandler::new()));
-        default_metrics_handler.push(Box::new(TargetReachedHandler::new()));
+        let default_metrics_handler: Vec<Box<dyn MetricsHandler>> = vec![
+            Box::new(ActionCountHandler::new()),
+            Box::new(TargetReachedHandler::new()),
+        ];
 
         Self {
             environment: SimulationEnvironment {

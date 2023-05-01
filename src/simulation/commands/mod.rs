@@ -2,8 +2,10 @@
 //! Each command implements the `SimulationCommand` trait, which provides the `execute` method to
 //! apply the command on a given simulation instance.
 //!
-use crate::simulation::Simulation;
 use clap::{arg, Parser};
+mod object_command;
+use crate::simulation::Simulation;
+pub use object_command::ObjectCommand;
 
 /// A trait for commands that manipulate a simulation.
 pub trait SimulationCommand {

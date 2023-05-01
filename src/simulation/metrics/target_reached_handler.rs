@@ -15,6 +15,7 @@ use crate::simulation::events::{SimulationEvent, TargetReachedEvent};
 /// handler.handle(&event);
 /// assert_eq!(handler.get_value(), 1.0);
 /// ```
+#[derive(Default)]
 pub struct TargetReachedHandler {
     target_reached_count: u64,
 }

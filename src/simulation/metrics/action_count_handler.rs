@@ -7,6 +7,7 @@ use std::collections::HashMap;
 ///
 /// It maintains a count of actions by their type and provides the total number
 /// of actions performed as the metric value.
+#[derive(Default)]
 pub struct ActionCountHandler {
     action_counts: HashMap<String, u64>,
 }
@@ -36,10 +37,7 @@ impl MetricsHandler for ActionCountHandler {
     }
 
     fn get_value(&self) -> f64 {
-        self.action_counts
-            .iter()
-            .map(|(_, count)| *count as f64)
-            .sum()
+        self.action_counts.values().map(|count| *count as f64).sum()
     }
 }
 
