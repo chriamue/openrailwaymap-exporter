@@ -48,6 +48,12 @@ pub struct AppResource {
     look_at_position: Option<Vec3>,
 }
 
+/// Stores configuration of current debug
+#[derive(Default, Resource)]
+pub struct DebugResource {
+    show_train_target: bool,
+}
+
 /// Defines the different interaction modes for the application.
 #[derive(Debug, PartialEq, Clone, Default)]
 pub enum InteractionMode {
@@ -84,6 +90,7 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
+        .insert_resource(DebugResource::default())
         .add_startup_system(setup)
         .add_startup_system(camera::setup_camera)
         .add_system(update_look_at_position_system)

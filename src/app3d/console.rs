@@ -1,4 +1,4 @@
-use crate::app3d::AppResource;
+use crate::app3d::{AppResource, DebugResource};
 use crate::simulation::commands::{
     MetricsCommand, ObjectCommand, PauseCommand, SetSpeedupCommand, SimulationCommand,
 };
@@ -6,9 +6,11 @@ use bevy::prelude::*;
 use bevy_console::{
     AddConsoleCommand, ConsoleCommand, ConsoleConfiguration, ConsolePlugin, NamedCommand,
 };
+use clap::Parser;
 
 pub fn add_console_to_app(app: &mut App) {
     app.add_plugin(ConsolePlugin);
+    app.add_console_command::<DebugCommand, _>(debug_command);
     app.add_console_command::<PauseCommand, _>(pause_command);
     app.add_console_command::<SetSpeedupCommand, _>(set_speedup_command);
     app.add_console_command::<ObjectCommand, _>(object_command);
@@ -17,6 +19,11 @@ pub fn add_console_to_app(app: &mut App) {
         ..Default::default()
     });
 }
+
+/// Some debug configuration
+#[derive(Parser, ConsoleCommand)]
+#[command(name = "debug")]
+struct DebugCommand {}
 
 impl Resource for PauseCommand {}
 impl NamedCommand for PauseCommand {
@@ -46,12 +53,25 @@ impl NamedCommand for MetricsCommand {
     }
 }
 
-fn pause_command(mut app_resource: ResMut<AppResource>, mut pause: ConsoleCommand<PauseCommand>) {
-    if let Some(Ok(pause_command)) = pause.take() {
+fn debug_command(
+    mut console_command: ConsoleCommand<DebugCommand>,
+    mut debug_resource: ResMut<DebugResource>,
+) {
+    if let Some(Ok(_command)) = console_command.take() {
+        debug_resource.show_train_target = !debug_resource.show_train_target;
+        console_command.ok();
+    }
+}
+
+fn pause_command(
+    mut console_command: ConsoleCommand<PauseCommand>,
+    mut app_resource: ResMut<AppResource>,
+) {
+    if let Some(Ok(command)) = console_command.take() {
         if let Some(simulation) = &app_resource.simulation.as_mut() {
             if let Ok(mut simulation) = simulation.lock() {
-                if let Some(info) = pause_command.execute(&mut simulation) {
-                    pause.reply_ok(info);
+                if let Some(info) = command.execute(&mut simulation) {
+                    console_command.reply_ok(info);
                 }
             }
         }

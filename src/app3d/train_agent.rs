@@ -5,6 +5,7 @@ use geo::coord;
 use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
+use crate::app3d::DebugResource;
 use crate::types::NodeId;
 use crate::{
     prelude::{RailwayEdge, RailwayGraph},
@@ -213,46 +214,49 @@ pub fn update_train_agent_line_system(
     mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
     mut polylines: ResMut<Assets<Polyline>>,
     q_line: Query<Entity, With<TrainAgentLine>>,
+    debug_resource: Res<DebugResource>,
 ) {
     for entity in q_line.iter() {
         commands.entity(entity).despawn();
     }
-    for (train_agent, train_agent_transform) in train_agent_query.iter() {
-        if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
-            if let (Some(current_node_id), Some(target_node_id)) =
-                (train.position(), train.next_target())
-            {
-                let current_node_transform = node_query
-                    .iter()
-                    .find(|(node, _)| node.id == current_node_id)
-                    .map(|(_, transform)| transform);
-
-                let target_node_transform = node_query
-                    .iter()
-                    .find(|(node, _)| node.id == target_node_id)
-                    .map(|(_, transform)| transform);
-
-                if let (Some(_current_node_transform), Some(target_node_transform)) =
-                    (current_node_transform, target_node_transform)
+    if debug_resource.show_train_target == true {
+        for (train_agent, train_agent_transform) in train_agent_query.iter() {
+            if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
+                if let (Some(current_node_id), Some(target_node_id)) =
+                    (train.position(), train.next_target())
                 {
-                    commands
-                        .spawn(PolylineBundle {
-                            polyline: polylines.add(Polyline {
-                                vertices: vec![
-                                    train_agent_transform.translation,
-                                    //current_node_transform.translation,
-                                    target_node_transform.translation,
-                                ],
-                            }),
-                            material: polyline_materials.add(PolylineMaterial {
-                                width: 2.0,
-                                color: Color::RED,
-                                perspective: false,
+                    let current_node_transform = node_query
+                        .iter()
+                        .find(|(node, _)| node.id == current_node_id)
+                        .map(|(_, transform)| transform);
+
+                    let target_node_transform = node_query
+                        .iter()
+                        .find(|(node, _)| node.id == target_node_id)
+                        .map(|(_, transform)| transform);
+
+                    if let (Some(_current_node_transform), Some(target_node_transform)) =
+                        (current_node_transform, target_node_transform)
+                    {
+                        commands
+                            .spawn(PolylineBundle {
+                                polyline: polylines.add(Polyline {
+                                    vertices: vec![
+                                        train_agent_transform.translation,
+                                        //current_node_transform.translation,
+                                        target_node_transform.translation,
+                                    ],
+                                }),
+                                material: polyline_materials.add(PolylineMaterial {
+                                    width: 2.0,
+                                    color: Color::RED,
+                                    perspective: false,
+                                    ..default()
+                                }),
                                 ..default()
-                            }),
-                            ..default()
-                        })
-                        .insert(TrainAgentLine);
+                            })
+                            .insert(TrainAgentLine);
+                    }
                 }
             }
         }
