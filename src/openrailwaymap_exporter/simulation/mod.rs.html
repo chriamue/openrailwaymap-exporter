@@ -366,6 +366,23 @@
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -584,23 +601,40 @@
         }
     }
 
-    <span class="doccomment">/// Updates the simulation state based on the given delta time.
+    <span class="doccomment">/// Updates the simulation state based on the given delta time and the speedup factor.
     ///
     /// # Arguments
     ///
     /// * `delta_time` - The elapsed time since the last update.
     </span><span class="kw">pub fn </span>update(<span class="kw-2">&amp;mut </span><span class="self">self</span>, delta_time: Duration) {
         <span class="kw">if </span>!<span class="self">self</span>.is_paused {
-            <span class="kw">let </span>scaled_delta_time = delta_time.mul_f64(<span class="self">self</span>.speedup_factor);
+            <span class="kw">let </span>int_speedup_factor = <span class="self">self</span>.speedup_factor.floor() <span class="kw">as </span>u32;
+            <span class="kw">let </span>fractional_speedup_factor = <span class="self">self</span>.speedup_factor.fract();
+
+            <span class="kw">let </span>full_delta_time = delta_time;
+            <span class="kw">let </span>fractional_delta_time = delta_time.mul_f64(fractional_speedup_factor);
+
             <span class="comment">// Update the total elapsed time.
-            </span><span class="self">self</span>.elapsed_time += scaled_delta_time;
+            </span><span class="kw">let </span>scaled_delta_time = delta_time.mul_f64(<span class="self">self</span>.speedup_factor);
+            <span class="self">self</span>.elapsed_time += scaled_delta_time;
 
-            <span class="comment">// Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
-            </span><span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.environment.objects.keys().cloned().collect();
+            <span class="kw">for _ in </span><span class="number">0</span>..int_speedup_factor {
+                <span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.environment.objects.keys().cloned().collect();
 
-            <span class="comment">// Iterate over each object in the simulation and update its state based on the delta time.
-            </span><span class="kw">for </span>id <span class="kw">in </span>object_ids {
-                <span class="self">self</span>.update_object(scaled_delta_time, id);
+                <span class="comment">// Iterate over each object in the simulation and update its state based on the delta time and speedup factor.
+                </span><span class="kw">for </span>id <span class="kw">in </span>object_ids {
+                    <span class="self">self</span>.update_object(full_delta_time, id);
+                }
+            }
+
+            <span class="kw">if </span>fractional_speedup_factor &gt; <span class="number">0.0 </span>{
+                <span class="kw">for _ in </span><span class="number">0</span>..int_speedup_factor {
+                    <span class="kw">let </span>object_ids: Vec&lt;<span class="kw">_</span>&gt; = <span class="self">self</span>.environment.objects.keys().cloned().collect();
+
+                    <span class="kw">for </span>id <span class="kw">in </span>object_ids {
+                        <span class="self">self</span>.update_object(fractional_delta_time, id);
+                    }
+                }
             }
         }
     }
