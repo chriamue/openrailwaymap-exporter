@@ -1,7 +1,9 @@
 use super::*;
 use crate::railway_objects::Train;
 use crate::simulation::agents::ForwardUntilTargetAgent;
+use crate::simulation::commands::{SetSpeedupCommand, SimulationCommand};
 use crate::tests::test_graph_1;
+use approx::assert_relative_eq;
 use geo::coord;
 use std::collections::VecDeque;
 use uom::si::{
@@ -163,4 +165,39 @@ fn test_metrics_count_stop_actions() {
 
     let expected_stop_count = 10.0;
     assert_eq!(stop_count, expected_stop_count);
+}
+
+#[test]
+fn test_simulation_with_agent_and_speedup() {
+    let graph = test_graph_1();
+    let train = Train {
+        id: 1,
+        position: Some(1),
+        geo_location: Some(coord! { x: 0.0, y: 0.0 }),
+        next_target: Some(2),
+        targets: VecDeque::from(vec![2, 10, 15]),
+        max_speed: Velocity::new::<kilometer_per_hour>(80.0),
+        ..Default::default()
+    };
+    let mut simulation: Simulation = Simulation::new(graph);
+    let agent = ForwardUntilTargetAgent::new(train.id());
+    simulation.add_object(Box::new(train.clone()), Some(Box::new(agent)));
+
+    // Set the speedup factor to 2.0
+    let set_speedup_command = SetSpeedupCommand {
+        speedup_factor: 2.0,
+    };
+    set_speedup_command.execute(&mut simulation);
+
+    // Update the simulation with a given delta_time
+    let delta_time = Duration::from_secs(1);
+    simulation.update(delta_time);
+    let updated_train = simulation.environment.objects.get(&1).unwrap();
+
+    // Test the expected outcome, e.g., check if the train's speed has increased
+    assert_relative_eq!(
+        updated_train.speed().get::<meter_per_second>(),
+        22.22,
+        epsilon = 0.1
+    );
 }

@@ -60,6 +60,8 @@ pub struct Simulation {
     elapsed_time: Duration,
     /// simulation pause state
     pub is_paused: bool,
+    /// Speedup factor of the simulation
+    pub speedup_factor: f64,
 }
 
 impl fmt::Debug for Simulation {
@@ -95,6 +97,7 @@ impl Simulation {
             metrics_handlers: default_metrics_handler,
             elapsed_time: Duration::default(),
             is_paused: false,
+            speedup_factor: 1.0,
         }
     }
 
@@ -219,15 +222,16 @@ impl Simulation {
     /// * `delta_time` - The elapsed time since the last update.
     pub fn update(&mut self, delta_time: Duration) {
         if !self.is_paused {
+            let scaled_delta_time = delta_time.mul_f64(self.speedup_factor);
             // Update the total elapsed time.
-            self.elapsed_time += delta_time;
+            self.elapsed_time += scaled_delta_time;
 
             // Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
             let object_ids: Vec<_> = self.environment.objects.keys().cloned().collect();
 
             // Iterate over each object in the simulation and update its state based on the delta time.
             for id in object_ids {
-                self.update_object(delta_time, id);
+                self.update_object(scaled_delta_time, id);
             }
         }
     }
