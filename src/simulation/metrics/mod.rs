@@ -8,8 +8,8 @@
 //! of target reached events during the simulation.
 //!
 //! Handlers can be registered with the `Simulation` struct to process events during the simulation execution.
-
 use crate::simulation::events::SimulationEvent;
+use std::any::Any;
 mod action_count_handler;
 pub use action_count_handler::ActionCountHandler;
 
@@ -33,4 +33,11 @@ pub trait MetricsHandler: Send {
     ///
     /// A `f64` representing the current value of the metric.
     fn get_value(&self) -> f64;
+
+    /// Returns a reference to the underlying Any type for downcasting.
+    ///
+    /// # Returns
+    ///
+    /// A reference to the underlying Any type.
+    fn as_any(&self) -> &dyn Any;
 }

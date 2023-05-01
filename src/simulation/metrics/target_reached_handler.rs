@@ -1,5 +1,6 @@
 use super::MetricsHandler;
 use crate::simulation::events::{SimulationEvent, TargetReachedEvent};
+use std::any::Any;
 
 /// A metrics handler that counts the number of times the target has been reached.
 ///
@@ -38,6 +39,10 @@ impl MetricsHandler for TargetReachedHandler {
 
     fn get_value(&self) -> f64 {
         self.target_reached_count as f64
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

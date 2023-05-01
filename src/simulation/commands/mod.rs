@@ -3,8 +3,11 @@
 //! apply the command on a given simulation instance.
 //!
 use clap::{arg, Parser};
+mod metrics_command;
 mod object_command;
+
 use crate::simulation::Simulation;
+pub use metrics_command::MetricsCommand;
 pub use object_command::ObjectCommand;
 
 /// A trait for commands that manipulate a simulation.

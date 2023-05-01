@@ -1,5 +1,6 @@
 use crate::simulation::events::{RailMovableEvent, SimulationEvent};
 use crate::simulation::metrics::MetricsHandler;
+use std::any::Any;
 use std::collections::HashMap;
 
 /// `ActionCountHandler` is a metrics handler that counts the number of actions
@@ -38,6 +39,10 @@ impl MetricsHandler for ActionCountHandler {
 
     fn get_value(&self) -> f64 {
         self.action_counts.values().map(|count| *count as f64).sum()
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 
