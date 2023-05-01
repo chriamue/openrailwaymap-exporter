@@ -369,11 +369,6 @@
 <a href="#369" id="369">369</a>
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
@@ -383,7 +378,7 @@
 /// The `PathFinding` trait is implemented for the `RailwayGraph` type, allowing users
 /// to perform pathfinding operations on railway graphs.
 </span><span class="kw">mod </span>path_finding;
-<span class="kw">use </span><span class="kw">crate</span>::algorithms::points_in_front;
+<span class="kw">use </span><span class="kw">crate</span>::algorithms::{points_in_front, Distance};
 <span class="kw">use </span><span class="kw">crate</span>::prelude::{RailwayEdge, RailwayGraph};
 <span class="kw">use </span>geo::{Coord, HaversineDistance, Point};
 <span class="kw">pub use </span>path_finding::PathFinding;
@@ -489,21 +484,16 @@
             <span class="kw">return </span>Length::new::&lt;meter&gt;(<span class="number">0.0</span>);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>total_distance = <span class="number">0.0</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>total_distance = Length::new::&lt;meter&gt;(<span class="number">0.0</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>current_point = current_location;
 
         <span class="kw">for </span>next_point <span class="kw">in </span>points_in_front {
-            <span class="kw">let </span>current_point_geo = Point::new(current_point.x, current_point.y);
-            <span class="kw">let </span>next_point_geo = Point::new(next_point.x, next_point.y);
-
-            <span class="comment">// Use haversine_distance to calculate distance between points
-            </span><span class="kw">let </span>segment_distance = current_point_geo.haversine_distance(<span class="kw-2">&amp;</span>next_point_geo);
+            <span class="kw">let </span>segment_distance = current_point.distance(<span class="kw-2">&amp;</span>next_point);
             total_distance += segment_distance;
 
             current_point = next_point;
         }
-
-        Length::new::&lt;meter&gt;(total_distance)
+        total_distance
     }
 
     <span class="doccomment">/// Calculates a new position on the edge based on the given parameters.
@@ -588,7 +578,7 @@
         <span class="kw">let </span>current_position1 = <span class="macro">coord! </span>{ x: <span class="number">13.377054</span>, y: <span class="number">52.516250 </span>}; <span class="comment">// Brandenburg Gate, Berlin
         </span><span class="kw">let </span>direction1 = <span class="macro">coord! </span>{ x: <span class="number">13.378685</span>, y: <span class="number">52.520165 </span>}; <span class="comment">// Reichstag Building, Berlin
         </span><span class="kw">let </span>distance_to_end1 = edge.distance_to_end(current_position1, direction1);
-        <span class="kw">let </span>expected_distance1 = Length::new::&lt;meter&gt;(<span class="number">930.0</span>); <span class="comment">// Approx. distance between Brandenburg Gate and Berlin Central Station
+        <span class="kw">let </span>expected_distance1 = Length::new::&lt;meter&gt;(<span class="number">1796.0</span>); <span class="comment">// Approx. distance between Brandenburg Gate and Berlin Central Station
         </span><span class="macro">assert_relative_eq!</span>(
             distance_to_end1.get::&lt;meter&gt;(),
             expected_distance1.get::&lt;meter&gt;(),
