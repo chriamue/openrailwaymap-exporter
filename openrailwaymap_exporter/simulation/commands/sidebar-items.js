@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ObjectCommand"],"struct":["PauseCommand","SetSpeedupCommand"],"trait":["SimulationCommand"]};
+window.SIDEBAR_ITEMS = {"enum":["MetricsCommand","ObjectCommand"],"struct":["PauseCommand","SetSpeedupCommand"],"trait":["SimulationCommand"]};

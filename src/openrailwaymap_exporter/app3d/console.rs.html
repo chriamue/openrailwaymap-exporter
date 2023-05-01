@@ -79,9 +79,32 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::app3d::AppResource;
 <span class="kw">use </span><span class="kw">crate</span>::simulation::commands::{
-    ObjectCommand, PauseCommand, SetSpeedupCommand, SimulationCommand,
+    MetricsCommand, ObjectCommand, PauseCommand, SetSpeedupCommand, SimulationCommand,
 };
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_console::{
@@ -93,6 +116,7 @@
     app.add_console_command::&lt;PauseCommand, <span class="kw">_</span>&gt;(pause_command);
     app.add_console_command::&lt;SetSpeedupCommand, <span class="kw">_</span>&gt;(set_speedup_command);
     app.add_console_command::&lt;ObjectCommand, <span class="kw">_</span>&gt;(object_command);
+    app.add_console_command::&lt;MetricsCommand, <span class="kw">_</span>&gt;(metrics_command);
     app.insert_resource(ConsoleConfiguration {
         ..Default::default()
     });
@@ -119,6 +143,13 @@
     </span>}
 }
 
+<span class="kw">impl </span>Resource <span class="kw">for </span>MetricsCommand {}
+<span class="kw">impl </span>NamedCommand <span class="kw">for </span>MetricsCommand {
+    <span class="kw">fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="string">&quot;metrics&quot;
+    </span>}
+}
+
 <span class="kw">fn </span>pause_command(<span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;, <span class="kw-2">mut </span>pause: ConsoleCommand&lt;PauseCommand&gt;) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(pause_command)) = pause.take() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
@@ -132,14 +163,14 @@
 }
 
 <span class="kw">fn </span>set_speedup_command(
-    <span class="kw-2">mut </span>command: ConsoleCommand&lt;SetSpeedupCommand&gt;,
+    <span class="kw-2">mut </span>console_command: ConsoleCommand&lt;SetSpeedupCommand&gt;,
     <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
 ) {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(pause_command)) = command.take() {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(command)) = console_command.take() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = pause_command.execute(<span class="kw-2">&amp;mut </span>simulation) {
-                    command.reply_ok(info);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = command.execute(<span class="kw-2">&amp;mut </span>simulation) {
+                    console_command.reply_ok(info);
                 }
             }
         }
@@ -147,14 +178,29 @@
 }
 
 <span class="kw">fn </span>object_command(
-    <span class="kw-2">mut </span>command: ConsoleCommand&lt;ObjectCommand&gt;,
+    <span class="kw-2">mut </span>console_command: ConsoleCommand&lt;ObjectCommand&gt;,
     <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
 ) {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(object_command)) = command.take() {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(command)) = console_command.take() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = object_command.execute(<span class="kw-2">&amp;mut </span>simulation) {
-                    command.reply(info);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = command.execute(<span class="kw-2">&amp;mut </span>simulation) {
+                    console_command.reply(info);
+                }
+            }
+        }
+    }
+}
+
+<span class="kw">fn </span>metrics_command(
+    <span class="kw-2">mut </span>console_command: ConsoleCommand&lt;MetricsCommand&gt;,
+    <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
+) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(command)) = console_command.take() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = command.execute(<span class="kw-2">&amp;mut </span>simulation) {
+                    console_command.reply(info);
                 }
             }
         }
