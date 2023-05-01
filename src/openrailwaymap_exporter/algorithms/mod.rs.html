@@ -191,11 +191,11 @@
 <a href="#191" id="191">191</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A module containing algorithms for working with geographical data structures.
 //!
-</span><span class="kw">use </span><span class="kw">crate</span>::algorithms::distance::Distance;
-<span class="kw">use </span>geo::{coord, Coord, LineString, Point};
+</span><span class="kw">use </span>geo::{coord, Coord, LineString, Point};
 <span class="kw">use </span>uom::si::length::meter;
 
 <span class="kw">mod </span>distance;
+<span class="kw">pub use </span>distance::Distance;
 
 <span class="doccomment">/// Returns the closest point of points in a given `LineString` to a given `Coord`.
 ///
