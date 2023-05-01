@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"openrailwaymap_exporter":[["impl FromArgMatches for <a class=\"struct\" href=\"openrailwaymap_exporter/simulation/commands/struct.PauseCommand.html\" title=\"struct openrailwaymap_exporter::simulation::commands::PauseCommand\">PauseCommand</a>"]]
+"openrailwaymap_exporter":[["impl FromArgMatches for <a class=\"struct\" href=\"openrailwaymap_exporter/simulation/commands/struct.PauseCommand.html\" title=\"struct openrailwaymap_exporter::simulation::commands::PauseCommand\">PauseCommand</a>"],["impl FromArgMatches for <a class=\"struct\" href=\"openrailwaymap_exporter/simulation/commands/struct.SetSpeedupCommand.html\" title=\"struct openrailwaymap_exporter::simulation::commands::SetSpeedupCommand\">SetSpeedupCommand</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
