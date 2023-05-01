@@ -365,6 +365,7 @@
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module contains types related to railway simulations.
 //!
 //! A railway simulation consists of a railway graph representing the infrastructure and a
@@ -451,9 +452,10 @@
     /// A new `Simulation` instance.
     ///
     </span><span class="kw">pub fn </span>new(graph: RailwayGraph) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>default_metrics_handler: Vec&lt;Box&lt;<span class="kw">dyn </span>MetricsHandler&gt;&gt; = <span class="macro">vec!</span>[];
-        default_metrics_handler.push(Box::new(ActionCountHandler::new()));
-        default_metrics_handler.push(Box::new(TargetReachedHandler::new()));
+        <span class="kw">let </span>default_metrics_handler: Vec&lt;Box&lt;<span class="kw">dyn </span>MetricsHandler&gt;&gt; = <span class="macro">vec!</span>[
+            Box::new(ActionCountHandler::new()),
+            Box::new(TargetReachedHandler::new()),
+        ];
 
         <span class="self">Self </span>{
             environment: SimulationEnvironment {

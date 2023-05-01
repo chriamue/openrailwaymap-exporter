@@ -99,12 +99,16 @@
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre><pre class="rust"><code><span class="doccomment">//! This module provides a set of commands that can be used to manipulate a `Simulation` instance.
 //! Each command implements the `SimulationCommand` trait, which provides the `execute` method to
 //! apply the command on a given simulation instance.
 //!
-</span><span class="kw">use </span><span class="kw">crate</span>::simulation::Simulation;
-<span class="kw">use </span>clap::{arg, Parser};
+</span><span class="kw">use </span>clap::{arg, Parser};
+<span class="kw">mod </span>object_command;
+<span class="kw">use </span><span class="kw">crate</span>::simulation::Simulation;
+<span class="kw">pub use </span>object_command::ObjectCommand;
 
 <span class="doccomment">/// A trait for commands that manipulate a simulation.
 </span><span class="kw">pub trait </span>SimulationCommand {

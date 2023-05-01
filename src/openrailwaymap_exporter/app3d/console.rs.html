@@ -54,8 +54,35 @@
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::app3d::AppResource;
-<span class="kw">use </span><span class="kw">crate</span>::simulation::commands::{PauseCommand, SetSpeedupCommand, SimulationCommand};
+<span class="kw">use </span><span class="kw">crate</span>::simulation::commands::{
+    ObjectCommand, PauseCommand, SetSpeedupCommand, SimulationCommand,
+};
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_console::{
     AddConsoleCommand, ConsoleCommand, ConsoleConfiguration, ConsolePlugin, NamedCommand,
@@ -65,6 +92,7 @@
     app.add_plugin(ConsolePlugin);
     app.add_console_command::&lt;PauseCommand, <span class="kw">_</span>&gt;(pause_command);
     app.add_console_command::&lt;SetSpeedupCommand, <span class="kw">_</span>&gt;(set_speedup_command);
+    app.add_console_command::&lt;ObjectCommand, <span class="kw">_</span>&gt;(object_command);
     app.insert_resource(ConsoleConfiguration {
         ..Default::default()
     });
@@ -81,6 +109,13 @@
 <span class="kw">impl </span>NamedCommand <span class="kw">for </span>SetSpeedupCommand {
     <span class="kw">fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
         <span class="string">&quot;speedup&quot;
+    </span>}
+}
+
+<span class="kw">impl </span>Resource <span class="kw">for </span>ObjectCommand {}
+<span class="kw">impl </span>NamedCommand <span class="kw">for </span>ObjectCommand {
+    <span class="kw">fn </span>name() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="string">&quot;object&quot;
     </span>}
 }
 
@@ -105,6 +140,21 @@
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = pause_command.execute(<span class="kw-2">&amp;mut </span>simulation) {
                     command.reply_ok(info);
+                }
+            }
+        }
+    }
+}
+
+<span class="kw">fn </span>object_command(
+    <span class="kw-2">mut </span>command: ConsoleCommand&lt;ObjectCommand&gt;,
+    <span class="kw-2">mut </span>app_resource: ResMut&lt;AppResource&gt;,
+) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(object_command)) = command.take() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = object_command.execute(<span class="kw-2">&amp;mut </span>simulation) {
+                    command.reply(info);
                 }
             }
         }

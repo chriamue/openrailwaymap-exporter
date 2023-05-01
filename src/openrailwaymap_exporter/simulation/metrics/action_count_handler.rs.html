@@ -67,8 +67,6 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::simulation::events::{RailMovableEvent, SimulationEvent};
 <span class="kw">use </span><span class="kw">crate</span>::simulation::metrics::MetricsHandler;
 <span class="kw">use </span>std::collections::HashMap;
@@ -78,6 +76,7 @@
 ///
 /// It maintains a count of actions by their type and provides the total number
 /// of actions performed as the metric value.
+</span><span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>ActionCountHandler {
     action_counts: HashMap&lt;String, u64&gt;,
 }
@@ -107,10 +106,7 @@
     }
 
     <span class="kw">fn </span>get_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
-        <span class="self">self</span>.action_counts
-            .iter()
-            .map(|(<span class="kw">_</span>, count)| <span class="kw-2">*</span>count <span class="kw">as </span>f64)
-            .sum()
+        <span class="self">self</span>.action_counts.values().map(|count| <span class="kw-2">*</span>count <span class="kw">as </span>f64).sum()
     }
 }
 
