@@ -7,7 +7,7 @@
 /// The `PathFinding` trait is implemented for the `RailwayGraph` type, allowing users
 /// to perform pathfinding operations on railway graphs.
 mod path_finding;
-use crate::algorithms::points_in_front;
+use crate::algorithms::{points_in_front, Distance};
 use crate::prelude::{RailwayEdge, RailwayGraph};
 use geo::{Coord, HaversineDistance, Point};
 pub use path_finding::PathFinding;
@@ -113,21 +113,16 @@ impl RailwayEdge {
             return Length::new::<meter>(0.0);
         }
 
-        let mut total_distance = 0.0;
+        let mut total_distance = Length::new::<meter>(0.0);
         let mut current_point = current_location;
 
         for next_point in points_in_front {
-            let current_point_geo = Point::new(current_point.x, current_point.y);
-            let next_point_geo = Point::new(next_point.x, next_point.y);
-
-            // Use haversine_distance to calculate distance between points
-            let segment_distance = current_point_geo.haversine_distance(&next_point_geo);
+            let segment_distance = current_point.distance(&next_point);
             total_distance += segment_distance;
 
             current_point = next_point;
         }
-
-        Length::new::<meter>(total_distance)
+        total_distance
     }
 
     /// Calculates a new position on the edge based on the given parameters.
@@ -212,7 +207,7 @@ pub mod tests {
         let current_position1 = coord! { x: 13.377054, y: 52.516250 }; // Brandenburg Gate, Berlin
         let direction1 = coord! { x: 13.378685, y: 52.520165 }; // Reichstag Building, Berlin
         let distance_to_end1 = edge.distance_to_end(current_position1, direction1);
-        let expected_distance1 = Length::new::<meter>(930.0); // Approx. distance between Brandenburg Gate and Berlin Central Station
+        let expected_distance1 = Length::new::<meter>(1796.0); // Approx. distance between Brandenburg Gate and Berlin Central Station
         assert_relative_eq!(
             distance_to_end1.get::<meter>(),
             expected_distance1.get::<meter>(),

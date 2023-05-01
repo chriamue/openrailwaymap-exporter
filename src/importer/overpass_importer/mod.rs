@@ -6,7 +6,7 @@ use crate::algorithms::Distance;
 use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
 use anyhow::Result;
 pub use coordinate::Coordinate;
-use geo::{coord, LineString};
+use geo::{coord, Coord, LineString};
 use geoutils::Location;
 use petgraph::graph::Graph;
 use petgraph::stable_graph::NodeIndex;
@@ -97,18 +97,38 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
 
                 if let (Some(node_index), Some(next_node_index)) = (node_index, next_node_index) {
                     assert_ne!(node_index, next_node_index);
+
+                    let linestring: Vec<_> = {
+                        let node1_coord: Coord<f64> =
+                            coord! {x: graph[node_index].lon, y: graph[node_index].lat};
+                        let node2_coord: Coord<f64> =
+                            coord! {x: graph[next_node_index].lon, y: graph[next_node_index].lat};
+                        let reverse = node1_coord
+                            .distance(&coord! {x: geometry[0].lon, y: geometry[0].lat})
+                            > node2_coord
+                                .distance(&coord! {x: geometry[0].lon, y: geometry[0].lat});
+
+                        if reverse {
+                            geometry
+                                .into_iter()
+                                .rev()
+                                .map(|coord| coord! { x: coord.lon, y: coord.lat })
+                                .collect()
+                        } else {
+                            geometry
+                                .iter()
+                                .map(|coord| coord! { x: coord.lon, y: coord.lat })
+                                .collect::<Vec<_>>()
+                        }
+                    };
+
                     graph.add_edge(
                         node_index,
                         next_node_index,
                         RailwayEdge {
                             id: element.id,
                             length,
-                            path: LineString::from(
-                                geometry
-                                    .iter()
-                                    .map(|coord| coord! { x: coord.lon, y: coord.lat })
-                                    .collect::<Vec<_>>(),
-                            ),
+                            path: LineString::from(linestring),
                             source: node_id.unwrap(),
                             target: next_node_id.unwrap(),
                         },
@@ -424,7 +444,7 @@ mod tests {
                 nodes: Some(vec![1, 7, 3, 8]),
                 geometry: Some(vec![
                     Coordinate { lat: 0.0, lon: 0.0 },
-                    Coordinate { lat: 0.0, lon: 3.0 },
+                    Coordinate { lat: 0.0, lon: 3.5 },
                 ]),
             },
             RailwayElement {
@@ -461,7 +481,7 @@ mod tests {
         let node_index_3 = railway_graph.node_indices.get(&3).unwrap();
         let node_3 = &railway_graph.graph[*node_index_3];
         assert_eq!(node_3.lat, 0.0);
-        assert_eq!(node_3.lon, 0.0);
+        assert_eq!(node_3.lon, 3.5);
     }
 
     #[test]
