@@ -216,23 +216,40 @@ impl Simulation {
         }
     }
 
-    /// Updates the simulation state based on the given delta time.
+    /// Updates the simulation state based on the given delta time and the speedup factor.
     ///
     /// # Arguments
     ///
     /// * `delta_time` - The elapsed time since the last update.
     pub fn update(&mut self, delta_time: Duration) {
         if !self.is_paused {
-            let scaled_delta_time = delta_time.mul_f64(self.speedup_factor);
+            let int_speedup_factor = self.speedup_factor.floor() as u32;
+            let fractional_speedup_factor = self.speedup_factor.fract();
+
+            let full_delta_time = delta_time;
+            let fractional_delta_time = delta_time.mul_f64(fractional_speedup_factor);
+
             // Update the total elapsed time.
+            let scaled_delta_time = delta_time.mul_f64(self.speedup_factor);
             self.elapsed_time += scaled_delta_time;
 
-            // Create a copy of the object keys to avoid borrowing `self.objects` mutably while iterating.
-            let object_ids: Vec<_> = self.environment.objects.keys().cloned().collect();
+            for _ in 0..int_speedup_factor {
+                let object_ids: Vec<_> = self.environment.objects.keys().cloned().collect();
 
-            // Iterate over each object in the simulation and update its state based on the delta time.
-            for id in object_ids {
-                self.update_object(scaled_delta_time, id);
+                // Iterate over each object in the simulation and update its state based on the delta time and speedup factor.
+                for id in object_ids {
+                    self.update_object(full_delta_time, id);
+                }
+            }
+
+            if fractional_speedup_factor > 0.0 {
+                for _ in 0..int_speedup_factor {
+                    let object_ids: Vec<_> = self.environment.objects.keys().cloned().collect();
+
+                    for id in object_ids {
+                        self.update_object(fractional_delta_time, id);
+                    }
+                }
             }
         }
     }
