@@ -274,6 +274,10 @@
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
@@ -281,6 +285,7 @@
 <span class="kw">use </span>uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 <span class="kw">use super</span>::{AppResource, Node};
+<span class="kw">use </span><span class="kw">crate</span>::app3d::DebugResource;
 <span class="kw">use </span><span class="kw">crate</span>::types::NodeId;
 <span class="kw">use crate</span>::{
     prelude::{RailwayEdge, RailwayGraph},
@@ -489,46 +494,49 @@
     <span class="kw-2">mut </span>polyline_materials: ResMut&lt;Assets&lt;PolylineMaterial&gt;&gt;,
     <span class="kw-2">mut </span>polylines: ResMut&lt;Assets&lt;Polyline&gt;&gt;,
     q_line: Query&lt;Entity, With&lt;TrainAgentLine&gt;&gt;,
+    debug_resource: Res&lt;DebugResource&gt;,
 ) {
     <span class="kw">for </span>entity <span class="kw">in </span>q_line.iter() {
         commands.entity(entity).despawn();
     }
-    <span class="kw">for </span>(train_agent, train_agent_transform) <span class="kw">in </span>train_agent_query.iter() {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
-            <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) =
-                (train.position(), train.next_target())
-            {
-                <span class="kw">let </span>current_node_transform = node_query
-                    .iter()
-                    .find(|(node, <span class="kw">_</span>)| node.id == current_node_id)
-                    .map(|(<span class="kw">_</span>, transform)| transform);
-
-                <span class="kw">let </span>target_node_transform = node_query
-                    .iter()
-                    .find(|(node, <span class="kw">_</span>)| node.id == target_node_id)
-                    .map(|(<span class="kw">_</span>, transform)| transform);
-
-                <span class="kw">if let </span>(<span class="prelude-val">Some</span>(_current_node_transform), <span class="prelude-val">Some</span>(target_node_transform)) =
-                    (current_node_transform, target_node_transform)
+    <span class="kw">if </span>debug_resource.show_train_target == <span class="bool-val">true </span>{
+        <span class="kw">for </span>(train_agent, train_agent_transform) <span class="kw">in </span>train_agent_query.iter() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
+                <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) =
+                    (train.position(), train.next_target())
                 {
-                    commands
-                        .spawn(PolylineBundle {
-                            polyline: polylines.add(Polyline {
-                                vertices: <span class="macro">vec!</span>[
-                                    train_agent_transform.translation,
-                                    <span class="comment">//current_node_transform.translation,
-                                    </span>target_node_transform.translation,
-                                ],
-                            }),
-                            material: polyline_materials.add(PolylineMaterial {
-                                width: <span class="number">2.0</span>,
-                                color: Color::RED,
-                                perspective: <span class="bool-val">false</span>,
+                    <span class="kw">let </span>current_node_transform = node_query
+                        .iter()
+                        .find(|(node, <span class="kw">_</span>)| node.id == current_node_id)
+                        .map(|(<span class="kw">_</span>, transform)| transform);
+
+                    <span class="kw">let </span>target_node_transform = node_query
+                        .iter()
+                        .find(|(node, <span class="kw">_</span>)| node.id == target_node_id)
+                        .map(|(<span class="kw">_</span>, transform)| transform);
+
+                    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(_current_node_transform), <span class="prelude-val">Some</span>(target_node_transform)) =
+                        (current_node_transform, target_node_transform)
+                    {
+                        commands
+                            .spawn(PolylineBundle {
+                                polyline: polylines.add(Polyline {
+                                    vertices: <span class="macro">vec!</span>[
+                                        train_agent_transform.translation,
+                                        <span class="comment">//current_node_transform.translation,
+                                        </span>target_node_transform.translation,
+                                    ],
+                                }),
+                                material: polyline_materials.add(PolylineMaterial {
+                                    width: <span class="number">2.0</span>,
+                                    color: Color::RED,
+                                    perspective: <span class="bool-val">false</span>,
+                                    ..default()
+                                }),
                                 ..default()
-                            }),
-                            ..default()
-                        })
-                        .insert(TrainAgentLine);
+                            })
+                            .insert(TrainAgentLine);
+                    }
                 }
             }
         }
