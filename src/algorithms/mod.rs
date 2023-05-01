@@ -1,10 +1,10 @@
 //! A module containing algorithms for working with geographical data structures.
 //!
-use crate::algorithms::distance::Distance;
 use geo::{coord, Coord, LineString, Point};
 use uom::si::length::meter;
 
 mod distance;
+pub use distance::Distance;
 
 /// Returns the closest point of points in a given `LineString` to a given `Coord`.
 ///

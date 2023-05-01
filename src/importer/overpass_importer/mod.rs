@@ -2,6 +2,7 @@
 //! railway graph data from the Overpass API.
 mod coordinate;
 mod railway_element;
+use crate::algorithms::Distance;
 use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
 use anyhow::Result;
 pub use coordinate::Coordinate;
@@ -13,6 +14,7 @@ use petgraph::Undirected;
 pub use railway_element::RailwayElement;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
+use uom::si::length::meter;
 
 pub use self::railway_element::{count_node_elements, count_way_elements, ElementType};
 
@@ -317,34 +319,67 @@ fn create_id_to_element_map<'a>(
 
     id_to_element_map
 }
-
-fn create_nodes_from_way_elements_without_existing(
+/// Create railway nodes from two railway elements that share a node ID but do not have an existing
+/// common node. The nodes are created by finding the two coordinates in the geometries of the two
+/// railway elements that are closest to each other.
+///
+/// # Arguments
+///
+/// * `elements` - A slice of railway elements to process.
+/// * `node_ids` - A mutable reference to a HashSet of node IDs to be updated with newly created nodes.
+///
+/// # Returns
+///
+/// A vector of railway nodes created from the input railway elements.
+pub fn create_nodes_from_way_elements_without_existing(
     elements: &[RailwayElement],
     node_ids: &mut HashSet<i64>,
 ) -> Vec<RailwayNode> {
-    let mut nodes: Vec<RailwayNode> = Vec::new();
     let node_id_to_element_ids = create_node_id_to_element_ids_map(elements);
     let id_to_element_map = create_id_to_element_map(elements);
 
+    let mut new_nodes = Vec::new();
+
     for (node_id, element_ids) in node_id_to_element_ids {
-        if !node_ids.contains(&node_id) && element_ids.len() >= 2 {
-            if let Some(element) = id_to_element_map.get(&element_ids[0]) {
-                if let Some(geometry) = &element.geometry {
-                    if let Some(first_coordinate) = geometry.first() {
-                        let node = RailwayNode {
-                            id: node_id,
-                            lat: first_coordinate.lat,
-                            lon: first_coordinate.lon,
-                        };
-                        nodes.push(node);
-                        node_ids.insert(node_id);
+        if element_ids.len() == 2 && !node_ids.contains(&node_id) {
+            let element1 = id_to_element_map.get(&element_ids[0]);
+            let element2 = id_to_element_map.get(&element_ids[1]);
+
+            if let (Some(element1), Some(element2)) = (element1, element2) {
+                if let (Some(geometry1), Some(geometry2)) = (&element1.geometry, &element2.geometry)
+                {
+                    let mut min_distance = f64::MAX;
+                    let mut closest_coords = (
+                        coord! {x: geometry1[0].lon, y: geometry1[0].lat},
+                        coord! {x: geometry2[0].lon, y: geometry2[0].lat },
+                    );
+
+                    for coord1 in geometry1 {
+                        let coord1_geo = coord! { x: coord1.lon, y: coord1.lat };
+                        for coord2 in geometry2 {
+                            let coord2_geo = coord! { x: coord2.lon, y: coord2.lat };
+                            let distance = coord1_geo.distance(&coord2_geo).get::<meter>();
+                            if distance < min_distance {
+                                min_distance = distance;
+                                closest_coords = (coord1_geo.clone(), coord2_geo.clone());
+                            }
+                        }
                     }
+
+                    let node = RailwayNode {
+                        id: node_id,
+                        lat: closest_coords.0.y,
+                        lon: closest_coords.0.x,
+                    };
+
+                    new_nodes.push(node);
+                    node_ids.insert(node_id);
                 }
             }
         }
     }
 
-    nodes
+    new_nodes
 }
 
 #[cfg(test)]

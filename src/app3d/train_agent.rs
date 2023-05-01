@@ -187,7 +187,7 @@ pub fn update_train_position_system(
         }
     }
 }
-use bevy::math::{Quat, Vec3};
+
 fn update_look_at(
     projection: &Res<super::Projection>,
     transform: &mut Mut<Transform>,
@@ -199,7 +199,7 @@ fn update_look_at(
         if let Some(target_view_coord) = projection.project(target_location) {
             transform.look_at(
                 Vec3::new(target_view_coord.x, target_view_coord.y, 5.0),
-                Vec3::Z
+                Vec3::Z,
             );
         }
     }
