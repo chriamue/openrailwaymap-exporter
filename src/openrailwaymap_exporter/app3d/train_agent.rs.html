@@ -463,7 +463,7 @@
         }
     }
 }
-
+<span class="kw">use </span>bevy::math::{Quat, Vec3};
 <span class="kw">fn </span>update_look_at(
     projection: <span class="kw-2">&amp;</span>Res&lt;<span class="kw">super</span>::Projection&gt;,
     transform: <span class="kw-2">&amp;mut </span>Mut&lt;Transform&gt;,
@@ -474,8 +474,8 @@
         <span class="kw">let </span>target_location = <span class="macro">coord! </span>{ x: next_node.lon, y: next_node.lat };
         <span class="kw">if let </span><span class="prelude-val">Some</span>(target_view_coord) = projection.project(target_location) {
             transform.look_at(
-                Vec3::new(target_view_coord.x, target_view_coord.y, <span class="number">1.0</span>),
-                Vec3::new(<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
+                Vec3::new(target_view_coord.x, target_view_coord.y, <span class="number">5.0</span>),
+                Vec3::Z
             );
         }
     }
