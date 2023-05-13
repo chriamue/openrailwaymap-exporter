@@ -218,7 +218,7 @@
 //!
 </span><span class="kw">use </span>std::any::Any;
 <span class="kw">use </span>std::fmt;
-<span class="kw">use </span>std::sync::{Arc, Mutex};
+<span class="kw">use </span>std::sync::{Arc, RwLock};
 
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
 <span class="kw">use </span><span class="kw">crate</span>::simulation::agents::{DecisionAgent, RailMovableAction};
@@ -251,7 +251,7 @@
     <span class="doccomment">/// The reinforcement learning agent responsible for controlling the train.
     </span><span class="kw">pub </span>agent_rl: TrainAgentRL,
     <span class="doccomment">/// The trainer responsible for training the reinforcement learning agent.
-    </span><span class="kw">pub </span>trainer: Arc&lt;Mutex&lt;AgentTrainer&lt;TrainAgentState&gt;&gt;&gt;,
+    </span><span class="kw">pub </span>trainer: Arc&lt;RwLock&lt;AgentTrainer&lt;TrainAgentState&gt;&gt;&gt;,
 }
 
 <span class="kw">impl </span>fmt::Debug <span class="kw">for </span>TrainAgentAI {
@@ -282,7 +282,7 @@
             state: initial_state,
             max_speed_mm_s: ((<span class="number">160.0 </span>/ <span class="number">3.6</span>) <span class="kw">as </span>i32) * <span class="number">1000</span>,
         };
-        <span class="kw">let </span>trainer = Arc::new(Mutex::new(AgentTrainer::new()));
+        <span class="kw">let </span>trainer = Arc::new(RwLock::new(AgentTrainer::new()));
         <span class="self">Self </span>{
             id: <span class="number">0</span>,
             railway_graph: <span class="prelude-val">Some</span>(railway_graph),
@@ -301,7 +301,7 @@
     </span><span class="kw">pub fn </span>train(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iterations: usize) {
         <span class="macro">println!</span>(<span class="string">&quot;Starting training for {} iterations...&quot;</span>, iterations);
         <span class="kw">let </span><span class="kw-2">mut </span>agent = <span class="self">self</span>.agent_rl.clone();
-        <span class="kw">let </span><span class="kw-2">mut </span>trainer = <span class="self">self</span>.trainer.try_lock().unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>trainer = <span class="self">self</span>.trainer.write().unwrap();
         trainer.train(
             <span class="kw-2">&amp;mut </span>agent,
             <span class="kw-2">&amp;</span>QLearning::new(<span class="number">0.2</span>, <span class="number">0.01</span>, <span class="number">20.</span>),
@@ -322,7 +322,7 @@
     </span><span class="kw">pub fn </span>best_action(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;</span>TrainAgentState) -&gt; <span class="prelude-ty">Option</span>&lt;RailMovableAction&gt; {
         <span class="prelude-val">Some</span>(
             <span class="self">self</span>.trainer
-                .lock()
+                .read()
                 .unwrap()
                 .best_action(state)
                 .unwrap_or_default(),

@@ -357,7 +357,7 @@
 //!
 </span><span class="attr">#![cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, allow(dead_code, unused_imports))]
 
-</span><span class="kw">use </span>std::sync::{Arc, Mutex};
+</span><span class="kw">use </span>std::sync::{Arc, RwLock};
 
 <span class="kw">use </span><span class="kw">crate</span>::app3d::train_agent::TrainAgent;
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayGraph;
@@ -396,7 +396,7 @@
 </span><span class="kw">pub struct </span>AppResource {
     area_name: String,
     graph: <span class="prelude-ty">Option</span>&lt;RailwayGraph&gt;,
-    simulation: <span class="prelude-ty">Option</span>&lt;Arc&lt;Mutex&lt;Simulation&gt;&gt;&gt;,
+    simulation: <span class="prelude-ty">Option</span>&lt;Arc&lt;RwLock&lt;Simulation&gt;&gt;&gt;,
     look_at_position: <span class="prelude-ty">Option</span>&lt;Vec3&gt;,
 }
 
@@ -475,7 +475,7 @@
         area_name: <span class="string">&quot;&quot;</span>.to_string(),
         graph: <span class="prelude-val">Some</span>(graph.clone()),
         look_at_position: <span class="prelude-val">None</span>,
-        simulation: <span class="prelude-val">Some</span>(Arc::new(Mutex::new(Simulation::new(graph)))),
+        simulation: <span class="prelude-val">Some</span>(Arc::new(RwLock::new(Simulation::new(graph)))),
     };
     <span class="kw">let </span><span class="kw-2">mut </span>app = App::new();
     app.add_plugins(DefaultPlugins);
@@ -533,7 +533,7 @@
 
 <span class="kw">fn </span>update_simulation_system(app_resource: Res&lt;AppResource&gt;, time: Res&lt;Time&gt;) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
-        simulation.lock().unwrap().update(time.delta())
+        simulation.write().unwrap().update(time.delta())
     }
 }
 

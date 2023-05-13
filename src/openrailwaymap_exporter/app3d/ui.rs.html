@@ -411,7 +411,7 @@
     meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
 ) {
-    <span class="kw">use </span>std::sync::{Arc, Mutex};
+    <span class="kw">use </span>std::sync::{Arc, RwLock};
 
     <span class="kw">use </span><span class="kw">crate</span>::simulation::Simulation;
 
@@ -444,7 +444,7 @@
                 <span class="kw">let </span>(min_coord, max_coord) = graph.bounding_box();
                 projection.set_bounding_box(min_coord, max_coord);
                 app_resource.graph = <span class="prelude-val">Some</span>(graph.clone());
-                app_resource.simulation = <span class="prelude-val">Some</span>(Arc::new(Mutex::new(Simulation::new(graph))));
+                app_resource.simulation = <span class="prelude-val">Some</span>(Arc::new(RwLock::new(Simulation::new(graph))));
                 ui.set_enabled(<span class="bool-val">false</span>);
                 display_graph(
                     commands,
@@ -484,7 +484,7 @@
     ));
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation.as_mut() {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.lock() {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>simulation) = simulation.write() {
             <span class="kw">let </span>graph = simulation.get_observable_environment().get_graph();
             <span class="kw">if let </span><span class="prelude-val">Some</span>(length) = path_length(
                 graph,

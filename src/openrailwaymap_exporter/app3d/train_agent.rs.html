@@ -452,7 +452,7 @@
                     <span class="comment">// Add next target information
                     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(target_node_id) = train.next_target() {
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
-                            <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.try_lock() {
+                            <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.read() {
                                 <span class="kw">let </span>graph = simulation.get_observable_environment().get_graph();
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(next_node_id) = graph.get_next_node(
                                     train.position().unwrap_or_default(),
@@ -545,7 +545,7 @@
 
 <span class="kw">pub fn </span>clone_train_from_app(train_agent: <span class="kw-2">&amp;</span>TrainAgent, app_resource: <span class="kw-2">&amp;</span>AppResource) -&gt; <span class="prelude-ty">Option</span>&lt;Train&gt; {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(simulation) = <span class="kw-2">&amp;</span>app_resource.simulation {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.try_lock() {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(simulation) = simulation.read() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(object) = simulation
                 .get_observable_environment()
                 .get_object(<span class="kw-2">&amp;</span>train_agent.id)
