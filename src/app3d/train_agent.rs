@@ -84,67 +84,24 @@ pub fn create_train(
 }
 
 pub fn create_train_agent_bundle(
-    mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
 ) -> impl FnOnce(&mut ChildBuilder) {
     let rotation_quat = Quat::from_rotation_y(-std::f32::consts::FRAC_PI_2);
 
     let main_body = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(20.0, 10.0, 4.0))),
+        mesh: asset_server.load("train.obj"),
         material: materials.add(Color::rgb(0.0, 0.6, 0.0).into()),
         transform: Transform {
             rotation: rotation_quat,
+            scale: Vec3::ONE * 0.001,
             ..Default::default()
         },
         ..Default::default()
     };
 
-    let top_part = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(6.0, 4.0, 2.0))),
-        material: materials.add(Color::rgb(0.0, 0.4, 0.0).into()),
-        transform: Transform::from_xyz(10.0, 0.0, 1.0),
-        ..Default::default()
-    };
-
-    let bottom_part = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(6.0, 4.0, 2.0))),
-        material: materials.add(Color::rgb(0.0, 0.4, 0.0).into()),
-        transform: Transform::from_xyz(-10.0, 0.0, 1.0),
-        ..Default::default()
-    };
-
-    let left_wheel = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cylinder {
-            radius: 2.0,
-            height: 4.0,
-            resolution: 20,
-            segments: 1,
-        })),
-        material: materials.add(Color::rgb(0.2, 0.2, 0.2).into()),
-        transform: Transform::from_xyz(-8.0, -5.0, 1.0),
-        ..Default::default()
-    };
-
-    let right_wheel = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cylinder {
-            radius: 2.0,
-            height: 4.0,
-            resolution: 20,
-            segments: 1,
-        })),
-        material: materials.add(Color::rgb(0.2, 0.2, 0.2).into()),
-        transform: Transform::from_xyz(8.0, -5.0, 1.0),
-        ..Default::default()
-    };
     move |builder: &mut ChildBuilder| {
-        builder
-            .spawn((main_body, PickableBundle::default()))
-            .with_children(|parent| {
-                parent.spawn(top_part);
-                parent.spawn(bottom_part);
-                parent.spawn(left_wheel);
-                parent.spawn(right_wheel);
-            });
+        builder.spawn((main_body, PickableBundle::default()));
     }
 }
 
@@ -199,7 +156,7 @@ fn update_look_at(
         let target_location = coord! { x: next_node.lon, y: next_node.lat };
         if let Some(target_view_coord) = projection.project(target_location) {
             transform.look_at(
-                Vec3::new(target_view_coord.x, target_view_coord.y, 5.0),
+                Vec3::new(target_view_coord.x, target_view_coord.y, 1.0),
                 Vec3::Z,
             );
         }

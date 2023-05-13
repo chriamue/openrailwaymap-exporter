@@ -15,6 +15,7 @@ use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
 use bevy_mod_picking::PickingEvent;
 use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
+use bevy_obj::ObjPlugin;
 use bevy_polyline::PolylinePlugin;
 use geo::coord;
 use petgraph::visit::IntoNodeReferences;
@@ -86,6 +87,7 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
         .add_plugin(PolylinePlugin)
+        .add_plugin(ObjPlugin)
         .insert_resource(app_resource)
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())

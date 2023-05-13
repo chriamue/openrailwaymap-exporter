@@ -26,8 +26,8 @@ pub fn select_node_system(
     q_node: Query<(Entity, &Node, &Transform), Without<Camera>>,
     interaction_mode: Res<InteractionModeResource>,
     mut commands: Commands,
-    meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
 ) {
     let mut selection = None;
     for event in events.iter() {
@@ -76,7 +76,7 @@ pub fn select_node_system(
                             Transform::from_xyz(
                                 transform.translation.x,
                                 transform.translation.y,
-                                transform.translation.z + 5.0,
+                                transform.translation.z + 1.0,
                             ),
                             GlobalTransform::default(),
                             ComputedVisibility::default(),
@@ -84,7 +84,10 @@ pub fn select_node_system(
                             train_agent,
                         ))
                         .insert(PickableBundle::default())
-                        .with_children(train_agent::create_train_agent_bundle(meshes, materials));
+                        .with_children(train_agent::create_train_agent_bundle(
+                            materials,
+                            asset_server,
+                        ));
                 }
             }
         }
