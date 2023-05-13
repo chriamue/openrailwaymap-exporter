@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["generate_dot_string","generate_svg_string"]};
+window.SIDEBAR_ITEMS = {"fn":["generate_dot_string"]};

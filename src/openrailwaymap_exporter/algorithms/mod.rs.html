@@ -286,8 +286,8 @@
     <span class="kw">let </span>first_point = linestring.into_iter().next().unwrap();
     <span class="kw">let </span>last_point = linestring.into_iter().last().unwrap();
 
-    <span class="kw">let </span>distance_to_first_point = current_location.distance(<span class="kw-2">&amp;</span>first_point);
-    <span class="kw">let </span>distance_to_last_point = target_direction.distance(<span class="kw-2">&amp;</span>last_point);
+    <span class="kw">let </span>distance_to_first_point = current_location.distance(first_point);
+    <span class="kw">let </span>distance_to_last_point = target_direction.distance(last_point);
 
     <span class="kw">let </span>linestring = <span class="kw">if </span>distance_to_first_point &lt; distance_to_last_point {
         LineString::from(

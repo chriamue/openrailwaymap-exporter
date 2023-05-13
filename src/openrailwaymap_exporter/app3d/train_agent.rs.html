@@ -235,6 +235,7 @@
 <a href="#235" id="235">235</a>
 <a href="#236" id="236">236</a>
 <a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
@@ -400,7 +401,8 @@
     }
 }
 
-<span class="kw">pub fn </span>update_train_agent_line_system(
+<span class="attr">#[allow(clippy::too_many_arguments)]
+</span><span class="kw">pub fn </span>update_train_agent_line_system(
     app_resource: Res&lt;AppResource&gt;,
     <span class="kw-2">mut </span>commands: Commands,
     train_agent_query: Query&lt;(<span class="kw-2">&amp;</span>TrainAgent, <span class="kw-2">&amp;</span>Transform)&gt;,
@@ -413,7 +415,7 @@
     <span class="kw">for </span>entity <span class="kw">in </span>q_line.iter() {
         commands.entity(entity).despawn();
     }
-    <span class="kw">if </span>debug_resource.show_train_target == <span class="bool-val">true </span>{
+    <span class="kw">if </span>debug_resource.show_train_target {
         <span class="kw">for </span>(train_agent, train_agent_transform) <span class="kw">in </span>train_agent_query.iter() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(train) = clone_train_from_app(train_agent, <span class="kw-2">&amp;</span>app_resource) {
                 <span class="kw">if let </span>(<span class="prelude-val">Some</span>(current_node_id), <span class="prelude-val">Some</span>(target_node_id)) =

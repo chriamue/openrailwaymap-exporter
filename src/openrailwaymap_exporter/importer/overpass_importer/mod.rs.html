@@ -799,7 +799,7 @@
 
                         <span class="kw">if </span>reverse {
                             geometry
-                                .into_iter()
+                                .iter()
                                 .rev()
                                 .map(|coord| <span class="macro">coord! </span>{ x: coord.lon, y: coord.lat })
                                 .collect()
@@ -1070,7 +1070,7 @@
                             <span class="kw">let </span>distance = coord1_geo.distance(<span class="kw-2">&amp;</span>coord2_geo).get::&lt;meter&gt;();
                             <span class="kw">if </span>distance &lt; min_distance {
                                 min_distance = distance;
-                                closest_coords = (coord1_geo.clone(), coord2_geo.clone());
+                                closest_coords = (coord1_geo, coord2_geo);
                             }
                         }
                     }
