@@ -9,7 +9,7 @@
 //!
 use std::any::Any;
 use std::fmt;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 
 use crate::prelude::RailwayGraph;
 use crate::simulation::agents::{DecisionAgent, RailMovableAction};
@@ -42,7 +42,7 @@ pub struct TrainAgentAI {
     /// The reinforcement learning agent responsible for controlling the train.
     pub agent_rl: TrainAgentRL,
     /// The trainer responsible for training the reinforcement learning agent.
-    pub trainer: Arc<Mutex<AgentTrainer<TrainAgentState>>>,
+    pub trainer: Arc<RwLock<AgentTrainer<TrainAgentState>>>,
 }
 
 impl fmt::Debug for TrainAgentAI {
@@ -73,7 +73,7 @@ impl TrainAgentAI {
             state: initial_state,
             max_speed_mm_s: ((160.0 / 3.6) as i32) * 1000,
         };
-        let trainer = Arc::new(Mutex::new(AgentTrainer::new()));
+        let trainer = Arc::new(RwLock::new(AgentTrainer::new()));
         Self {
             id: 0,
             railway_graph: Some(railway_graph),
@@ -92,7 +92,7 @@ impl TrainAgentAI {
     pub fn train(&mut self, iterations: usize) {
         println!("Starting training for {} iterations...", iterations);
         let mut agent = self.agent_rl.clone();
-        let mut trainer = self.trainer.try_lock().unwrap();
+        let mut trainer = self.trainer.write().unwrap();
         trainer.train(
             &mut agent,
             &QLearning::new(0.2, 0.01, 20.),
@@ -113,7 +113,7 @@ impl TrainAgentAI {
     pub fn best_action(&self, state: &TrainAgentState) -> Option<RailMovableAction> {
         Some(
             self.trainer
-                .lock()
+                .read()
                 .unwrap()
                 .best_action(state)
                 .unwrap_or_default(),

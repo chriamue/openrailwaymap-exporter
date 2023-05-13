@@ -117,7 +117,7 @@ pub fn select_graph_ui_system(
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    use std::sync::{Arc, Mutex};
+    use std::sync::{Arc, RwLock};
 
     use crate::simulation::Simulation;
 
@@ -150,7 +150,7 @@ pub fn select_graph_ui_system(
                 let (min_coord, max_coord) = graph.bounding_box();
                 projection.set_bounding_box(min_coord, max_coord);
                 app_resource.graph = Some(graph.clone());
-                app_resource.simulation = Some(Arc::new(Mutex::new(Simulation::new(graph))));
+                app_resource.simulation = Some(Arc::new(RwLock::new(Simulation::new(graph))));
                 ui.set_enabled(false);
                 display_graph(
                     commands,
@@ -190,7 +190,7 @@ pub fn display_selected_train_agent_info(
     ));
 
     if let Some(simulation) = &app_resource.simulation.as_mut() {
-        if let Ok(mut simulation) = simulation.lock() {
+        if let Ok(mut simulation) = simulation.write() {
             let graph = simulation.get_observable_environment().get_graph();
             if let Some(length) = path_length(
                 graph,

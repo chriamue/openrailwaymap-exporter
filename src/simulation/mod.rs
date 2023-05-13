@@ -64,6 +64,9 @@ pub struct Simulation {
     pub speedup_factor: f64,
 }
 
+unsafe impl Send for Simulation {}
+unsafe impl Sync for Simulation {}
+
 impl fmt::Debug for Simulation {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Simulation")

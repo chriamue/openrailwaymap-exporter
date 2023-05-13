@@ -65,7 +65,7 @@ pub fn select_node_system(
             }
             InteractionMode::PlaceTrain => {
                 if let Some(simulation) = &app_resource.simulation {
-                    let mut sim = simulation.lock().unwrap();
+                    let mut sim = simulation.write().unwrap();
                     let id = create_new_train_id();
                     let id = create_train(id, Some(node_id), None, &mut sim);
                     let train_agent = TrainAgent::new(id);

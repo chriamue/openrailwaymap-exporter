@@ -69,7 +69,7 @@ fn pause_command(
 ) {
     if let Some(Ok(command)) = console_command.take() {
         if let Some(simulation) = &app_resource.simulation.as_mut() {
-            if let Ok(mut simulation) = simulation.lock() {
+            if let Ok(mut simulation) = simulation.write() {
                 if let Some(info) = command.execute(&mut simulation) {
                     console_command.reply_ok(info);
                 }
@@ -84,7 +84,7 @@ fn set_speedup_command(
 ) {
     if let Some(Ok(command)) = console_command.take() {
         if let Some(simulation) = &app_resource.simulation.as_mut() {
-            if let Ok(mut simulation) = simulation.lock() {
+            if let Ok(mut simulation) = simulation.write() {
                 if let Some(info) = command.execute(&mut simulation) {
                     console_command.reply_ok(info);
                 }
@@ -99,7 +99,7 @@ fn object_command(
 ) {
     if let Some(Ok(command)) = console_command.take() {
         if let Some(simulation) = &app_resource.simulation.as_mut() {
-            if let Ok(mut simulation) = simulation.lock() {
+            if let Ok(mut simulation) = simulation.write() {
                 if let Some(info) = command.execute(&mut simulation) {
                     console_command.reply(info);
                 }
@@ -114,7 +114,7 @@ fn metrics_command(
 ) {
     if let Some(Ok(command)) = console_command.take() {
         if let Some(simulation) = &app_resource.simulation.as_mut() {
-            if let Ok(mut simulation) = simulation.lock() {
+            if let Ok(mut simulation) = simulation.write() {
                 if let Some(info) = command.execute(&mut simulation) {
                     console_command.reply(info);
                 }

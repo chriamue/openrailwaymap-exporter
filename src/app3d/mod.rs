@@ -5,7 +5,7 @@
 //!
 #![cfg_attr(target_arch = "wasm32", allow(dead_code, unused_imports))]
 
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 
 use crate::app3d::train_agent::TrainAgent;
 use crate::prelude::RailwayGraph;
@@ -44,7 +44,7 @@ use self::train_agent::SelectedTrain;
 pub struct AppResource {
     area_name: String,
     graph: Option<RailwayGraph>,
-    simulation: Option<Arc<Mutex<Simulation>>>,
+    simulation: Option<Arc<RwLock<Simulation>>>,
     look_at_position: Option<Vec3>,
 }
 
@@ -123,7 +123,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
         area_name: "".to_string(),
         graph: Some(graph.clone()),
         look_at_position: None,
-        simulation: Some(Arc::new(Mutex::new(Simulation::new(graph)))),
+        simulation: Some(Arc::new(RwLock::new(Simulation::new(graph)))),
     };
     let mut app = App::new();
     app.add_plugins(DefaultPlugins);
@@ -181,7 +181,7 @@ fn setup(mut commands: Commands) {
 
 fn update_simulation_system(app_resource: Res<AppResource>, time: Res<Time>) {
     if let Some(simulation) = &app_resource.simulation {
-        simulation.lock().unwrap().update(time.delta())
+        simulation.write().unwrap().update(time.delta())
     }
 }
 

@@ -172,7 +172,7 @@ pub fn update_train_position_system(
                     // Add next target information
                     if let Some(target_node_id) = train.next_target() {
                         if let Some(simulation) = &app_resource.simulation {
-                            if let Ok(simulation) = simulation.try_lock() {
+                            if let Ok(simulation) = simulation.read() {
                                 let graph = simulation.get_observable_environment().get_graph();
                                 if let Some(next_node_id) = graph.get_next_node(
                                     train.position().unwrap_or_default(),
@@ -265,7 +265,7 @@ pub fn update_train_agent_line_system(
 
 pub fn clone_train_from_app(train_agent: &TrainAgent, app_resource: &AppResource) -> Option<Train> {
     if let Some(simulation) = &app_resource.simulation {
-        if let Ok(simulation) = simulation.try_lock() {
+        if let Ok(simulation) = simulation.read() {
             if let Some(object) = simulation
                 .get_observable_environment()
                 .get_object(&train_agent.id)
