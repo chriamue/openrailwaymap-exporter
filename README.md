@@ -129,6 +129,10 @@ This project includes Python bindings using PyO3 and Maturin. To use the Python 
     python tests/pythonlib.py
     ```
 
+### Jupyter Notebook
+
+A Jupyter notebook is available to demonstrate how to use the Python bindings and visualize the railway graph as an SVG image. You can access the [notebook here](Notebook.ipynb).
+
 ### Python API
 
 The Python bindings provide a `PyOverpassImporter` class for importing railway graph data from a JSON string and a `PyRailwayGraph` class for working with the imported railway graph data. Here's a brief overview of the available methods:
