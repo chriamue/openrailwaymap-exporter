@@ -235,49 +235,6 @@
 <a href="#235" id="235">235</a>
 <a href="#236" id="236">236</a>
 <a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_mod_picking::PickableBundle;
 <span class="kw">use </span>bevy_polyline::prelude::<span class="kw-2">*</span>;
@@ -364,67 +321,24 @@
 }
 
 <span class="kw">pub fn </span>create_train_agent_bundle(
-    <span class="kw-2">mut </span>meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+    asset_server: Res&lt;AssetServer&gt;,
 ) -&gt; <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>ChildBuilder) {
     <span class="kw">let </span>rotation_quat = Quat::from_rotation_y(-std::f32::consts::FRAC_PI_2);
 
     <span class="kw">let </span>main_body = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">20.0</span>, <span class="number">10.0</span>, <span class="number">4.0</span>))),
+        mesh: asset_server.load(<span class="string">&quot;train.obj&quot;</span>),
         material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.6</span>, <span class="number">0.0</span>).into()),
         transform: Transform {
             rotation: rotation_quat,
+            scale: Vec3::ONE * <span class="number">0.001</span>,
             ..Default::default()
         },
         ..Default::default()
     };
 
-    <span class="kw">let </span>top_part = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">6.0</span>, <span class="number">4.0</span>, <span class="number">2.0</span>))),
-        material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.4</span>, <span class="number">0.0</span>).into()),
-        transform: Transform::from_xyz(<span class="number">10.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
-        ..Default::default()
-    };
-
-    <span class="kw">let </span>bottom_part = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Box::new(<span class="number">6.0</span>, <span class="number">4.0</span>, <span class="number">2.0</span>))),
-        material: materials.add(Color::rgb(<span class="number">0.0</span>, <span class="number">0.4</span>, <span class="number">0.0</span>).into()),
-        transform: Transform::from_xyz(-<span class="number">10.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>),
-        ..Default::default()
-    };
-
-    <span class="kw">let </span>left_wheel = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cylinder {
-            radius: <span class="number">2.0</span>,
-            height: <span class="number">4.0</span>,
-            resolution: <span class="number">20</span>,
-            segments: <span class="number">1</span>,
-        })),
-        material: materials.add(Color::rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>).into()),
-        transform: Transform::from_xyz(-<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">1.0</span>),
-        ..Default::default()
-    };
-
-    <span class="kw">let </span>right_wheel = PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cylinder {
-            radius: <span class="number">2.0</span>,
-            height: <span class="number">4.0</span>,
-            resolution: <span class="number">20</span>,
-            segments: <span class="number">1</span>,
-        })),
-        material: materials.add(Color::rgb(<span class="number">0.2</span>, <span class="number">0.2</span>, <span class="number">0.2</span>).into()),
-        transform: Transform::from_xyz(<span class="number">8.0</span>, -<span class="number">5.0</span>, <span class="number">1.0</span>),
-        ..Default::default()
-    };
     <span class="kw">move </span>|builder: <span class="kw-2">&amp;mut </span>ChildBuilder| {
-        builder
-            .spawn((main_body, PickableBundle::default()))
-            .with_children(|parent| {
-                parent.spawn(top_part);
-                parent.spawn(bottom_part);
-                parent.spawn(left_wheel);
-                parent.spawn(right_wheel);
-            });
+        builder.spawn((main_body, PickableBundle::default()));
     }
 }
 
@@ -479,7 +393,7 @@
         <span class="kw">let </span>target_location = <span class="macro">coord! </span>{ x: next_node.lon, y: next_node.lat };
         <span class="kw">if let </span><span class="prelude-val">Some</span>(target_view_coord) = projection.project(target_location) {
             transform.look_at(
-                Vec3::new(target_view_coord.x, target_view_coord.y, <span class="number">5.0</span>),
+                Vec3::new(target_view_coord.x, target_view_coord.y, <span class="number">1.0</span>),
                 Vec3::Z,
             );
         }

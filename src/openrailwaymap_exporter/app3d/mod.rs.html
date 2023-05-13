@@ -350,6 +350,8 @@
 <a href="#350" id="350">350</a>
 <a href="#351" id="351">351</a>
 <a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -367,6 +369,7 @@
 <span class="kw">use </span>bevy_egui::EguiPlugin;
 <span class="kw">use </span>bevy_mod_picking::PickingEvent;
 <span class="kw">use </span>bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
+<span class="kw">use </span>bevy_obj::ObjPlugin;
 <span class="kw">use </span>bevy_polyline::PolylinePlugin;
 <span class="kw">use </span>geo::coord;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
@@ -438,6 +441,7 @@
         .add_plugin(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
         .add_plugin(PolylinePlugin)
+        .add_plugin(ObjPlugin)
         .insert_resource(app_resource)
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())
