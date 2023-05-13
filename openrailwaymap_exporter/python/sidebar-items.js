@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["PyOverpassImporter","PyRailwayGraph"]};
+window.SIDEBAR_ITEMS = {"fn":["export_svg"],"struct":["PyOverpassImporter","PyRailwayGraph"]};
