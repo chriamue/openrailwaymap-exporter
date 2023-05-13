@@ -1,6 +1,7 @@
+use openrailwaymap_exporter::exporter::svg::generate_svg_string;
 use openrailwaymap_exporter::prelude::{
-    generate_dot_string, generate_svg_string, OverpassApiClient, OverpassImporter,
-    RailwayApiClient, RailwayGraphImporter,
+    generate_dot_string, OverpassApiClient, OverpassImporter, RailwayApiClient,
+    RailwayGraphImporter,
 };
 use std::fs::File;
 use std::io::Write;

@@ -110,7 +110,7 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
 
                         if reverse {
                             geometry
-                                .into_iter()
+                                .iter()
                                 .rev()
                                 .map(|coord| coord! { x: coord.lon, y: coord.lat })
                                 .collect()
@@ -381,7 +381,7 @@ pub fn create_nodes_from_way_elements_without_existing(
                             let distance = coord1_geo.distance(&coord2_geo).get::<meter>();
                             if distance < min_distance {
                                 min_distance = distance;
-                                closest_coords = (coord1_geo.clone(), coord2_geo.clone());
+                                closest_coords = (coord1_geo, coord2_geo);
                             }
                         }
                     }

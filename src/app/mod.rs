@@ -7,6 +7,7 @@
 //! The `Msg` enum represents the different messages that can be sent to the `App` component to trigger
 //! state updates and UI changes.
 
+use crate::exporter::svg::SvgComponent;
 use crate::importer::overpass_importer::from_railway_elements;
 use crate::importer::overpass_importer::{count_node_elements, count_way_elements, RailwayElement};
 use crate::prelude::{OverpassApiClient, RailwayApiClient, RailwayGraph};
@@ -31,15 +32,6 @@ use kiss3d_component::Kiss3dComponent;
 
 mod path_display;
 pub use path_display::PathDisplay;
-
-mod svg_component;
-use svg_component::SvgComponent;
-
-mod svg_edge;
-pub use svg_edge::SvgEdge;
-
-mod svg_node;
-pub use svg_node::SvgNode;
 
 mod statistics;
 pub use statistics::Statistics;

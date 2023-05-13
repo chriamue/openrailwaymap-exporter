@@ -3,11 +3,10 @@
 //! This module provides functions to generate a DOT or SVG string representation of a RailwayGraph.
 //! The generated strings can be used to visualize the railway infrastructure data.
 
-use petgraph::dot::{Config, Dot};
-use petgraph::visit::{IntoNodeReferences, NodeRef};
-use std::error::Error;
-
+pub use crate::exporter::svg::generate_svg_string;
 use crate::prelude::RailwayGraph;
+use petgraph::dot::{Config, Dot};
+use std::error::Error;
 
 /// Generates a DOT string representation of a given RailwayGraph.
 ///
@@ -41,68 +40,6 @@ use crate::prelude::RailwayGraph;
 pub fn generate_dot_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error>> {
     let dot = Dot::with_config(&graph.graph, &[Config::EdgeNoLabel]);
     Ok(format!("{:?}", dot))
-}
-
-/// Generates an SVG string representation of a given RailwayGraph.
-///
-/// The SVG string can be used to visualize the graph.
-///
-/// # Arguments
-///
-/// * `graph` - A reference to a RailwayGraph.
-///
-/// # Returns
-///
-/// A `Result` containing an SVG-formatted `String` on success, or a `Box<dyn Error>` on failure.
-pub fn generate_svg_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error>> {
-    let (min_coord, max_coord) = graph.bounding_box();
-    let width = 10000.0;
-    let height = 10000.0;
-
-    let x_scale = width / (max_coord.x - min_coord.x);
-    let y_scale = height / (max_coord.y - min_coord.y);
-
-    let mut svg_edges = String::new();
-    let mut svg_nodes = String::new();
-
-    for edge in graph.graph.edge_references() {
-        let edge_data = edge.weight();
-
-        let mut path_data = String::new();
-        for (i, coord) in edge_data.path.0.iter().enumerate() {
-            let x = (coord.x - min_coord.x) * x_scale;
-            let y = height - (coord.y - min_coord.y) * y_scale;
-
-            if i == 0 {
-                path_data.push_str(&format!("M {} {}", x, y));
-            } else {
-                path_data.push_str(&format!(" L {} {}", x, y));
-            }
-        }
-
-        svg_edges.push_str(&format!(
-            r#"<path d="{}" stroke="black" stroke-width="2" fill="none" />"#,
-            path_data
-        ));
-    }
-
-    for (idx, node) in graph.graph.node_references().enumerate() {
-        let node_data = node.weight();
-        let x = (node_data.lon - min_coord.x) * x_scale;
-        let y = height - (node_data.lat - min_coord.y) * y_scale;
-
-        svg_nodes.push_str(&format!(
-            r#"<g class="node" onclick="onNodeClick('{:?}')"><circle cx="{}" cy="{}" r="5" fill="red" /></g>"#,
-            idx, x, y
-        ));
-    }
-
-    Ok(format!(
-        r#"<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {} {}">
-{}{}
-</svg>"#,
-        width, height, svg_edges, svg_nodes
-    ))
 }
 
 #[cfg(test)]

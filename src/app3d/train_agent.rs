@@ -163,6 +163,7 @@ fn update_look_at(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn update_train_agent_line_system(
     app_resource: Res<AppResource>,
     mut commands: Commands,
@@ -176,7 +177,7 @@ pub fn update_train_agent_line_system(
     for entity in q_line.iter() {
         commands.entity(entity).despawn();
     }
-    if debug_resource.show_train_target == true {
+    if debug_resource.show_train_target {
         for (train_agent, train_agent_transform) in train_agent_query.iter() {
             if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
                 if let (Some(current_node_id), Some(target_node_id)) =

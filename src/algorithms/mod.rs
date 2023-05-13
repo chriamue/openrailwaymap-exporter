@@ -77,8 +77,8 @@ pub fn points_in_front(
     let first_point = linestring.into_iter().next().unwrap();
     let last_point = linestring.into_iter().last().unwrap();
 
-    let distance_to_first_point = current_location.distance(&first_point);
-    let distance_to_last_point = target_direction.distance(&last_point);
+    let distance_to_first_point = current_location.distance(first_point);
+    let distance_to_last_point = target_direction.distance(last_point);
 
     let linestring = if distance_to_first_point < distance_to_last_point {
         LineString::from(

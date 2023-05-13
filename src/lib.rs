@@ -28,6 +28,7 @@ pub mod ai;
 pub mod app3d;
 
 pub mod export;
+pub mod exporter;
 pub mod importer;
 pub mod railway_algorithms;
 pub mod railway_api_client;
