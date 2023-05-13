@@ -1,5 +1,5 @@
 import pytest
-from openrailwaymap_exporter import PyOverpassImporter, PyRailwayGraph
+from openrailwaymap_exporter import PyOverpassImporter, PyRailwayGraph, export_svg
 
 
 @pytest.fixture
@@ -67,3 +67,11 @@ def test_get_edge_by_id(railway_graph):
     edge = railway_graph.get_edge_by_id(3)
     assert edge is not None
     assert edge['id'] == 3
+
+def test_export_svg(railway_graph):
+    svg_string = export_svg(railway_graph)
+    assert svg_string is not None
+    assert '<svg' in svg_string
+    assert '</svg>' in svg_string
+    assert '<circle' in svg_string
+    assert '<path' in svg_string

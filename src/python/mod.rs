@@ -1,6 +1,7 @@
 //! This module provides Python bindings for importing and interacting with railway graphs.
 //!
 use pyo3::prelude::*;
+use pyo3::wrap_pyfunction;
 use pythonize::pythonize;
 
 use crate::importer::overpass_importer::OverpassImporter;
@@ -42,6 +43,23 @@ impl PyOverpassImporter {
             inner: railway_graph,
         })
     }
+}
+
+/// Export a PyRailwayGraph to an SVG string.
+///
+/// This function generates an SVG representation of the given PyRailwayGraph.
+///
+/// # Arguments
+///
+/// * `graph` - A reference to the PyRailwayGraph to be exported.
+///
+/// # Returns
+///
+/// * A PyResult containing a String of the SVG representation of the graph, or an error if the
+///   conversion failed.
+#[pyfunction]
+pub fn export_svg(graph: &PyRailwayGraph) -> PyResult<String> {
+    Ok(crate::export::generate_svg_string(&graph.inner).unwrap())
 }
 
 /// A Python wrapper for the RailwayGraph struct.
@@ -119,6 +137,7 @@ impl PyRailwayGraph {
 fn openrailwaymap_exporter(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<PyOverpassImporter>()?;
     m.add_class::<PyRailwayGraph>()?;
+    m.add_function(wrap_pyfunction!(export_svg, m)?)?;
     overpass_api_client::init_overpass_api_client(py, m)?;
     Ok(())
 }
