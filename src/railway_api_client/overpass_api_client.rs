@@ -83,7 +83,8 @@ mod tests {
     use crate::tests::test_json_vilbel;
     use mockito::{mock, server_url};
 
-    #[tokio::test]
+    #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
+    #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_connect() {
         let mock = mock("GET", "/").with_status(200).create();
 
@@ -93,7 +94,9 @@ mod tests {
         mock.assert();
         assert!(result.is_ok());
     }
-    #[tokio::test]
+
+    #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
+    #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_fetch_by_area_name() {
         let test_json = test_json_vilbel();
         let query = r#"[out:json];area[name="Bad Vilbel"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];);out geom;"#;
@@ -120,7 +123,9 @@ mod tests {
         assert_eq!(result.unwrap(), test_json);
     }
 
-    #[tokio::test]
+
+    #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
+    #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_fetch_by_bbox() {
         let test_json = test_json_vilbel();
         let bbox = "1,2,3,4";
