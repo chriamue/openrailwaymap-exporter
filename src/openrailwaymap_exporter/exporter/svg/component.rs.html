@@ -200,6 +200,7 @@
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A module containing the `SvgComponent`, which renders a `RailwayGraph` as an SVG.
 </span><span class="kw">use super</span>::{edge::SvgEdge, node::SvgNode};
 <span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayEdge;
@@ -336,7 +337,8 @@
     };
     <span class="kw">use </span>yew::LocalServerRenderer;
 
-    <span class="attr">#[tokio::test]
+    <span class="attr">#[cfg_attr(not(target_arch = <span class="string">&quot;wasm32&quot;</span>), tokio::test)]
+    #[cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, wasm_bindgen_test::wasm_bindgen_test)]
     </span><span class="kw">async fn </span>test_render() {
         <span class="kw">let </span>elements = <span class="macro">vec!</span>[
             RailwayElement {

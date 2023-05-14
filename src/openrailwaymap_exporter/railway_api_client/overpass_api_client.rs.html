@@ -151,6 +151,11 @@
 <a href="#151" id="151">151</a>
 <a href="#152" id="152">152</a>
 <a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::RailwayApiClient;
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_trait::async_trait;
@@ -236,7 +241,8 @@
     <span class="kw">use </span><span class="kw">crate</span>::tests::test_json_vilbel;
     <span class="kw">use </span>mockito::{mock, server_url};
 
-    <span class="attr">#[tokio::test]
+    <span class="attr">#[cfg_attr(not(target_arch = <span class="string">&quot;wasm32&quot;</span>), tokio::test)]
+    #[cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, ignore)]
     </span><span class="kw">async fn </span>test_connect() {
         <span class="kw">let </span>mock = mock(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;/&quot;</span>).with_status(<span class="number">200</span>).create();
 
@@ -246,7 +252,9 @@
         mock.assert();
         <span class="macro">assert!</span>(result.is_ok());
     }
-    <span class="attr">#[tokio::test]
+
+    <span class="attr">#[cfg_attr(not(target_arch = <span class="string">&quot;wasm32&quot;</span>), tokio::test)]
+    #[cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, ignore)]
     </span><span class="kw">async fn </span>test_fetch_by_area_name() {
         <span class="kw">let </span>test_json = test_json_vilbel();
         <span class="kw">let </span>query = <span class="string">r#&quot;[out:json];area[name=&quot;Bad Vilbel&quot;]-&gt;.searchArea;(way(area.searchArea)[&quot;railway&quot;=&quot;rail&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;switch&quot;];);out geom;&quot;#</span>;
@@ -273,7 +281,9 @@
         <span class="macro">assert_eq!</span>(result.unwrap(), test_json);
     }
 
-    <span class="attr">#[tokio::test]
+
+    <span class="attr">#[cfg_attr(not(target_arch = <span class="string">&quot;wasm32&quot;</span>), tokio::test)]
+    #[cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, ignore)]
     </span><span class="kw">async fn </span>test_fetch_by_bbox() {
         <span class="kw">let </span>test_json = test_json_vilbel();
         <span class="kw">let </span>bbox = <span class="string">&quot;1,2,3,4&quot;</span>;

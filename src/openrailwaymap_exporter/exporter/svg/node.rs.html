@@ -119,6 +119,7 @@
 <a href="#119" id="119">119</a>
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::prelude::RailwayNode;
 <span class="kw">use </span>yew::prelude::<span class="kw-2">*</span>;
 
@@ -214,7 +215,8 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>yew::LocalServerRenderer;
 
-    <span class="attr">#[tokio::test]
+    <span class="attr">#[cfg_attr(not(target_arch = <span class="string">&quot;wasm32&quot;</span>), tokio::test)]
+    #[cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, wasm_bindgen_test::wasm_bindgen_test)]
     </span><span class="kw">async fn </span>test_render() {
         <span class="kw">let </span>node = RailwayNode {
             id: <span class="number">1</span>,
