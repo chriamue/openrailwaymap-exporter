@@ -7,3 +7,4 @@
 - [Chapter 4: Downloading Railway Graphs from OpenStreetMap](./chapter_4.md)
 - [Chapter 5: Python Bindings for OpenRailwayMap Exporter](./chapter_5.md)
 - [Chapter 6: Railway Model](./chapter_6.md)
+- [Chapter 7: The Railway Simulation](./chapter_7.md)
