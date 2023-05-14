@@ -1,0 +1,36 @@
+@startuml overview
+
+package "app" {
+    class "Statistics" as Statistics
+    class "App3D" as App3D
+    class "Simulation" as Simulation
+}
+
+package "railway_api_client" {
+    interface "RailwayApiClient" as RailwayApiClient
+    class "OverpassApiClient" as OverpassApiClient
+}
+
+package "railway_model" {
+    class "RailwayGraphBuilder" as RailwayGraphBuilder
+    class "RailwayGraph" as RailwayGraph
+    interface "RailwayObject" as RailwayObject
+    class "Train" as Train
+}
+
+package "ai" {
+    class "AI" as AI
+}
+
+Statistics -down-> RailwayGraph : displays statistics
+RailwayApiClient <|.. OverpassApiClient : implements
+RailwayGraphBuilder -up-> RailwayApiClient : retrieves data
+RailwayGraphBuilder ---> RailwayGraph : builds
+App3D --> RailwayGraph : displays 3D view
+Simulation --> RailwayGraph : simulates
+RailwayObject <|.. Train : implemented by
+Simulation --> RailwayObject : simulates
+App3D --> RailwayObject : visualizes
+AI --> RailwayObject : controls
+
+@enduml
