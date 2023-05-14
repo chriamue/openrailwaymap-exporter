@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["generate_svg_string"],"struct":["Props","SvgComponent"]};

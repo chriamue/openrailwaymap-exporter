@@ -3,7 +3,8 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - OpenRailwayMap Exporter: A Rust-based Railway Data Retrieval and Visualization Tool</title>
+        <title>OpenRailwayMap Exporter: A Rust-based Railway Data Retrieval and Visualization Tool</title>
+        <meta name="robots" content="noindex" />
 
 
         <!-- Custom HTML head -->
@@ -83,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Chapter 1: Getting Started</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">3.</strong> Chapter 2: Web App</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> Chapter 1: Getting Started</a></li><li class="chapter-item expanded "><a href="chapter_2.html"><strong aria-hidden="true">3.</strong> Chapter 2: Web App</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -148,15 +149,63 @@
 <p>Welcome to the OpenRailwayMap Exporter documentation! This Rust-based tool retrieves railway data from OpenRailwayMap using the Overpass API and exports it into a custom format. It offers a command-line interface, web app, 3D visualization, Python bindings, and more.</p>
 <p>In this documentation, you'll learn how to install and use OpenRailwayMap Exporter, as well as how to integrate it with other tools and platforms. We will cover topics such as installation, usage, command-line options, web app, 3D visualization, Python bindings, Jupyter Notebook, profiling, benchmarking, and contributing to the project.</p>
 <p>Let's get started!</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="chapter-1-getting-started"><a class="header" href="#chapter-1-getting-started">Chapter 1: Getting Started</a></h1>
+<p>This chapter covers the basics of using the OpenRailwayMap Exporter. It will guide you through the installation process and demonstrate how to run the tool to retrieve railway data. Additionally, you will learn about the available command-line options and how to use them effectively.</p>
+<h2 id="11-installation"><a class="header" href="#11-installation">1.1 Installation</a></h2>
+<p>To install OpenRailwayMap Exporter, you need to have Rust and Cargo installed on your system. If you haven't installed them yet, visit the <a href="https://www.rust-lang.org/tools/install">official Rust website</a> and follow the installation instructions for your operating system.</p>
+<p>Once you have Rust and Cargo installed, you can clone the OpenRailwayMap Exporter repository from GitHub:</p>
+<pre><code class="language-sh">git clone https://github.com/chriamue/openrailwaymap-exporter.git
+</code></pre>
+<p>Navigate to the repository folder and build the project:</p>
+<pre><code class="language-sh">cd openrailwaymap-exporter
+cargo build --release
+</code></pre>
+<p>After the build process is complete, you will find the compiled binary in the <code>target/release</code> folder.</p>
+<h2 id="12-basic-usage"><a class="header" href="#12-basic-usage">1.2 Basic Usage</a></h2>
+<p>Now that you have successfully built the OpenRailwayMap Exporter, you can start using it to download railway data.</p>
+<p>To download railway data within a bounding box around a specific location, run the following command:</p>
+<pre><code class="language-sh">cargo run -- --bbox &quot;latitude_min,longitude_min,latitude_max,longitude_max&quot;
+</code></pre>
+<p>Alternatively, you can download railway data for a specific area by running:</p>
+<pre><code class="language-sh">cargo run -- --area &quot;Area Name&quot;
+</code></pre>
+<p>Refer to the main documentation for more examples and detailed usage instructions.</p>
+<h2 id="13-command-line-options"><a class="header" href="#13-command-line-options">1.3 Command-Line Options</a></h2>
+<p>OpenRailwayMap Exporter offers several command-line options that allow you to customize the output format and destination, as well as enable additional features. For a comprehensive list of command-line options and their usage, refer to the main documentation.</p>
+<p>Some of the available command-line options include:</p>
+<ul>
+<li><code>-j</code>: Save the downloaded elements in a JSON file.</li>
+<li><code>-d</code>: Save the railway graph in Graphviz format.</li>
+<li><code>--svg</code>: Save the railway graph as an SVG image.</li>
+<li><code>-o</code>: Specify the output file name.</li>
+</ul>
+<p>For more information on using these options and others, consult the main documentation.</p>
+<p>In the next chapter, we will explore the web application.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="chapter-2-web-app"><a class="header" href="#chapter-2-web-app">Chapter 2: Web App</a></h1>
+<p>In this chapter, we will cover how to use the OpenRailwayMap Exporter web app to visualize and interact with the downloaded railway data in a browser environment.</p>
+<h2 id="21-compiling-to-webassembly-wasm"><a class="header" href="#21-compiling-to-webassembly-wasm">2.1 Compiling to WebAssembly (WASM)</a></h2>
+<p>To run the web app, you'll first need to compile the OpenRailwayMap Exporter to WebAssembly (WASM) using the following command:</p>
+<pre><code class="language-sh">wasm-pack build --target web
+</code></pre>
+<p>This command will generate a <code>pkg</code> folder containing the compiled WASM files, JavaScript bindings, and other necessary files.</p>
+<h2 id="22-running-the-web-app"><a class="header" href="#22-running-the-web-app">2.2 Running the Web App</a></h2>
+<p>After compiling the project to WASM, you can run the web app using a local web server. In this example, we'll use Python's built-in HTTP server. If you don't have Python installed, you can download it from the official Python website.</p>
+<p>Run the following command to start the HTTP server:</p>
+<pre><code class="language-sh">python3 -m http.server
+</code></pre>
+<p>This command will start the server on port 8000 by default. If you want to use a different port, simply add the desired port number at the end of the command, like this:</p>
+<pre><code class="language-sh">python3 -m http.server 8080
+</code></pre>
+<h2 id="23-accessing-the-web-app-in-your-browser"><a class="header" href="#23-accessing-the-web-app-in-your-browser">2.3 Accessing the Web App in Your Browser</a></h2>
+<p>Once the HTTP server is running, open your browser and navigate to http://localhost:8000 (or replace 8000 with the port number you used). You should see the OpenRailwayMap Exporter web app in your browser.</p>
+<p>From the web app, you can download railway data, visualize it on a map, and interact with the railway elements. You can also customize the appearance of the map, such as the colors and line styles, to better visualize the railway data.</p>
+<p>In the next chapter, we'll explore the 3D visualization capabilities of the OpenRailwayMap Exporter.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
-                            <a rel="next" href="chapter_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -165,9 +214,6 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
-                    <a rel="next" href="chapter_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
             </nav>
 
         </div>
@@ -190,6 +236,11 @@
 
         <!-- Custom JS scripts -->
 
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
 
     </div>
     </body>

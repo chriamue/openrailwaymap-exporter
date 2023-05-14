@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Train"],"trait":["GeoLocation","Movable","MultipleTargets","NextTarget","RailwayObject"]};

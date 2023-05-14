@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["overpass_api_client"],"trait":["RailwayApiClient"]};

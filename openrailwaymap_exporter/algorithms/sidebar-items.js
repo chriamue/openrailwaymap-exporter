@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["closest_point_in_linestring","is_middle_coord_between","points_in_front"],"trait":["Distance"]};

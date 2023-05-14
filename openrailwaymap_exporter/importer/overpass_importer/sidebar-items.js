@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ElementType"],"fn":["calculate_geometry_length","count_node_elements","count_way_elements","create_nodes","create_nodes_from_way_elements_without_existing","find_next_existing_node","from_railway_elements"],"struct":["Coordinate","OverpassImporter","RailwayElement"]};

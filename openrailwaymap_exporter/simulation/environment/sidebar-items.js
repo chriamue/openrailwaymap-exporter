@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["SimulationEnvironment"],"trait":["ObservableEnvironment","ObservableEnvironmentRef"]};

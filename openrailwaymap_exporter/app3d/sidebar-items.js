@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["InteractionMode"],"fn":["init","init_with_graph","setup_app"],"struct":["AppResource","DebugResource","InteractionModeResource","Projection"]};
