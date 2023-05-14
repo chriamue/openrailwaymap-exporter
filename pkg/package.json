@@ -1,0 +1,23 @@
+{
+  "name": "openrailwaymap_exporter",
+  "collaborators": [
+    "Christian <chriamue@gmail.com>"
+  ],
+  "description": "OpenRailwayMap Exporter is a Rust project that downloads railway data from the OpenRailwayMap API",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chriamue/openrailwaymap-exporter"
+  },
+  "files": [
+    "openrailwaymap_exporter_bg.wasm",
+    "openrailwaymap_exporter.js",
+    "openrailwaymap_exporter.d.ts"
+  ],
+  "module": "openrailwaymap_exporter.js",
+  "types": "openrailwaymap_exporter.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
