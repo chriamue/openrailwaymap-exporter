@@ -1,0 +1,6 @@
+[book]
+authors = ["Christian M"]
+language = "en"
+multilingual = false
+src = "src"
+title = "OpenRailwayMap Exporter: A Rust-based Railway Data Retrieval and Visualization Tool"
