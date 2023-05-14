@@ -1,55 +1,38 @@
-# Chapter 5: Python Bindings for OpenRailwayMap Exporter
+# Downloading Railway Graphs from OpenStreetMap
 
-In this chapter, we will discuss how to use the Python bindings for the OpenRailwayMap Exporter, allowing users to interact with railway graphs and import them using Python.
+In this chapter, we will discuss how the OpenRailwayMap Exporter can download railway graphs from OpenStreetMap using a client that fetches data through an API.
 
-## 5.1 Python Wrapper for OverpassImporter
+## 4.1 The Railway API Client
 
-The OpenRailwayMap Exporter provides a Python wrapper for the `OverpassImporter` struct called `PyOverpassImporter`. This wrapper enables users to import railway graph data from a JSON string in Python. To create a new `PyOverpassImporter` instance, simply call its constructor:
+The OpenRailwayMap Exporter includes a module called the Railway API Client, which provides a trait and an implementation for fetching railway infrastructure data from an API. The `RailwayApiClient` trait offers a common asynchronous interface for retrieving data by area name or bounding box.
 
-```python
-import openrailwaymap_exporter
+By implementing the `RailwayApiClient` trait, developers can create custom API clients that can fetch railway graph data from different APIs or sources. The OpenRailwayMap Exporter comes with a built-in API client called the `OverpassApiClient`, which fetches railway data from OpenStreetMap using the Overpass API.
 
-# Create a new PyOverpassImporter instance.
-overpass_importer = openrailwaymap_exporter.PyOverpassImporter()
+## 4.2 Fetching Railway Data by Area Name or Bounding Box
+
+The `RailwayApiClient` trait has two primary methods for fetching railway data: `fetch_by_area_name` and `fetch_by_bbox`. The `fetch_by_area_name` method allows users to download railway data by specifying the name of an area, while the `fetch_by_bbox` method enables users to provide a bounding box to define the area of interest.
+
+These methods return a JSON `Value` containing the fetched railway data, which can then be passed to a `RailwayGraphImporter` to import the railway graph data into the OpenRailwayMap Exporter.
+
+## 4.3 Using the Overpass API Client
+
+To use the built-in Overpass API client, you can create a new instance of the client and connect it to the OpenRailwayMap API using the desired URL. Once connected, you can fetch railway data by area name or bounding box:
+
+```rust
+use crate::api_client::OverpassApiClient;
+
+// Create a new OverpassApiClient instance.
+let mut client = OverpassApiClient::new();
+
+// Connect to the OpenRailwayMap API.
+client.connect("https://overpass-api.de/api/interpreter").await?;
+
+// Fetch railway data by area name or bounding box.
+let area_name = "Frankfurt am Main";
+let bbox = "49.9,8.4,50.2,8.8";
+
+let railway_data_by_area = client.fetch_by_area_name(area_name).await?;
+let railway_data_by_bbox = client.fetch_by_bbox(bbox).await?;
 ```
 
-To import a railway graph from a JSON string, use the `import_graph` method:
-
-```python
-input_json = "..."
-railway_graph = overpass_importer.import_graph(input_json)
-```
-
-## 5.2 Python Wrapper for RailwayGraph
-
-The OpenRailwayMap Exporter also provides a Python wrapper for the `RailwayGraph` struct, called `PyRailwayGraph`. This wrapper allows users to interact with railway graphs in Python, providing access to the following methods:
-
-- `node_count`: Get the number of nodes in the railway graph.
-- `edge_count`: Get the number of edges in the railway graph.
-- `get_node_by_id`: Get a node by its ID from the railway graph.
-- `get_edge_by_id`: Get an edge by its ID from the railway graph.
-
-```python
-# Get the number of nodes and edges in the railway graph.
-node_count = railway_graph.node_count()
-edge_count = railway_graph.edge_count()
-
-# Get a node and an edge by their IDs.
-node = railway_graph.get_node_by_id(node_id)
-edge = railway_graph.get_edge_by_id(edge_id)
-```
-
-## 5.3 Exporting Railway Graphs to SVG
-
-The Python bindings also provide a function, `export_svg`, that generates an SVG representation of a given `PyRailwayGraph`:
-
-```python
-import openrailwaymap_exporter
-
-# Export the railway graph to an SVG string.
-svg_string = openrailwaymap_exporter.export_svg(railway_graph)
-```
-
-## 5.4 Summary
-
-In this chapter, we have seen how the Python bindings for the OpenRailwayMap Exporter make it easy for users to interact with railway graphs and import them using Python. By providing Python wrappers for the `OverpassImporter` and `RailwayGraph` structs, along with an SVG export function, the OpenRailwayMap Exporter can be used in various Python applications, opening up new possibilities for developers and users alike.
+In summary, the Railway API Client is a crucial component of the OpenRailwayMap Exporter, enabling users to fetch railway data from OpenStreetMap and other sources easily. By implementing the `RailwayApiClient` trait, developers can create custom clients that fetch railway data from different APIs or sources, providing flexibility and extensibility to the OpenRailwayMap Exporter.

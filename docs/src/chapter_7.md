@@ -1,25 +1,59 @@
-# Chapter 7: The Railway Simulation
+# Railway Model
 
-In this chapter, we discuss the implementation of a railway simulation, which consists of a railway graph representing the infrastructure and a list of movable railway objects, such as trains, within the simulation. The simulation module provides a `Simulation` struct to manage the state of the simulation, decision agents for the objects, and metrics handlers to process events and gather metrics during the simulation run.
+The Railway Model module is a core component of the OpenRailwayMap Exporter. It provides data structures and functions for working with railway infrastructure data. The main components of this module are the RailwayNode, RailwayEdge, and RailwayGraph structs, as well as a RailwayGraphBuilder for creating RailwayGraphs from raw data.
 
-The `Simulation` struct holds a simulation environment, a list of agents, a list of metrics handlers, elapsed time of the simulation, a pause state, and a speedup factor. The environment contains a railway graph and a list of movable railway objects. Agents are used to make decisions for objects, and metrics handlers process events and gather metrics.
+## RailwayNode
 
-The core functionality of the simulation is implemented in several methods:
+RailwayNode represents a single node in the railway network. A node can represent a railway station, a junction, or any other point of interest within the railway infrastructure. Each node has a unique ID, latitude, and longitude.
 
-1. `new`: Creates a new simulation with the given railway graph.
-2. `get_observable_environment`: Returns a reference to the observable environment of the simulation, which allows external components to access the state of the simulation without being able to modify it.
-3. `add_object`: Adds a movable railway object to the simulation and associates a decision agent with it if provided.
-4. `remove_object`: Removes a movable railway object from the simulation.
-5. `add_agent_for_object`: Adds a decision agent for an object in the simulation.
-6. `register_metrics_handler`: Registers a metrics handler for the simulation.
-7. `handle_event`: Handles a simulation event by passing it to all registered metrics handlers.
-8. `update`: Updates the simulation state based on the given delta time and the speedup factor. This method is called periodically to advance the simulation.
-9. `update_object`: Updates the state of the object with the given id based on the given delta time. It is called internally by the `update` method.
-10. `update_object_position`: Updates the position of the object with the given id based on the given delta time. It is called internally by the `update_object` method.
-11. `update_train_target`: Updates the target of the train with the given id. It is called internally by the `update_object` method.
+## RailwayEdge
 
-The simulation also includes additional modules such as `agents`, `environment`, `commands`, `events`, and `metrics` to provide more specialized functionality.
+RailwayEdge represents a railway segment connecting two nodes in the railway network. Each edge has a unique ID, a length, and a set of attributes such as the track type, maximum speed, or electrification.
 
-The `agents` module contains types related to decision-making agents for the movable railway objects. The `environment` module contains types related to the simulation environment and an `ObservableEnvironment` trait to provide read-only access to the environment. The `commands` module contains types related to commands that can be issued to the movable railway objects. The `events` module contains types related to events that occur during the simulation. Finally, the `metrics` module contains types related to metrics handlers that process events and gather metrics during the simulation run.
+## RailwayGraph
 
-In conclusion, the railway simulation module provides a comprehensive framework for creating, managing, and updating a railway simulation. The simulation consists of a railway graph, movable railway objects, decision agents, and metrics handlers to process events and gather metrics. The modular structure allows for easy extension and customization, making it a suitable choice for a wide range of railway simulation applications.
+RailwayGraph is the main data structure for representing railway networks. It is an undirected graph consisting of RailwayNode instances as nodes and RailwayEdge instances as edges. The graph also stores a HashMap that maps node IDs to their corresponding indices in the graph for easy retrieval.
+
+RailwayGraph provides several methods for working with railway networks, such as:
+
+- Retrieving a node or an edge by its ID
+- Retrieving the edge connecting two nodes
+- Retrieving all edges connected to a node
+- Calculating the bounding box of the graph
+- Calculating the total length of the railway network
+- Finding the nearest node to a given position on an edge
+
+## RailwayGraphBuilder
+
+The RailwayGraphBuilder is a helper struct for constructing RailwayGraph instances from raw data. It provides methods for adding nodes and edges to the graph and ensures that the graph remains consistent during construction.
+
+# Usage Example
+
+Suppose you have imported railway infrastructure data from OpenStreetMap using the Overpass API. You can create a RailwayGraph instance from this data using the RailwayGraphBuilder, like this:
+
+```rust
+let mut builder = RailwayGraphBuilder::new();
+
+// Add nodes and edges from the raw data
+for node in raw_nodes {
+    builder.add_node(node.id, node.lat, node.lon);
+}
+for edge in raw_edges {
+    builder.add_edge(edge.id, edge.start_node_id, edge.end_node_id, edge.length, edge.attributes);
+}
+
+// Build the RailwayGraph
+let railway_graph = builder.build();
+```
+
+Now you can use the methods provided by the RailwayGraph struct to interact with the railway network. For example, you can find the nearest node to a given position on an edge like this:
+
+```rust
+let edge_id = 12345;
+let position_on_edge = 0.75;
+let current_node_id = Some(67890);
+
+let nearest_node_id = railway_graph.nearest_node(edge_id, position_on_edge, current_node_id);
+
+println!("The nearest node has ID: {}", nearest_node_id.unwrap());
+```

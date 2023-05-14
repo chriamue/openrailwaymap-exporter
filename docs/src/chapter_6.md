@@ -1,59 +1,55 @@
-# Chapter 6: Railway Model
+# Python Bindings for OpenRailwayMap Exporter
 
-The Railway Model module is a core component of the OpenRailwayMap Exporter. It provides data structures and functions for working with railway infrastructure data. The main components of this module are the RailwayNode, RailwayEdge, and RailwayGraph structs, as well as a RailwayGraphBuilder for creating RailwayGraphs from raw data.
+In this chapter, we will discuss how to use the Python bindings for the OpenRailwayMap Exporter, allowing users to interact with railway graphs and import them using Python.
 
-## RailwayNode
+## 5.1 Python Wrapper for OverpassImporter
 
-RailwayNode represents a single node in the railway network. A node can represent a railway station, a junction, or any other point of interest within the railway infrastructure. Each node has a unique ID, latitude, and longitude.
+The OpenRailwayMap Exporter provides a Python wrapper for the `OverpassImporter` struct called `PyOverpassImporter`. This wrapper enables users to import railway graph data from a JSON string in Python. To create a new `PyOverpassImporter` instance, simply call its constructor:
 
-## RailwayEdge
+```python
+import openrailwaymap_exporter
 
-RailwayEdge represents a railway segment connecting two nodes in the railway network. Each edge has a unique ID, a length, and a set of attributes such as the track type, maximum speed, or electrification.
-
-## RailwayGraph
-
-RailwayGraph is the main data structure for representing railway networks. It is an undirected graph consisting of RailwayNode instances as nodes and RailwayEdge instances as edges. The graph also stores a HashMap that maps node IDs to their corresponding indices in the graph for easy retrieval.
-
-RailwayGraph provides several methods for working with railway networks, such as:
-
-- Retrieving a node or an edge by its ID
-- Retrieving the edge connecting two nodes
-- Retrieving all edges connected to a node
-- Calculating the bounding box of the graph
-- Calculating the total length of the railway network
-- Finding the nearest node to a given position on an edge
-
-## RailwayGraphBuilder
-
-The RailwayGraphBuilder is a helper struct for constructing RailwayGraph instances from raw data. It provides methods for adding nodes and edges to the graph and ensures that the graph remains consistent during construction.
-
-# Usage Example
-
-Suppose you have imported railway infrastructure data from OpenStreetMap using the Overpass API. You can create a RailwayGraph instance from this data using the RailwayGraphBuilder, like this:
-
-```rust
-let mut builder = RailwayGraphBuilder::new();
-
-// Add nodes and edges from the raw data
-for node in raw_nodes {
-    builder.add_node(node.id, node.lat, node.lon);
-}
-for edge in raw_edges {
-    builder.add_edge(edge.id, edge.start_node_id, edge.end_node_id, edge.length, edge.attributes);
-}
-
-// Build the RailwayGraph
-let railway_graph = builder.build();
+# Create a new PyOverpassImporter instance.
+overpass_importer = openrailwaymap_exporter.PyOverpassImporter()
 ```
 
-Now you can use the methods provided by the RailwayGraph struct to interact with the railway network. For example, you can find the nearest node to a given position on an edge like this:
+To import a railway graph from a JSON string, use the `import_graph` method:
 
-```rust
-let edge_id = 12345;
-let position_on_edge = 0.75;
-let current_node_id = Some(67890);
-
-let nearest_node_id = railway_graph.nearest_node(edge_id, position_on_edge, current_node_id);
-
-println!("The nearest node has ID: {}", nearest_node_id.unwrap());
+```python
+input_json = "..."
+railway_graph = overpass_importer.import_graph(input_json)
 ```
+
+## 5.2 Python Wrapper for RailwayGraph
+
+The OpenRailwayMap Exporter also provides a Python wrapper for the `RailwayGraph` struct, called `PyRailwayGraph`. This wrapper allows users to interact with railway graphs in Python, providing access to the following methods:
+
+- `node_count`: Get the number of nodes in the railway graph.
+- `edge_count`: Get the number of edges in the railway graph.
+- `get_node_by_id`: Get a node by its ID from the railway graph.
+- `get_edge_by_id`: Get an edge by its ID from the railway graph.
+
+```python
+# Get the number of nodes and edges in the railway graph.
+node_count = railway_graph.node_count()
+edge_count = railway_graph.edge_count()
+
+# Get a node and an edge by their IDs.
+node = railway_graph.get_node_by_id(node_id)
+edge = railway_graph.get_edge_by_id(edge_id)
+```
+
+## 5.3 Exporting Railway Graphs to SVG
+
+The Python bindings also provide a function, `export_svg`, that generates an SVG representation of a given `PyRailwayGraph`:
+
+```python
+import openrailwaymap_exporter
+
+# Export the railway graph to an SVG string.
+svg_string = openrailwaymap_exporter.export_svg(railway_graph)
+```
+
+## 5.4 Summary
+
+In this chapter, we have seen how the Python bindings for the OpenRailwayMap Exporter make it easy for users to interact with railway graphs and import them using Python. By providing Python wrappers for the `OverpassImporter` and `RailwayGraph` structs, along with an SVG export function, the OpenRailwayMap Exporter can be used in various Python applications, opening up new possibilities for developers and users alike.

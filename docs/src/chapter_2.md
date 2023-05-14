@@ -1,37 +1,55 @@
-# Chapter 2: Web App
+# Getting Started
 
-In this chapter, we will cover how to use the OpenRailwayMap Exporter web app to visualize and interact with the downloaded railway data in a browser environment.
+This chapter covers the basics of using the OpenRailwayMap Exporter. It will guide you through the installation process and demonstrate how to run the tool to retrieve railway data. Additionally, you will learn about the available command-line options and how to use them effectively.
 
-## 2.1 Compiling to WebAssembly (WASM)
+## 1.1 Installation
 
-To run the web app, you'll first need to compile the OpenRailwayMap Exporter to WebAssembly (WASM) using the following command:
+To install OpenRailwayMap Exporter, you need to have Rust and Cargo installed on your system. If you haven't installed them yet, visit the [official Rust website](https://www.rust-lang.org/tools/install) and follow the installation instructions for your operating system.
 
-```sh
-wasm-pack build --target web
-```
-
-This command will generate a `pkg` folder containing the compiled WASM files, JavaScript bindings, and other necessary files.
-
-## 2.2 Running the Web App
-
-After compiling the project to WASM, you can run the web app using a local web server. In this example, we'll use Python's built-in HTTP server. If you don't have Python installed, you can download it from the official Python website.
-
-Run the following command to start the HTTP server:
+Once you have Rust and Cargo installed, you can clone the OpenRailwayMap Exporter repository from GitHub:
 
 ```sh
-python3 -m http.server
+git clone https://github.com/chriamue/openrailwaymap-exporter.git
 ```
 
-This command will start the server on port 8000 by default. If you want to use a different port, simply add the desired port number at the end of the command, like this:
+Navigate to the repository folder and build the project:
 
 ```sh
-python3 -m http.server 8080
+cd openrailwaymap-exporter
+cargo build --release
 ```
 
-## 2.3 Accessing the Web App in Your Browser
+After the build process is complete, you will find the compiled binary in the `target/release` folder.
 
-Once the HTTP server is running, open your browser and navigate to http://localhost:8000 (or replace 8000 with the port number you used). You should see the OpenRailwayMap Exporter web app in your browser.
+## 1.2 Basic Usage
 
-From the web app, you can download railway data, visualize it on a map, and interact with the railway elements. You can also customize the appearance of the map, such as the colors and line styles, to better visualize the railway data.
+Now that you have successfully built the OpenRailwayMap Exporter, you can start using it to download railway data.
 
-In the next chapter, we'll explore the 3D visualization capabilities of the OpenRailwayMap Exporter.
+To download railway data within a bounding box around a specific location, run the following command:
+
+```sh
+cargo run -- --bbox "latitude_min,longitude_min,latitude_max,longitude_max"
+```
+
+Alternatively, you can download railway data for a specific area by running:
+
+```sh
+cargo run -- --area "Area Name"
+```
+
+Refer to the main documentation for more examples and detailed usage instructions.
+
+## 1.3 Command-Line Options
+
+OpenRailwayMap Exporter offers several command-line options that allow you to customize the output format and destination, as well as enable additional features. For a comprehensive list of command-line options and their usage, refer to the main documentation.
+
+Some of the available command-line options include:
+
+* `-j`: Save the downloaded elements in a JSON file.
+* `-d`: Save the railway graph in Graphviz format.
+* `--svg`: Save the railway graph as an SVG image.
+* `-o`: Specify the output file name.
+
+For more information on using these options and others, consult the main documentation.
+
+In the next chapter, we will explore the web application.

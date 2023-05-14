@@ -1,63 +1,37 @@
-# Chapter 3: The Railway Graph Importer
+# Web App
 
-In this chapter, we will discuss the Railway Graph Importer, a core component of the OpenRailwayMap Exporter that is responsible for importing railway graph data from different formats and sources.
+In this chapter, we will cover how to use the OpenRailwayMap Exporter web app to visualize and interact with the downloaded railway data in a browser environment.
 
-## 3.1 Understanding the Railway Graph Importer
+## 2.1 Compiling to WebAssembly (WASM)
 
-The Railway Graph Importer is a module that defines a trait called `RailwayGraphImporter`. This trait provides a unified interface for importing railway graph data from various sources and formats, such as JSON, XML, or other custom formats. By implementing this trait, developers can create custom importers that seamlessly integrate with the OpenRailwayMap Exporter.
+To run the web app, you'll first need to compile the OpenRailwayMap Exporter to WebAssembly (WASM) using the following command:
 
-The `RailwayGraphImporter` trait has a single method, `import`, which takes a reference to a `serde_json::Value` and returns a `Result<RailwayGraph>`. The method is responsible for converting the input data into a `RailwayGraph` object that can be used by the rest of the OpenRailwayMap Exporter.
-
-## 3.2 Implementing a Custom Railway Graph Importer
-
-To create a custom railway graph importer, you'll need to implement the `RailwayGraphImporter` trait for your importer struct. This involves providing a definition for the `import` method that takes a `serde_json::Value` as input and returns a `Result<RailwayGraph>`.
-
-Here's a basic outline of how you can implement the `RailwayGraphImporter` trait:
-
-```rust
-use crate::railway_model::RailwayGraph;
-use crate::importer::RailwayGraphImporter;
-use serde_json::Value;
-use anyhow::Result;
-
-pub struct MyCustomImporter;
-
-impl RailwayGraphImporter for MyCustomImporter {
-    fn import(input: &Value) -> Result<RailwayGraph> {
-        // Your custom importer logic goes here.
-
-        // 1. Parse the input data.
-        // 2. Create a new RailwayGraph instance.
-        // 3. Add nodes and edges to the RailwayGraph.
-        // 4. Return the RailwayGraph wrapped in a Result.
-
-        // Example:
-        // let graph = RailwayGraph::new();
-        // Ok(graph)
-    }
-}
+```sh
+wasm-pack build --target web
 ```
 
-With your custom importer implementation, you can now use it in the OpenRailwayMap Exporter to import railway graph data from your custom format or source.
+This command will generate a `pkg` folder containing the compiled WASM files, JavaScript bindings, and other necessary files.
 
-## 3.3 Using the Overpass Importer
+## 2.2 Running the Web App
 
-The OpenRailwayMap Exporter comes with a built-in importer called `OverpassImporter` that fetches railway data from the OpenRailwayMap using the Overpass API. This importer is an implementation of the `RailwayGraphImporter` trait and serves as an example of how to create custom importers.
+After compiling the project to WASM, you can run the web app using a local web server. In this example, we'll use Python's built-in HTTP server. If you don't have Python installed, you can download it from the official Python website.
 
-To use the `OverpassImporter`, you can simply create a new instance of the importer and call the `import` method with the desired input data:
+Run the following command to start the HTTP server:
 
-```rust
-use crate::importer::OverpassImporter;
-use serde_json::Value;
-
-// Create a new OverpassImporter instance.
-let importer = OverpassImporter::new();
-
-// Deserialize the input data as a serde_json::Value.
-let input_data: Value = serde_json::from_str(&input_json)?;
-
-// Import the railway graph using the OverpassImporter.
-let railway_graph = importer.import(&input_data)?;
+```sh
+python3 -m http.server
 ```
 
-In the next chapter, we will explore the 3D visualization capabilities of the OpenRailwayMap Exporter.
+This command will start the server on port 8000 by default. If you want to use a different port, simply add the desired port number at the end of the command, like this:
+
+```sh
+python3 -m http.server 8080
+```
+
+## 2.3 Accessing the Web App in Your Browser
+
+Once the HTTP server is running, open your browser and navigate to http://localhost:8000 (or replace 8000 with the port number you used). You should see the OpenRailwayMap Exporter web app in your browser.
+
+From the web app, you can download railway data, visualize it on a map, and interact with the railway elements. You can also customize the appearance of the map, such as the colors and line styles, to better visualize the railway data.
+
+In the next chapter, we'll explore the 3D visualization capabilities of the OpenRailwayMap Exporter.
