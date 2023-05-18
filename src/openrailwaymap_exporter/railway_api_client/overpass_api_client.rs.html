@@ -216,7 +216,7 @@
 
     <span class="kw">async fn </span>fetch_by_area_name(<span class="kw-2">&amp;</span><span class="self">self</span>, area_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Value&gt; {
         <span class="kw">let </span>query = <span class="macro">format!</span>(
-            <span class="string">r#&quot;[out:json];area[name=&quot;{}&quot;]-&gt;.searchArea;(way(area.searchArea)[&quot;railway&quot;=&quot;rail&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;switch&quot;];);out geom;&quot;#</span>,
+            <span class="string">r#&quot;[out:json];area[name=&quot;{}&quot;]-&gt;.searchArea;(way(area.searchArea)[&quot;railway&quot;=&quot;rail&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;switch&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;buffer_stop&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;railway_crossing&quot;];);out geom;&quot;#</span>,
             area_name
         );
 
@@ -226,8 +226,8 @@
 
     <span class="kw">async fn </span>fetch_by_bbox(<span class="kw-2">&amp;</span><span class="self">self</span>, bbox: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Value&gt; {
         <span class="kw">let </span>query = <span class="macro">format!</span>(
-            <span class="string">r#&quot;[out:json];(way({})[&quot;railway&quot;=&quot;rail&quot;];node({})[&quot;railway&quot;=&quot;switch&quot;];);out geom;&quot;#</span>,
-            bbox, bbox
+            <span class="string">r#&quot;[out:json];(way({})[&quot;railway&quot;=&quot;rail&quot;];node({})[&quot;railway&quot;=&quot;switch&quot;];node({})[&quot;railway&quot;=&quot;buffer_stop&quot;];node({})[&quot;railway&quot;=&quot;railway_crossing&quot;];);out geom;&quot;#</span>,
+            bbox, bbox, bbox, bbox
         );
 
         <span class="kw">let </span>response: Value = <span class="self">self</span>.fetch_by_query(<span class="kw-2">&amp;</span>query).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -257,7 +257,7 @@
     #[cfg_attr(target_arch = <span class="string">&quot;wasm32&quot;</span>, ignore)]
     </span><span class="kw">async fn </span>test_fetch_by_area_name() {
         <span class="kw">let </span>test_json = test_json_vilbel();
-        <span class="kw">let </span>query = <span class="string">r#&quot;[out:json];area[name=&quot;Bad Vilbel&quot;]-&gt;.searchArea;(way(area.searchArea)[&quot;railway&quot;=&quot;rail&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;switch&quot;];);out geom;&quot;#</span>;
+        <span class="kw">let </span>query = <span class="string">r#&quot;[out:json];area[name=&quot;Bad Vilbel&quot;]-&gt;.searchArea;(way(area.searchArea)[&quot;railway&quot;=&quot;rail&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;switch&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;buffer_stop&quot;];node(area.searchArea)[&quot;railway&quot;=&quot;railway_crossing&quot;];);out geom;&quot;#</span>;
         <span class="kw">let </span>mock = mock(<span class="string">&quot;POST&quot;</span>, <span class="string">&quot;/api/interpreter&quot;</span>)
             .with_status(<span class="number">200</span>)
             .with_header(<span class="string">&quot;content-type&quot;</span>, <span class="string">&quot;application/json&quot;</span>)
@@ -288,8 +288,8 @@
         <span class="kw">let </span>test_json = test_json_vilbel();
         <span class="kw">let </span>bbox = <span class="string">&quot;1,2,3,4&quot;</span>;
         <span class="kw">let </span>query = <span class="macro">format!</span>(
-            <span class="string">r#&quot;[out:json];(way({})[&quot;railway&quot;=&quot;rail&quot;];node({})[&quot;railway&quot;=&quot;switch&quot;];);out geom;&quot;#</span>,
-            bbox, bbox
+            <span class="string">r#&quot;[out:json];(way({})[&quot;railway&quot;=&quot;rail&quot;];node({})[&quot;railway&quot;=&quot;switch&quot;];node({})[&quot;railway&quot;=&quot;buffer_stop&quot;];node({})[&quot;railway&quot;=&quot;railway_crossing&quot;];);out geom;&quot;#</span>,
+            bbox, bbox, bbox, bbox
         );
         <span class="kw">let </span>mock = mock(<span class="string">&quot;POST&quot;</span>, <span class="string">&quot;/api/interpreter&quot;</span>)
             .with_status(<span class="number">200</span>)
