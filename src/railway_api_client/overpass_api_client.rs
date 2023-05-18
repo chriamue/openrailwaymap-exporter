@@ -58,7 +58,7 @@ impl RailwayApiClient for OverpassApiClient {
 
     async fn fetch_by_area_name(&self, area_name: &str) -> Result<Value> {
         let query = format!(
-            r#"[out:json];area[name="{}"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];);out geom;"#,
+            r#"[out:json];area[name="{}"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#,
             area_name
         );
 
@@ -68,8 +68,8 @@ impl RailwayApiClient for OverpassApiClient {
 
     async fn fetch_by_bbox(&self, bbox: &str) -> Result<Value> {
         let query = format!(
-            r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];);out geom;"#,
-            bbox, bbox
+            r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];node({})["railway"="buffer_stop"];node({})["railway"="railway_crossing"];);out geom;"#,
+            bbox, bbox, bbox, bbox
         );
 
         let response: Value = self.fetch_by_query(&query).await?;
@@ -99,7 +99,7 @@ mod tests {
     #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_fetch_by_area_name() {
         let test_json = test_json_vilbel();
-        let query = r#"[out:json];area[name="Bad Vilbel"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];);out geom;"#;
+        let query = r#"[out:json];area[name="Bad Vilbel"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#;
         let mock = mock("POST", "/api/interpreter")
             .with_status(200)
             .with_header("content-type", "application/json")
@@ -130,8 +130,8 @@ mod tests {
         let test_json = test_json_vilbel();
         let bbox = "1,2,3,4";
         let query = format!(
-            r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];);out geom;"#,
-            bbox, bbox
+            r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];node({})["railway"="buffer_stop"];node({})["railway"="railway_crossing"];);out geom;"#,
+            bbox, bbox, bbox, bbox
         );
         let mock = mock("POST", "/api/interpreter")
             .with_status(200)
