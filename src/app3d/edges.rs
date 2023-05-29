@@ -1,13 +1,13 @@
 use bevy::prelude::*;
 
-use crate::railway_algorithms::PathFinding;
+use crate::{railway_algorithms::PathFinding, types::EdgeId};
 
 use super::{nodes::SelectedNode, AppResource};
 
 /// Represents an edge in the railway graph.
 #[derive(Component)]
 pub struct Edge {
-    pub id: i64,
+    pub id: EdgeId,
 }
 
 pub fn show_edges_on_path(

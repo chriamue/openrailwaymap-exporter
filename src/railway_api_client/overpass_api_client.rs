@@ -123,7 +123,6 @@ mod tests {
         assert_eq!(result.unwrap(), test_json);
     }
 
-
     #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
     #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_fetch_by_bbox() {

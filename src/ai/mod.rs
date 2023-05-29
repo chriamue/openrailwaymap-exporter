@@ -15,7 +15,7 @@ use crate::prelude::RailwayGraph;
 use crate::simulation::agents::{DecisionAgent, RailMovableAction};
 use crate::simulation::environment::ObservableEnvironment;
 use crate::simulation::SimulationEnvironment;
-use crate::types::RailwayObjectId;
+use crate::types::{NodeId, RailwayObjectId};
 use rurel::strategy::explore::RandomExploration;
 use rurel::strategy::learn::QLearning;
 use rurel::strategy::terminate::FixedIterations;
@@ -36,9 +36,9 @@ pub struct TrainAgentAI {
     /// The railway graph representing the train network.
     pub railway_graph: Option<RailwayGraph>,
     /// The current node
-    pub current_node: Option<i64>,
+    pub current_node: Option<NodeId>,
     /// The target node
-    pub target_node: Option<i64>,
+    pub target_node: Option<NodeId>,
     /// The reinforcement learning agent responsible for controlling the train.
     pub agent_rl: TrainAgentRL,
     /// The trainer responsible for training the reinforcement learning agent.
@@ -130,8 +130,8 @@ impl TrainAgentAI {
     /// * `time_delta_ms` - The time delta in milliseconds since the last update.
     pub fn observe(
         &mut self,
-        current_node: i64,
-        target_node: Option<i64>,
+        current_node: NodeId,
+        target_node: Option<NodeId>,
         speed_mm_s: Option<i32>,
         delta_distance_mm: Option<i32>,
     ) {
@@ -191,8 +191,8 @@ mod tests {
 
         let mut train_agent_ai = TrainAgentAI::new(graph, Default::default());
 
-        let source_node = 662529467i64;
-        let target_node = 662529466i64;
+        let source_node = 662529467;
+        let target_node = 662529466;
 
         train_agent_ai.observe(source_node, Some(target_node), Some(1000), Some(1000));
         train_agent_ai.train(10000);

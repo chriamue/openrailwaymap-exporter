@@ -1,4 +1,7 @@
-use crate::railway_model::RailwayGraph;
+use crate::{
+    railway_model::RailwayGraph,
+    types::{EdgeId, NodeId},
+};
 use geoutils::Location;
 use petgraph::{
     algo::{astar, dijkstra},
@@ -16,7 +19,7 @@ pub trait PathFinding {
     ///
     /// # Returns
     /// Returns the distance of the shortest path between the source and target nodes if it exists.
-    fn shortest_path_distance(&self, source: i64, target: i64) -> Option<f64>;
+    fn shortest_path_distance(&self, source: NodeId, target: NodeId) -> Option<f64>;
 
     /// Calculate the shortest path between two nodes as a list of node IDs.
     ///
@@ -27,7 +30,7 @@ pub trait PathFinding {
     /// # Returns
     /// Returns a `Vec<i64>` containing the IDs of the nodes in the shortest path if it exists.
     /// The returned vector includes the start and end node IDs.
-    fn shortest_path_nodes(&self, start: i64, end: i64) -> Option<Vec<i64>>;
+    fn shortest_path_nodes(&self, start: NodeId, end: NodeId) -> Option<Vec<NodeId>>;
 
     /// Calculate the shortest path between two nodes as a list of edge IDs.
     ///
@@ -37,11 +40,11 @@ pub trait PathFinding {
     ///
     /// # Returns
     /// Returns a `Vec<i64>` containing the IDs of the edges in the shortest path if it exists.
-    fn shortest_path_edges(&self, start: i64, end: i64) -> Option<Vec<i64>>;
+    fn shortest_path_edges(&self, start: NodeId, end: NodeId) -> Option<Vec<EdgeId>>;
 }
 
 impl PathFinding for RailwayGraph {
-    fn shortest_path_distance(&self, source: i64, target: i64) -> Option<f64> {
+    fn shortest_path_distance(&self, source: NodeId, target: NodeId) -> Option<f64> {
         let source_index = self.node_indices.get(&source)?;
         let target_index = self.node_indices.get(&target)?;
 
@@ -52,7 +55,7 @@ impl PathFinding for RailwayGraph {
         shortest_path.get(target_index).copied()
     }
 
-    fn shortest_path_nodes(&self, start: i64, end: i64) -> Option<Vec<i64>> {
+    fn shortest_path_nodes(&self, start: NodeId, end: NodeId) -> Option<Vec<NodeId>> {
         let start_index = self.node_indices.get(&start)?;
         let end_index = self.node_indices.get(&end)?;
 
@@ -80,11 +83,11 @@ impl PathFinding for RailwayGraph {
             path_indices
                 .into_iter()
                 .map(|idx| self.graph[idx].id)
-                .collect::<Vec<i64>>()
+                .collect::<Vec<NodeId>>()
         })
     }
 
-    fn shortest_path_edges(&self, start: i64, end: i64) -> Option<Vec<i64>> {
+    fn shortest_path_edges(&self, start: NodeId, end: NodeId) -> Option<Vec<EdgeId>> {
         let node_path = self.shortest_path_nodes(start, end)?;
         if node_path.len() < 2 {
             return None;
@@ -96,7 +99,7 @@ impl PathFinding for RailwayGraph {
                 let edge = self.railway_edge(pair[0], pair[1])?;
                 Some(edge.id)
             })
-            .collect::<Vec<i64>>()
+            .collect::<Vec<EdgeId>>()
             .into()
     }
 }

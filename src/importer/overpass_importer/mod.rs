@@ -4,6 +4,7 @@ mod coordinate;
 mod railway_element;
 use crate::algorithms::Distance;
 use crate::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
+use crate::types::{EdgeId, NodeId};
 use anyhow::Result;
 pub use coordinate::Coordinate;
 use geo::{coord, Coord, LineString};
@@ -89,11 +90,16 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
     for element in elements.iter() {
         if let ElementType::Way = element.element_type {
             if let (Some(nodes_ids), Some(geometry)) = (&element.nodes, &element.geometry) {
+                let nodes_ids: Vec<NodeId> = nodes_ids
+                    .iter()
+                    .map(|id| NodeId::try_from(*id).unwrap())
+                    .collect();
                 let length = calculate_geometry_length(geometry);
 
-                let (node_id, node_index) = find_next_existing_node(None, nodes_ids, &node_indices);
+                let (node_id, node_index) =
+                    find_next_existing_node(None, &nodes_ids, &node_indices);
                 let (next_node_id, next_node_index) =
-                    find_next_existing_node(node_id, nodes_ids, &node_indices);
+                    find_next_existing_node(node_id, &nodes_ids, &node_indices);
 
                 if let (Some(node_index), Some(next_node_index)) = (node_index, next_node_index) {
                     assert_ne!(node_index, next_node_index);
@@ -126,7 +132,7 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                         node_index,
                         next_node_index,
                         RailwayEdge {
-                            id: element.id,
+                            id: element.id as EdgeId,
                             length,
                             path: LineString::from(linestring),
                             source: node_id.unwrap(),
@@ -179,10 +185,10 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
 /// assert_eq!(find_next_existing_node(None, &node_ids, &node_indices), (Some(1), Some(NodeIndex::new(0))));
 /// ```
 pub fn find_next_existing_node(
-    start: Option<i64>,
-    node_ids: &[i64],
-    node_indices: &HashMap<i64, NodeIndex>,
-) -> (Option<i64>, Option<NodeIndex>) {
+    start: Option<NodeId>,
+    node_ids: &[NodeId],
+    node_indices: &HashMap<NodeId, NodeIndex>,
+) -> (Option<NodeId>, Option<NodeIndex>) {
     let start_pos = start.and_then(|start_id| node_ids.iter().position(|&id| id == start_id));
 
     for (pos, &id) in node_ids.iter().enumerate() {
@@ -282,7 +288,7 @@ pub fn calculate_geometry_length(geometry: &[Coordinate]) -> f64 {
 /// ```
 pub fn create_nodes(elements: &[RailwayElement]) -> Vec<RailwayNode> {
     let nodes = create_nodes_from_node_elements(elements);
-    let mut node_ids: HashSet<i64> = node_ids_from_nodes(&nodes);
+    let mut node_ids: HashSet<NodeId> = node_ids_from_nodes(&nodes);
     let implicit_nodes = create_nodes_from_way_elements_without_existing(elements, &mut node_ids);
     [nodes, implicit_nodes].concat()
 }
@@ -294,7 +300,7 @@ fn create_nodes_from_node_elements(elements: &[RailwayElement]) -> Vec<RailwayNo
         if let ElementType::Node = element.element_type {
             if let (Some(lat), Some(lon)) = (element.lat, element.lon) {
                 let node = RailwayNode {
-                    id: element.id,
+                    id: NodeId::try_from(element.id).unwrap(),
                     lat,
                     lon,
                 };
@@ -305,19 +311,19 @@ fn create_nodes_from_node_elements(elements: &[RailwayElement]) -> Vec<RailwayNo
     nodes
 }
 
-fn node_ids_from_nodes(nodes: &[RailwayNode]) -> HashSet<i64> {
+fn node_ids_from_nodes(nodes: &[RailwayNode]) -> HashSet<NodeId> {
     nodes.iter().map(|node| node.id).collect()
 }
 
-fn create_node_id_to_element_ids_map(elements: &[RailwayElement]) -> HashMap<i64, Vec<i64>> {
-    let mut node_id_to_element_ids: HashMap<i64, Vec<i64>> = HashMap::new();
+fn create_node_id_to_element_ids_map(elements: &[RailwayElement]) -> HashMap<NodeId, Vec<i64>> {
+    let mut node_id_to_element_ids: HashMap<NodeId, Vec<i64>> = HashMap::new();
 
     for element in elements {
         if let ElementType::Way = element.element_type {
             if let Some(element_nodes) = &element.nodes {
                 for node_id in element_nodes {
                     node_id_to_element_ids
-                        .entry(*node_id)
+                        .entry(NodeId::try_from(*node_id).unwrap())
                         .or_insert_with(Vec::new)
                         .push(element.id);
                 }
@@ -353,7 +359,7 @@ fn create_id_to_element_map<'a>(
 /// A vector of railway nodes created from the input railway elements.
 pub fn create_nodes_from_way_elements_without_existing(
     elements: &[RailwayElement],
-    node_ids: &mut HashSet<i64>,
+    node_ids: &mut HashSet<NodeId>,
 ) -> Vec<RailwayNode> {
     let node_id_to_element_ids = create_node_id_to_element_ids_map(elements);
     let id_to_element_map = create_id_to_element_map(elements);

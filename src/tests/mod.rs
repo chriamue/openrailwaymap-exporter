@@ -11,6 +11,7 @@ use crate::{
         RailwayElement,
     },
     prelude::{OverpassImporter, RailwayEdge, RailwayGraph, RailwayGraphImporter, RailwayNode},
+    railway_algorithms::RailwayEdgeAlgos,
 };
 
 pub fn test_json_1() -> Value {
@@ -84,8 +85,8 @@ fn test_vilbel_json() {
     assert_eq!(railway_graph.graph.node_count(), 68);
     assert_eq!(railway_graph.graph.edge_count(), 68);
 
-    let source_node = 662529467i64;
-    let target_node = 662529466i64;
+    let source_node = 662529467;
+    let target_node = 662529466;
     let distance_to_travel = Length::new::<meter>(100.0);
     let current_location = coord! {x: 8.7674673, y: 50.1929356};
     let direction_coord = coord! { x: 8.7672898, y: 50.1929871 };

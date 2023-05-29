@@ -39,6 +39,7 @@ clap = "4.1.10"
 futures = "0.3.28"
 geoutils = "0.5.1"
 geo = "0.24.1"
+num-traits = "0.2"
 petgraph = "0.6.3"
 pyo3 = { version = "0.18.3", features = ["serde"], optional = true }
 pyo3-asyncio = { version = "0.18", features = ["tokio-runtime"], optional = true }
@@ -53,6 +54,7 @@ thiserror = "1.0"
 uom = "0.34.0"
 url = "2.3.1"
 reqwest = { version = "0.11", features = ["blocking", "json"] }
+transit-grid = { git = "https://github.com/rusty-rails/transit-grid" }
 yew = { version = "0.20.0", features = ["csr", "ssr"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

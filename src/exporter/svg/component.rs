@@ -3,6 +3,7 @@ use super::{edge::SvgEdge, node::SvgNode};
 use crate::prelude::RailwayEdge;
 use crate::prelude::RailwayGraph;
 use crate::railway_algorithms::PathFinding;
+use crate::types::NodeId;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 use yew::prelude::*;
@@ -17,11 +18,11 @@ pub struct Props {
     /// The height of the SVG view.
     pub view_height: f64,
     /// A callback that gets called when a node is selected.
-    pub on_select_node: Option<Callback<i64>>,
+    pub on_select_node: Option<Callback<NodeId>>,
     /// The starting node ID for pathfinding.
-    pub start_node_id: Option<i64>,
+    pub start_node_id: Option<NodeId>,
     /// The ending node ID for pathfinding.
-    pub end_node_id: Option<i64>,
+    pub end_node_id: Option<NodeId>,
 }
 
 /// A component that renders a `RailwayGraph` as an SVG.

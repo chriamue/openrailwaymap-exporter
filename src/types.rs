@@ -1,10 +1,10 @@
 //! Types used throughout the project.
 //!
 /// A unique identifier for a node in a `RailwayGraph`.
-pub type NodeId = i64;
+pub type NodeId = transit_grid::prelude::NodeId;
 
 /// A unique identifier for an edge in a `RailwayGraph`.
-pub type EdgeId = i64;
+pub type EdgeId = transit_grid::prelude::EdgeId;
 
 /// A unique identifier for a railway object.
 pub type RailwayObjectId = i64;

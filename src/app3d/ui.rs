@@ -22,6 +22,7 @@ use crate::simulation::agents::decision_agent_factory::{
 };
 use crate::simulation::agents::ForwardUntilTargetAgent;
 use crate::statistics::path_length;
+use crate::types::NodeId;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
@@ -166,7 +167,7 @@ pub fn select_graph_ui_system(
     });
 }
 
-pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_id: i64) {
+pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_id: NodeId) {
     if let Some(node_index) = graph.node_indices.get(&node_id) {
         let node = &graph.graph[*node_index];
         ui.label(format!("ID: {}", node.id));
@@ -268,8 +269,8 @@ pub fn display_selected_train_agent_info(
 pub fn display_path_info(
     ui: &mut egui::Ui,
     graph: &RailwayGraph,
-    start_node_id: i64,
-    end_node_id: i64,
+    start_node_id: NodeId,
+    end_node_id: NodeId,
 ) {
     if let (Some(start_node_index), Some(end_node_index)) = (
         graph.node_indices.get(&start_node_id),

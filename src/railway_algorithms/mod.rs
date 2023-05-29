@@ -7,13 +7,16 @@
 /// The `PathFinding` trait is implemented for the `RailwayGraph` type, allowing users
 /// to perform pathfinding operations on railway graphs.
 mod path_finding;
-use crate::algorithms::{points_in_front, Distance};
-use crate::prelude::{RailwayEdge, RailwayGraph};
-use geo::{Coord, HaversineDistance, Point};
+mod railway_edge_algos;
+
+use crate::{
+    prelude::RailwayGraph,
+    types::{EdgeId, NodeId},
+};
 pub use path_finding::PathFinding;
 use petgraph::visit::Bfs;
-use uom::si::f64::Length;
-use uom::si::length::meter;
+
+pub use railway_edge_algos::RailwayEdgeAlgos;
 
 impl RailwayGraph {
     /// Find all reachable nodes from the given start node in the railway graph.
@@ -29,7 +32,7 @@ impl RailwayGraph {
     ///
     /// A `Vec<i64>` containing the IDs of all nodes reachable from the start node.
     /// If the start node ID is not found in the graph, an empty vector is returned.
-    pub fn reachable_nodes(&self, start_node_id: i64) -> Vec<i64> {
+    pub fn reachable_nodes(&self, start_node_id: NodeId) -> Vec<NodeId> {
         if let Some(start_index) = self.node_indices.get(&start_node_id) {
             let mut reachable_nodes = Vec::new();
             let mut bfs = Bfs::new(&self.graph, *start_index);
@@ -60,7 +63,7 @@ impl RailwayGraph {
     ///
     /// A `Vec<i64>` containing the IDs of all edges reachable from the start node.
     /// If the start node ID is not found in the graph, an empty vector is returned.
-    pub fn reachable_edges(&self, start_node_id: i64) -> Vec<i64> {
+    pub fn reachable_edges(&self, start_node_id: NodeId) -> Vec<EdgeId> {
         if let Some(start_index) = self.node_indices.get(&start_node_id) {
             let mut reachable_edges = Vec::new();
             let mut bfs = Bfs::new(&self.graph, *start_index);
@@ -82,100 +85,9 @@ impl RailwayGraph {
     }
 
     /// Returns the next reachable node on the shortest path
-    pub fn get_next_node(&self, current: i64, target: i64) -> Option<i64> {
+    pub fn get_next_node(&self, current: NodeId, target: NodeId) -> Option<NodeId> {
         let path = self.shortest_path_nodes(current, target)?;
         path.get(1).copied()
-    }
-}
-
-impl RailwayEdge {
-    /// Calculates the distance between the current location and the last coordinate in the linestring.
-    ///
-    /// # Arguments
-    ///
-    /// * `current_location` - A `Coord<f64>` representing the current location on the edge.
-    /// * `direction_coord` - A `Coord<f64>` representing the target direction along the edge.
-    ///
-    /// # Returns
-    ///
-    /// A `f64` representing the distance to the last coordinate in the linestring.
-    ///
-    pub fn distance_to_end(
-        &self,
-        current_location: Coord<f64>,
-        direction_coord: Coord<f64>,
-    ) -> Length {
-        // Get the points in front of the current_location in the direction of direction_coord
-        let points_in_front = points_in_front(&self.path, current_location, direction_coord);
-
-        // If there are no points in front, return 0.0
-        if points_in_front.is_empty() {
-            return Length::new::<meter>(0.0);
-        }
-
-        let mut total_distance = Length::new::<meter>(0.0);
-        let mut current_point = current_location;
-
-        for next_point in points_in_front {
-            let segment_distance = current_point.distance(&next_point);
-            total_distance += segment_distance;
-
-            current_point = next_point;
-        }
-        total_distance
-    }
-
-    /// Calculates a new position on the edge based on the given parameters.
-    ///
-    /// # Arguments
-    ///
-    /// * `current_location` - A `Coord<f64>` representing the current location on the edge.
-    /// * `distance_to_travel` - A `f64` representing the distance to travel along the edge from the current location.
-    /// * `direction_coord` - A `Coord<f64>` representing the target direction along the edge.
-    ///
-    /// # Returns
-    ///
-    /// A `Coord<f64>` representing the new position on the edge after traveling the specified distance in the given direction.
-    ///
-    pub fn position_on_edge(
-        &self,
-        current_location: Coord<f64>,
-        distance_to_travel: Length,
-        direction_coord: Coord<f64>,
-    ) -> Coord<f64> {
-        // Get the points in front of the current_location in the direction of direction_coord
-        let points_in_front = points_in_front(&self.path, current_location, direction_coord);
-
-        // If there are no points in front, return the current_location
-        if points_in_front.is_empty() {
-            return current_location;
-        }
-
-        // Calculate the remaining distance to travel
-        let mut remaining_distance = distance_to_travel.get::<meter>();
-
-        // Iterate through the points in front and find the point where the remaining_distance is reached
-        let mut current_point = current_location;
-        let mut new_position = current_location;
-
-        for next_point in points_in_front {
-            let current_point_geo = Point::new(current_point.x, current_point.y);
-            let next_point_geo = Point::new(next_point.x, next_point.y);
-
-            // Use haversine_distance instead of euclidean_distance
-            let segment_distance = current_point_geo.haversine_distance(&next_point_geo);
-
-            let ratio = remaining_distance / segment_distance;
-            new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
-            new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
-            if remaining_distance < segment_distance {
-                break;
-            } else {
-                current_point = next_point;
-                remaining_distance -= segment_distance;
-            }
-        }
-        new_position
     }
 }
 
@@ -184,9 +96,13 @@ pub mod tests {
     use super::*;
     use approx::assert_relative_eq;
     use geo::{coord, line_string};
+    use uom::si::{f64::Length, length::meter};
 
-    use crate::importer::overpass_importer::{
-        from_railway_elements, Coordinate, ElementType, RailwayElement,
+    use crate::{
+        importer::overpass_importer::{
+            from_railway_elements, Coordinate, ElementType, RailwayElement,
+        },
+        prelude::RailwayEdge,
     };
     use std::collections::HashMap;
 

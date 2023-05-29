@@ -1,6 +1,6 @@
 use crate::{
     simulation::{environment::ObservableEnvironment, SimulationEnvironment},
-    types::RailwayObjectId,
+    types::{NodeId, RailwayObjectId},
 };
 use std::any::Any;
 
@@ -17,8 +17,8 @@ use std::time::Duration;
 #[derive(Debug, Default)]
 pub struct ForwardUntilTargetAgent {
     object_id: RailwayObjectId,
-    position: Option<i64>,
-    target: Option<i64>,
+    position: Option<NodeId>,
+    target: Option<NodeId>,
 }
 
 impl ForwardUntilTargetAgent {

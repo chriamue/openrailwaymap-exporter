@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::NodeId;
+
 /// Represents a railway node with a unique ID and geographic coordinates (latitude and longitude).
 ///
 /// # Examples
@@ -17,7 +19,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RailwayNode {
     /// The unique identifier of the railway node.
-    pub id: i64,
+    pub id: NodeId,
     /// The latitude coordinate of the railway node.
     pub lat: f64,
     /// The longitude coordinate of the railway node.

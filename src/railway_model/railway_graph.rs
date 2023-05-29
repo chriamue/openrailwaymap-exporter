@@ -23,7 +23,7 @@ pub struct RailwayGraph {
     /// A HashMap that maps node IDs to their corresponding indices in the graph.
     ///
     /// This HashMap allows for quick and easy retrieval of node indices based on their IDs.
-    pub node_indices: HashMap<i64, NodeIndex>,
+    pub node_indices: HashMap<NodeId, NodeIndex>,
 }
 
 impl PartialEq for RailwayGraph {

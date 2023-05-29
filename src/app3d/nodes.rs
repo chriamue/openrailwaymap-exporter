@@ -1,21 +1,24 @@
 use bevy::prelude::*;
 use bevy_mod_picking::{PickableBundle, PickingEvent};
 
-use crate::app3d::train_agent::{self, create_new_train_id, create_train, TrainAgent};
+use crate::{
+    app3d::train_agent::{self, create_new_train_id, create_train, TrainAgent},
+    types::NodeId,
+};
 
 use super::{AppResource, InteractionMode, InteractionModeResource};
 
 /// Represents a node in the railway graph.
 #[derive(Component)]
 pub struct Node {
-    pub id: i64,
+    pub id: NodeId,
 }
 
 /// Keeps track of the currently selected start and end nodes.
 #[derive(Default, Resource)]
 pub struct SelectedNode {
-    pub start_node_id: Option<i64>,
-    pub end_node_id: Option<i64>,
+    pub start_node_id: Option<NodeId>,
+    pub end_node_id: Option<NodeId>,
 }
 
 #[allow(clippy::too_many_arguments)]

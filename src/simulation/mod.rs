@@ -11,6 +11,7 @@ use self::{
 use crate::{
     algorithms::is_middle_coord_between,
     prelude::RailwayGraph,
+    railway_algorithms::RailwayEdgeAlgos,
     railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     types::RailwayObjectId,
 };

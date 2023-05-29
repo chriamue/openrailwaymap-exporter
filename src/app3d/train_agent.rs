@@ -54,8 +54,8 @@ impl TrainAgent {
 
 pub fn create_train(
     id: RailwayObjectId,
-    position: Option<i64>,
-    target: Option<i64>,
+    position: Option<NodeId>,
+    target: Option<NodeId>,
     simulation: &mut Simulation,
 ) -> RailwayObjectId {
     let geo_location = {

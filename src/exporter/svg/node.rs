@@ -1,4 +1,4 @@
-use crate::prelude::RailwayNode;
+use crate::{prelude::RailwayNode, types::NodeId};
 use yew::prelude::*;
 
 /// A Yew component for visualizing railway nodes as SVG circles.
@@ -22,7 +22,7 @@ pub struct Props {
     /// The minimum coordinates of the graph's bounding box.
     pub min_coord: (f64, f64),
     /// Callback for when the circle is clicked.
-    pub on_select: Option<Callback<i64>>,
+    pub on_select: Option<Callback<NodeId>>,
 }
 
 /// Messages for the `SvgNode` component.

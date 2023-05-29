@@ -15,9 +15,9 @@ pub struct Train {
     /// The geographical location of the train, represented by a coordinate.
     pub geo_location: Option<Coord<f64>>,
     /// The next target node ID for the train to move towards.
-    pub next_target: Option<i64>,
+    pub next_target: Option<NodeId>,
     /// A queue of target node IDs for the train to follow.
-    pub targets: VecDeque<i64>,
+    pub targets: VecDeque<NodeId>,
     /// The current speed of the train
     pub speed: Velocity,
     /// The current speed of the train
