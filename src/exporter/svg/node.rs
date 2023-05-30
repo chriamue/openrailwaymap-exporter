@@ -68,9 +68,9 @@ impl Component for SvgNode {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let radius = if self.hovered { 5.0 } else { 2.0 };
-        let x = (ctx.props().node.lon - ctx.props().min_coord.0) * ctx.props().scale_x;
+        let x = (ctx.props().node.location.x - ctx.props().min_coord.0) * ctx.props().scale_x;
         let y = ctx.props().view_height
-            - (ctx.props().node.lat - ctx.props().min_coord.1) * ctx.props().scale_y;
+            - (ctx.props().node.location.y - ctx.props().min_coord.1) * ctx.props().scale_y;
 
         let color = if self.clicked { "blue" } else { "red" };
 
@@ -91,6 +91,7 @@ impl Component for SvgNode {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use geo::coord;
     use yew::LocalServerRenderer;
 
     #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
@@ -98,8 +99,10 @@ mod tests {
     async fn test_render() {
         let node = RailwayNode {
             id: 1,
-            lat: 50.0,
-            lon: 30.0,
+            location: coord! {
+                x: 30.0,
+                y: 50.0,
+            },
         };
         let props = Props {
             node,

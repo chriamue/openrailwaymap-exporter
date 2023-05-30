@@ -1,54 +1,31 @@
-use serde::{Deserialize, Serialize};
+use geo::Coord;
+use transit_grid::prelude::TransitNode;
 
-use crate::types::NodeId;
-
-/// Represents a railway node with a unique ID and geographic coordinates (latitude and longitude).
-///
-/// # Examples
-///
-/// ```
-/// use openrailwaymap_exporter::prelude::RailwayNode;
-///
-/// let node = RailwayNode {
-///     id: 1,
-///     lat: 50.1191127,
-///     lon: 8.6090232,
-/// };
-/// assert_eq!(node.id, 1);
-/// ```
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct RailwayNode {
-    /// The unique identifier of the railway node.
-    pub id: NodeId,
-    /// The latitude coordinate of the railway node.
-    pub lat: f64,
-    /// The longitude coordinate of the railway node.
-    pub lon: f64,
-}
+/// A railway node.
+pub type RailwayNode = TransitNode<Coord<f64>>;
 
 #[cfg(test)]
 mod tests {
     use super::RailwayNode;
+    use geo::coord;
 
     #[test]
     fn test_railway_node_creation() {
         let node = RailwayNode {
             id: 1,
-            lat: 50.1191127,
-            lon: 8.6090232,
+            location: coord! { x: 8.6090232, y: 50.1191127 },
         };
 
         assert_eq!(node.id, 1);
-        assert_eq!(node.lat, 50.1191127);
-        assert_eq!(node.lon, 8.6090232);
+        assert_eq!(node.location.y, 50.1191127);
+        assert_eq!(node.location.x, 8.6090232);
     }
 
     #[test]
     fn test_railway_node_clone() {
         let node = RailwayNode {
             id: 1,
-            lat: 50.1191127,
-            lon: 8.6090232,
+            location: coord! { x: 8.6090232, y: 50.1191127 },
         };
 
         let cloned_node = node.clone();

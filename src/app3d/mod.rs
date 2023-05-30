@@ -17,7 +17,6 @@ use bevy_mod_picking::PickingEvent;
 use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
 use bevy_obj::ObjPlugin;
 use bevy_polyline::PolylinePlugin;
-use geo::coord;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 
@@ -204,22 +203,10 @@ fn update_look_at_position_system(
 
             let next_node = nodes
                 .find(|(_, node_data)| {
-                    let position = projection
-                        .project(coord! {
-                            x: node_data.lon,
-                            y: node_data.lat,
-                        })
-                        .unwrap_or_default();
+                    let position = projection.project(node_data.location).unwrap_or_default();
                     position != current_position
                 })
-                .map(|(_, node_data)| {
-                    projection
-                        .project(coord! {
-                            x: node_data.lon,
-                            y: node_data.lat,
-                        })
-                        .unwrap_or_default()
-                });
+                .map(|(_, node_data)| projection.project(node_data.location).unwrap_or_default());
 
             if let Some(next_position) = next_node {
                 app_resource.look_at_position = Some(next_position);
@@ -290,10 +277,7 @@ fn display_graph(
         // Display nodes
         for node in graph.graph.node_references() {
             let node_data = node.weight();
-            let position = projection.project(coord! {
-                x: node_data.lon,
-                y: node_data.lat,
-            });
+            let position = projection.project(node_data.location);
 
             if let Some(position) = position {
                 commands

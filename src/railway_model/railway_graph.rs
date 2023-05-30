@@ -125,8 +125,8 @@ impl RailwayGraph {
         let mut max_lon = std::f64::MIN;
 
         for node in self.graph.node_references() {
-            let lat = node.1.lat;
-            let lon = node.1.lon;
+            let lat = node.1.location.y;
+            let lon = node.1.location.x;
 
             min_lat = min_lat.min(lat);
             min_lon = min_lon.min(lon);
@@ -192,8 +192,8 @@ impl RailwayGraph {
         let position_on_edge = position_on_edge.max(0.0).min(1.0);
 
         // Calculate the coordinates of the point on the edge.
-        let start_coord = coord! {x: start_node.lon, y: start_node.lat};
-        let end_coord = coord! { x:end_node.lon, y: end_node.lat};
+        let start_coord = start_node.location;
+        let end_coord = end_node.location;
         let point_on_edge = start_coord + (end_coord - start_coord) * position_on_edge;
 
         // Find the nearest node to the point on the edge.
@@ -201,7 +201,7 @@ impl RailwayGraph {
         let mut nearest_distance = f64::MAX;
         for node_index in self.graph.node_indices() {
             let node = &self.graph[node_index];
-            let coord = coord! {x: node.lon, y: node.lat};
+            let coord = node.location;
             let distance = point_distance(&point_on_edge, &coord);
 
             if distance < nearest_distance {

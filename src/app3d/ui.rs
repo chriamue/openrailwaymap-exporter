@@ -171,8 +171,8 @@ pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_
     if let Some(node_index) = graph.node_indices.get(&node_id) {
         let node = &graph.graph[*node_index];
         ui.label(format!("ID: {}", node.id));
-        ui.label(format!("Latitude: {}", node.lat));
-        ui.label(format!("Longitude: {}", node.lon));
+        ui.label(format!("Latitude: {}", node.location.y));
+        ui.label(format!("Longitude: {}", node.location.x));
     }
 }
 

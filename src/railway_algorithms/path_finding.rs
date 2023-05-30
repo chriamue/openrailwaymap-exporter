@@ -60,10 +60,10 @@ impl PathFinding for RailwayGraph {
         let end_index = self.node_indices.get(&end)?;
 
         let heuristic = |index: NodeIndex| -> f64 {
-            let lat1 = self.graph[index].lat;
-            let lon1 = self.graph[index].lon;
-            let lat2 = self.graph[*end_index].lat;
-            let lon2 = self.graph[*end_index].lon;
+            let lat1 = self.graph[index].location.y;
+            let lon1 = self.graph[index].location.x;
+            let lat2 = self.graph[*end_index].location.y;
+            let lon2 = self.graph[*end_index].location.x;
 
             Location::new(lat1, lon1)
                 .distance_to(&Location::new(lat2, lon2))

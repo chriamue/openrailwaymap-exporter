@@ -98,8 +98,12 @@ mod tests {
         println!("{}", &dot_string);
 
         assert!(dot_string.contains("graph {"));
-        assert!(dot_string.contains("0 [ label = \"RailwayNode { id: 2, lat: 50.0, lon: 8.0 }\" ]"));
-        assert!(dot_string.contains("1 [ label = \"RailwayNode { id: 3, lat: 51.0, lon: 9.0 }\" ]"));
+        assert!(dot_string.contains(
+            "0 [ label = \"TransitNode { id: 2, location: Coord { x: 8.0, y: 50.0 } }\" ]"
+        ));
+        assert!(dot_string.contains(
+            "1 [ label = \"TransitNode { id: 3, location: Coord { x: 9.0, y: 51.0 } }\" ]"
+        ));
         assert!(dot_string.contains("0 -- 1 [ ]"));
         assert!(dot_string.contains('}'));
     }

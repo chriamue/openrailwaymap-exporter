@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use bevy_mod_picking::PickableBundle;
 use bevy_polyline::prelude::*;
-use geo::coord;
 use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
@@ -63,7 +62,7 @@ pub fn create_train(
             .get_observable_environment()
             .get_graph()
             .get_node_by_id(position.unwrap());
-        Some(coord! { x: node.unwrap().lon, y: node.unwrap().lat})
+        Some(node.unwrap().location)
     };
 
     let agent = ForwardUntilTargetAgent::new(id);
@@ -153,7 +152,7 @@ fn update_look_at(
     next_node_id: NodeId,
 ) {
     if let Some(next_node) = graph.get_node_by_id(next_node_id) {
-        let target_location = coord! { x: next_node.lon, y: next_node.lat };
+        let target_location = next_node.location;
         if let Some(target_view_coord) = projection.project(target_location) {
             transform.look_at(
                 Vec3::new(target_view_coord.x, target_view_coord.y, 1.0),

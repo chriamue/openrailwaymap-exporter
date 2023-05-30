@@ -86,7 +86,7 @@ fn test_simulation_with_agent() {
         .node_indices
         .get(&next_node_id)
         .unwrap()];
-    let direction_coord = coord! { x: direction_node.lon, y: direction_node.lat };
+    let direction_coord = direction_node.location;
     let distance_to_travel = current_speed * Time::new::<second>(delta_time.as_secs_f64());
     let edge = simulation
         .environment

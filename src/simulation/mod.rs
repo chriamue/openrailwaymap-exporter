@@ -23,7 +23,6 @@ pub mod agents;
 pub mod environment;
 use bevy::prelude::warn;
 pub use environment::SimulationEnvironment;
-use geo::coord;
 use rand::seq::SliceRandom;
 use uom::si::{
     acceleration::{meter_per_second_squared, Acceleration},
@@ -334,7 +333,7 @@ impl Simulation {
                             .expect("Invalid edge");
                         let next_node = graph.get_node_by_id(next_node_id).unwrap();
 
-                        let direction_coord = coord! { x: next_node.lon, y: next_node.lat };
+                        let direction_coord = next_node.location;
                         let distance_to_travel =
                             current_speed * Time::new::<second>(delta_time.as_secs_f64());
 
@@ -348,8 +347,8 @@ impl Simulation {
 
                         // reached next node
                         if is_middle_coord_between(
-                            coord! {x:current_node.lon, y: current_node.lat},
-                            coord! {x: next_node.lon, y: next_node.lat},
+                            current_node.location,
+                            next_node.location,
                             new_geo_location,
                         ) || edge.distance_to_end(new_geo_location, direction_coord)
                             < Length::new::<meter>(NEXT_NODE_DISTANCE_TOLERANCE)

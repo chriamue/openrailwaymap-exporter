@@ -105,10 +105,8 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                     assert_ne!(node_index, next_node_index);
 
                     let linestring: Vec<_> = {
-                        let node1_coord: Coord<f64> =
-                            coord! {x: graph[node_index].lon, y: graph[node_index].lat};
-                        let node2_coord: Coord<f64> =
-                            coord! {x: graph[next_node_index].lon, y: graph[next_node_index].lat};
+                        let node1_coord: Coord<f64> = graph[node_index].location;
+                        let node2_coord: Coord<f64> = graph[next_node_index].location;
                         let reverse = node1_coord
                             .distance(&coord! {x: geometry[0].lon, y: geometry[0].lat})
                             > node2_coord
@@ -301,8 +299,7 @@ fn create_nodes_from_node_elements(elements: &[RailwayElement]) -> Vec<RailwayNo
             if let (Some(lat), Some(lon)) = (element.lat, element.lon) {
                 let node = RailwayNode {
                     id: NodeId::try_from(element.id).unwrap(),
-                    lat,
-                    lon,
+                    location: coord! { x: lon, y: lat},
                 };
                 nodes.push(node);
             }
@@ -394,8 +391,7 @@ pub fn create_nodes_from_way_elements_without_existing(
 
                     let node = RailwayNode {
                         id: node_id,
-                        lat: closest_coords.0.y,
-                        lon: closest_coords.0.x,
+                        location: coord! { x: closest_coords.0.x, y: closest_coords.0.y},
                     };
 
                     new_nodes.push(node);
@@ -481,13 +477,13 @@ mod tests {
 
         let node_index_1 = railway_graph.node_indices.get(&1).unwrap();
         let node_1 = &railway_graph.graph[*node_index_1];
-        assert_eq!(node_1.lat, 0.0);
-        assert_eq!(node_1.lon, 1.0);
+        assert_eq!(node_1.location.y, 0.0);
+        assert_eq!(node_1.location.x, 1.0);
 
         let node_index_3 = railway_graph.node_indices.get(&3).unwrap();
         let node_3 = &railway_graph.graph[*node_index_3];
-        assert_eq!(node_3.lat, 0.0);
-        assert_eq!(node_3.lon, 3.5);
+        assert_eq!(node_3.location.y, 0.0);
+        assert_eq!(node_3.location.x, 3.5);
     }
 
     #[test]
@@ -521,8 +517,8 @@ mod tests {
 
         let node_index_1 = railway_graph.node_indices.get(&1).unwrap();
         let node_1 = &railway_graph.graph[*node_index_1];
-        assert_eq!(node_1.lat, 50.1191127);
-        assert_eq!(node_1.lon, 8.6090232);
+        assert_eq!(node_1.location.y, 50.1191127);
+        assert_eq!(node_1.location.x, 8.6090232);
     }
 
     #[test]
@@ -588,13 +584,13 @@ mod tests {
 
         let node_a = &nodes[0];
         assert_eq!(node_a.id, 1);
-        assert_eq!(node_a.lat, 50.1191127);
-        assert_eq!(node_a.lon, 8.6090232);
+        assert_eq!(node_a.location.y, 50.1191127);
+        assert_eq!(node_a.location.x, 8.6090232);
 
         let node_b = &nodes[1];
         assert_eq!(node_b.id, 3);
-        assert_eq!(node_b.lat, 50.1191177);
-        assert_eq!(node_b.lon, 8.6090237);
+        assert_eq!(node_b.location.y, 50.1191177);
+        assert_eq!(node_b.location.x, 8.6090237);
     }
 
     #[test]
@@ -646,8 +642,8 @@ mod tests {
 
         let node_a = &nodes[0];
         assert_eq!(node_a.id, 3);
-        assert_eq!(node_a.lat, 50.1191127);
-        assert_eq!(node_a.lon, 8.6090232);
+        assert_eq!(node_a.location.y, 50.1191127);
+        assert_eq!(node_a.location.x, 8.6090232);
     }
 
     #[test]
