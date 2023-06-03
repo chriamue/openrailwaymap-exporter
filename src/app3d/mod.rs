@@ -8,7 +8,7 @@
 use std::sync::{Arc, RwLock};
 
 use crate::app3d::train_agent::TrainAgent;
-use crate::prelude::RailwayGraph;
+use crate::prelude::{RailwayGraph, RailwayGraphExt};
 use crate::simulation::Simulation;
 use bevy::input::Input;
 use bevy::prelude::*;
@@ -194,7 +194,7 @@ fn update_look_at_position_system(
 ) {
     if keyboard_input.just_pressed(KeyCode::N) {
         if let Some(graph) = &app_resource.graph {
-            let mut nodes = graph.graph.node_references();
+            let mut nodes = graph.physical_graph.graph.node_references();
             let current_position = app_resource.look_at_position.unwrap_or(Vec3::ZERO);
 
             for transform in camera_query.iter() {
@@ -239,7 +239,7 @@ fn display_graph(
             commands.entity(entity).despawn();
         }
         // Display edges
-        for edge in graph.graph.edge_references() {
+        for edge in graph.physical_graph.graph.edge_references() {
             let edge_data = edge.weight();
             let path = &edge_data.path.0;
 
@@ -275,7 +275,7 @@ fn display_graph(
         }
 
         // Display nodes
-        for node in graph.graph.node_references() {
+        for node in graph.physical_graph.graph.node_references() {
             let node_data = node.weight();
             let position = projection.project(node_data.location);
 

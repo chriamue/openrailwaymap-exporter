@@ -38,7 +38,7 @@ use std::error::Error;
 /// println!("{}", dot_string);
 /// ```
 pub fn generate_dot_string(graph: &RailwayGraph) -> Result<String, Box<dyn Error>> {
-    let dot = Dot::with_config(&graph.graph, &[Config::EdgeNoLabel]);
+    let dot = Dot::with_config(&graph.physical_graph.graph, &[Config::EdgeNoLabel]);
     Ok(format!("{:?}", dot))
 }
 

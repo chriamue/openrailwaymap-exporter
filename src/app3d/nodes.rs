@@ -3,6 +3,7 @@ use bevy_mod_picking::{PickableBundle, PickingEvent};
 
 use crate::{
     app3d::train_agent::{self, create_new_train_id, create_train, TrainAgent},
+    prelude::RailwayGraphExt,
     types::NodeId,
 };
 

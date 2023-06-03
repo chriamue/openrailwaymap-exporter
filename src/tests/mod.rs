@@ -10,7 +10,10 @@ use crate::{
         count_way_elements, create_nodes, find_next_existing_node, from_railway_elements,
         RailwayElement,
     },
-    prelude::{OverpassImporter, RailwayEdge, RailwayGraph, RailwayGraphImporter, RailwayNode},
+    prelude::{
+        OverpassImporter, RailwayEdge, RailwayGraph, RailwayGraphExt, RailwayGraphImporter,
+        RailwayNode,
+    },
     railway_algorithms::RailwayEdgeAlgos,
 };
 
@@ -38,11 +41,11 @@ fn test_load_railway_graph_from_test1() {
     let expected_edges_count = count_way_elements(&railway_elements);
     let railway_graph = from_railway_elements(&railway_elements);
 
-    println!("{:?}", railway_graph.graph);
-    assert_eq!(railway_graph.graph.node_count(), 4);
+    println!("{:?}", railway_graph.physical_graph.graph);
+    assert_eq!(railway_graph.physical_graph.graph.node_count(), 4);
     assert_eq!(expected_edges_count, 5);
     // assert_eq!(railway_graph.graph.edge_count(), expected_edges_count);
-    assert_eq!(railway_graph.graph.edge_count(), 3);
+    assert_eq!(railway_graph.physical_graph.graph.edge_count(), 3);
 }
 
 #[test]
@@ -82,8 +85,8 @@ fn test_vilbel_json() {
     );
 
     let railway_graph = from_railway_elements(&railway_elements);
-    assert_eq!(railway_graph.graph.node_count(), 68);
-    assert_eq!(railway_graph.graph.edge_count(), 68);
+    assert_eq!(railway_graph.physical_graph.graph.node_count(), 68);
+    assert_eq!(railway_graph.physical_graph.graph.edge_count(), 68);
 
     let source_node = 662529467;
     let target_node = 662529466;

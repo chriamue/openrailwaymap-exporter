@@ -3,7 +3,7 @@ use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use geo::{coord, line_string};
 use openrailwaymap_exporter::{
     importer::overpass_importer::{find_next_existing_node, from_railway_elements, RailwayElement},
-    railway_algorithms::{PathFinding, RailwayEdgeAlgos},
+    railway_algorithms::{PathFinding, RailwayEdgeAlgos, RailwayGraphAlgos},
     railway_model::RailwayEdge,
 };
 use petgraph::stable_graph::NodeIndex;

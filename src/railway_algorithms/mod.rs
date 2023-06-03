@@ -18,7 +18,8 @@ use petgraph::visit::Bfs;
 
 pub use railway_edge_algos::RailwayEdgeAlgos;
 
-impl RailwayGraph {
+/// `RailwayGraphAlgos` trait provides algorithms for railway graphs.
+pub trait RailwayGraphAlgos {
     /// Find all reachable nodes from the given start node in the railway graph.
     ///
     /// This function performs a breadth-first search from the given start node and returns a
@@ -32,23 +33,7 @@ impl RailwayGraph {
     ///
     /// A `Vec<i64>` containing the IDs of all nodes reachable from the start node.
     /// If the start node ID is not found in the graph, an empty vector is returned.
-    pub fn reachable_nodes(&self, start_node_id: NodeId) -> Vec<NodeId> {
-        if let Some(start_index) = self.node_indices.get(&start_node_id) {
-            let mut reachable_nodes = Vec::new();
-            let mut bfs = Bfs::new(&self.graph, *start_index);
-
-            while let Some(visited_node_index) = bfs.next(&self.graph) {
-                let visited_node_id = self.graph.node_weight(visited_node_index).unwrap().id;
-                if visited_node_id != start_node_id {
-                    reachable_nodes.push(visited_node_id);
-                }
-            }
-
-            reachable_nodes
-        } else {
-            vec![]
-        }
-    }
+    fn reachable_nodes(&self, start_node_id: NodeId) -> Vec<NodeId>;
 
     /// Find all reachable edges from the given start node in the railway graph.
     ///
@@ -63,13 +48,45 @@ impl RailwayGraph {
     ///
     /// A `Vec<i64>` containing the IDs of all edges reachable from the start node.
     /// If the start node ID is not found in the graph, an empty vector is returned.
-    pub fn reachable_edges(&self, start_node_id: NodeId) -> Vec<EdgeId> {
-        if let Some(start_index) = self.node_indices.get(&start_node_id) {
-            let mut reachable_edges = Vec::new();
-            let mut bfs = Bfs::new(&self.graph, *start_index);
+    fn reachable_edges(&self, start_node_id: NodeId) -> Vec<EdgeId>;
 
-            while let Some(visited_node_index) = bfs.next(&self.graph) {
-                let visited_node_edges = self.graph.edges(visited_node_index);
+    /// Returns the next reachable node on the shortest path
+    fn get_next_node(&self, current: NodeId, target: NodeId) -> Option<NodeId>;
+}
+
+impl RailwayGraphAlgos for RailwayGraph {
+    fn reachable_nodes(&self, start_node_id: NodeId) -> Vec<NodeId> {
+        let start_index = self.physical_graph.id_to_index(start_node_id);
+        if let Some(&start_index) = start_index {
+            let mut reachable_nodes = Vec::new();
+            let mut bfs = Bfs::new(&self.physical_graph.graph, start_index);
+
+            while let Some(visited_node_index) = bfs.next(&self.physical_graph.graph) {
+                let visited_node_id = self
+                    .physical_graph
+                    .graph
+                    .node_weight(visited_node_index)
+                    .unwrap()
+                    .id;
+                if visited_node_id != start_node_id {
+                    reachable_nodes.push(visited_node_id);
+                }
+            }
+
+            reachable_nodes
+        } else {
+            Vec::new()
+        }
+    }
+
+    fn reachable_edges(&self, start_node_id: NodeId) -> Vec<EdgeId> {
+        let start_index = self.physical_graph.id_to_index(start_node_id);
+        if let Some(&start_index) = start_index {
+            let mut reachable_edges = Vec::new();
+            let mut bfs = Bfs::new(&self.physical_graph.graph, start_index);
+
+            while let Some(visited_node_index) = bfs.next(&self.physical_graph.graph) {
+                let visited_node_edges = self.physical_graph.graph.edges(visited_node_index);
                 for edge in visited_node_edges {
                     let edge_id = edge.weight().id;
                     if !reachable_edges.contains(&edge_id) {
@@ -80,12 +97,11 @@ impl RailwayGraph {
 
             reachable_edges
         } else {
-            vec![]
+            Vec::new()
         }
     }
 
-    /// Returns the next reachable node on the shortest path
-    pub fn get_next_node(&self, current: NodeId, target: NodeId) -> Option<NodeId> {
+    fn get_next_node(&self, current: NodeId, target: NodeId) -> Option<NodeId> {
         let path = self.shortest_path_nodes(current, target)?;
         path.get(1).copied()
     }

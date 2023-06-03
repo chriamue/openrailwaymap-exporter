@@ -5,6 +5,8 @@ use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
 use crate::app3d::DebugResource;
+use crate::prelude::RailwayGraphExt;
+use crate::railway_algorithms::RailwayGraphAlgos;
 use crate::types::NodeId;
 use crate::{
     prelude::{RailwayEdge, RailwayGraph},

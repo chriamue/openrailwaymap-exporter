@@ -1,38 +1,16 @@
 use geo::{coord, Coord};
 use petgraph::visit::IntoNodeReferences;
-use petgraph::{stable_graph::NodeIndex, Graph, Undirected};
-use std::collections::HashMap;
+use transit_grid::prelude::TransitNetwork;
 
 use crate::types::{EdgeId, NodeId};
 
 use super::{RailwayEdge, RailwayNode};
 
-/// `RailwayGraph` represents a graph structure for railway networks.
-///
-/// The graph consists of nodes representing railway stations and junctions, and edges representing
-/// the railway segments between the nodes. It also stores the node indices as a HashMap for easy
-/// retrieval.
-#[derive(Debug, Clone, Default)]
-pub struct RailwayGraph {
-    /// The internal graph used to represent the railway network.
-    ///
-    /// The graph consists of `RailwayNode` instances as nodes and `RailwayEdge` instances as edges.
-    /// It is an undirected graph.
-    pub graph: Graph<RailwayNode, RailwayEdge, Undirected>,
+/// A RailwayGraph is a TransitNetwork with RailwayNode and RailwayEdge as node and edge types.
+pub type RailwayGraph = TransitNetwork<Coord, f64>;
 
-    /// A HashMap that maps node IDs to their corresponding indices in the graph.
-    ///
-    /// This HashMap allows for quick and easy retrieval of node indices based on their IDs.
-    pub node_indices: HashMap<NodeId, NodeIndex>,
-}
-
-impl PartialEq for RailwayGraph {
-    fn eq(&self, other: &Self) -> bool {
-        self.node_indices.eq(&other.node_indices)
-    }
-}
-
-impl RailwayGraph {
+/// An extension trait for the RailwayGraph.
+pub trait RailwayGraphExt {
     /// Retrieve an edge from the graph by its ID.
     ///
     /// # Arguments
@@ -43,14 +21,7 @@ impl RailwayGraph {
     ///
     /// An `Option<RailwayEdge>` that contains the edge if found, or `None` if not found.
     ///
-    pub fn get_edge_by_id(&self, id: EdgeId) -> Option<RailwayEdge> {
-        for edge in self.graph.edge_references() {
-            if edge.weight().id == id {
-                return Some(edge.weight().clone());
-            }
-        }
-        None
-    }
+    fn get_edge_by_id(&self, id: EdgeId) -> Option<RailwayEdge>;
 
     /// Returns a reference to a RailwayNode with the specified NodeId if it exists in the graph.
     ///
@@ -64,10 +35,7 @@ impl RailwayGraph {
     /// # Returns
     ///
     /// An Option containing a reference to the RailwayNode if it exists, otherwise None.
-    pub fn get_node_by_id(&self, id: NodeId) -> Option<&RailwayNode> {
-        let node_index = *self.node_indices.get(&id)?;
-        Some(&self.graph[node_index])
-    }
+    fn get_node_by_id(&self, id: NodeId) -> Option<&RailwayNode>;
 
     /// Retrieve the railway edge between two nodes.
     ///
@@ -81,14 +49,7 @@ impl RailwayGraph {
     /// An `Option<&RailwayEdge>` that contains the railway edge connecting the two nodes if it exists,
     /// or `None` if no such edge exists.
     ///
-    pub fn railway_edge(&self, start_node_id: NodeId, end_node_id: NodeId) -> Option<&RailwayEdge> {
-        let start_node_index = *self.node_indices.get(&start_node_id)?;
-        let end_node_index = *self.node_indices.get(&end_node_id)?;
-
-        let edge_index = self.graph.find_edge(start_node_index, end_node_index)?;
-        Some(&self.graph[edge_index])
-    }
-
+    fn railway_edge(&self, start_node_id: NodeId, end_node_id: NodeId) -> Option<&RailwayEdge>;
     /// Retrieve the edges connected to a node by its ID.
     ///
     /// # Arguments
@@ -99,15 +60,7 @@ impl RailwayGraph {
     ///
     /// A `Vec<&RailwayEdge>` containing the edges connected to the node, or an empty vector if the node is not found.
     ///
-    pub fn get_edges_of_node(&self, node_id: NodeId) -> Vec<&RailwayEdge> {
-        let node_index = match self.node_indices.get(&node_id) {
-            Some(index) => *index,
-            None => return Vec::new(),
-        };
-
-        self.graph.edges(node_index).map(|e| e.weight()).collect()
-    }
-
+    fn get_edges_of_node(&self, node_id: NodeId) -> Vec<&RailwayEdge>;
     /// Calculate the bounding box of the graph.
     ///
     /// The bounding box is represented as a tuple containing the minimum and maximum
@@ -118,13 +71,79 @@ impl RailwayGraph {
     /// A tuple containing two `Coordinate` structs representing the minimum and maximum coordinates
     /// of the bounding box of the graph.
     ///
-    pub fn bounding_box(&self) -> (Coord, Coord) {
+    fn bounding_box(&self) -> (Coord, Coord);
+    /// Calculate the total length of the railway network.
+    ///
+    /// The total length is the sum of the lengths of all edges in the graph.
+    ///
+    /// # Returns
+    ///
+    /// A `f64` value representing the total length of the railway network in meters.
+    ///
+    fn total_length(&self) -> f64;
+    /// Returns the nearest node to the given position on the specified edge.
+    ///
+    /// # Arguments
+    ///
+    /// * `edge_id` - The ID of the edge.
+    /// * `position_on_edge` - The position on the edge, ranging from 0.0 to 1.0.
+    /// * `current_node_id` - An optional `NodeId` of the current node to determine the start node.
+    ///
+    /// # Returns
+    ///
+    /// An `Option<NodeId>` containing the ID of the nearest node if found, or `None` if the edge is not found.
+    fn nearest_node(
+        &self,
+        edge_id: EdgeId,
+        position_on_edge: f64,
+        current_node_id: Option<NodeId>,
+    ) -> Option<NodeId>;
+}
+
+impl RailwayGraphExt for RailwayGraph {
+    fn get_edge_by_id(&self, id: EdgeId) -> Option<RailwayEdge> {
+        for edge in self.physical_graph.graph.edge_references() {
+            if edge.weight().id == id {
+                return Some(edge.weight().clone());
+            }
+        }
+        None
+    }
+
+    fn get_node_by_id(&self, id: NodeId) -> Option<&RailwayNode> {
+        let node_index = self.physical_graph.id_to_index(id);
+        if let Some(node_index) = node_index {
+            return Some(&self.physical_graph.graph[*node_index]);
+        }
+        None
+    }
+
+    fn railway_edge(&self, start_node_id: NodeId, end_node_id: NodeId) -> Option<&RailwayEdge> {
+        self.physical_graph
+            .get_transit_edge(start_node_id, end_node_id)
+    }
+
+    fn get_edges_of_node(&self, node_id: NodeId) -> Vec<&RailwayEdge> {
+        let node_index = self.physical_graph.id_to_index(node_id);
+        if let Some(&node_index) = node_index {
+            return self
+                .physical_graph
+                .graph
+                .edges(node_index)
+                .map(|e| e.weight())
+                .collect();
+        } else {
+            Vec::new()
+        }
+    }
+
+    fn bounding_box(&self) -> (Coord, Coord) {
         let mut min_lat = std::f64::MAX;
         let mut min_lon = std::f64::MAX;
         let mut max_lat = std::f64::MIN;
         let mut max_lon = std::f64::MIN;
 
-        for node in self.graph.node_references() {
+        for node in self.physical_graph.graph.node_references() {
             let lat = node.1.location.y;
             let lon = node.1.location.x;
 
@@ -140,53 +159,36 @@ impl RailwayGraph {
         )
     }
 
-    /// Calculate the total length of the railway network.
-    ///
-    /// The total length is the sum of the lengths of all edges in the graph.
-    ///
-    /// # Returns
-    ///
-    /// A `f64` value representing the total length of the railway network in meters.
-    ///
-    pub fn total_length(&self) -> f64 {
-        self.graph
+    fn total_length(&self) -> f64 {
+        self.physical_graph
+            .graph
             .edge_references()
             .map(|edge| edge.weight().length)
             .sum()
     }
 
-    /// Returns the nearest node to the given position on the specified edge.
-    ///
-    /// # Arguments
-    ///
-    /// * `edge_id` - The ID of the edge.
-    /// * `position_on_edge` - The position on the edge, ranging from 0.0 to 1.0.
-    /// * `current_node_id` - An optional `NodeId` of the current node to determine the start node.
-    ///
-    /// # Returns
-    ///
-    /// An `Option<NodeId>` containing the ID of the nearest node if found, or `None` if the edge is not found.
-    pub fn nearest_node(
+    fn nearest_node(
         &self,
         edge_id: EdgeId,
         position_on_edge: f64,
         current_node_id: Option<NodeId>,
     ) -> Option<NodeId> {
         // Find the edge indices in the petgraph
-        let mut edge_indices = self.graph.edge_indices();
-        let edge_index = edge_indices.find(|idx| self.graph[*idx].id == edge_id)?;
+        let mut edge_indices = self.physical_graph.graph.edge_indices();
+        let edge_index = edge_indices.find(|idx| self.physical_graph.graph[*idx].id == edge_id)?;
 
         // Get the start and end nodes of the edge
-        let (mut start_node_index, mut end_node_index) = self.graph.edge_endpoints(edge_index)?;
+        let (mut start_node_index, mut end_node_index) =
+            self.physical_graph.graph.edge_endpoints(edge_index)?;
 
         if let Some(current_node_id) = current_node_id {
-            if current_node_id == self.graph[end_node_index].id {
+            if current_node_id == self.physical_graph.graph[end_node_index].id {
                 std::mem::swap(&mut start_node_index, &mut end_node_index);
             }
         }
 
-        let start_node = &self.graph[start_node_index];
-        let end_node = &self.graph[end_node_index];
+        let start_node = &self.physical_graph.graph[start_node_index];
+        let end_node = &self.physical_graph.graph[end_node_index];
 
         // Clamp position_on_edge to the range [0.0, 1.0].
         let position_on_edge = position_on_edge.max(0.0).min(1.0);
@@ -199,8 +201,8 @@ impl RailwayGraph {
         // Find the nearest node to the point on the edge.
         let mut nearest_node_index = None;
         let mut nearest_distance = f64::MAX;
-        for node_index in self.graph.node_indices() {
-            let node = &self.graph[node_index];
+        for node_index in self.physical_graph.graph.node_indices() {
+            let node = &self.physical_graph.graph[node_index];
             let coord = node.location;
             let distance = point_distance(&point_on_edge, &coord);
 
@@ -210,7 +212,7 @@ impl RailwayGraph {
             }
         }
 
-        nearest_node_index.map(|index| self.graph[index].id)
+        nearest_node_index.map(|index| self.physical_graph.graph[index].id)
     }
 }
 
@@ -222,8 +224,11 @@ fn point_distance(coord1: &Coord, coord2: &Coord) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use crate::importer::overpass_importer::{
-        from_railway_elements, Coordinate, ElementType, RailwayElement,
+    use crate::{
+        importer::overpass_importer::{
+            from_railway_elements, Coordinate, ElementType, RailwayElement,
+        },
+        prelude::RailwayGraphExt,
     };
     use geo::coord;
     use std::collections::HashMap;
@@ -382,6 +387,8 @@ mod tests {
         ];
 
         let railway_graph = from_railway_elements(&elements);
+
+        println!("{:?}", railway_graph.physical_graph.graph);
 
         // Test for a valid edge.
         let edge = railway_graph.railway_edge(1, 2);

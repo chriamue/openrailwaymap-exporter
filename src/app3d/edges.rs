@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{railway_algorithms::PathFinding, types::EdgeId};
+use crate::{
+    railway_algorithms::{PathFinding, RailwayGraphAlgos},
+    types::EdgeId,
+};
 
 use super::{nodes::SelectedNode, AppResource};
 

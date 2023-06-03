@@ -1,4 +1,5 @@
 use crate::{
+    prelude::RailwayGraphExt,
     railway_model::RailwayGraph,
     types::{EdgeId, NodeId},
 };
@@ -45,46 +46,57 @@ pub trait PathFinding {
 
 impl PathFinding for RailwayGraph {
     fn shortest_path_distance(&self, source: NodeId, target: NodeId) -> Option<f64> {
-        let source_index = self.node_indices.get(&source)?;
-        let target_index = self.node_indices.get(&target)?;
+        let source_index = self.physical_graph.id_to_index(source);
+        let target_index = self.physical_graph.id_to_index(target);
 
-        let shortest_path = dijkstra(&self.graph, *source_index, Some(*target_index), |e| {
-            e.weight().length
-        });
+        if let (Some(&source_index), Some(&target_index)) = (source_index, target_index) {
+            let shortest_path = dijkstra(
+                &self.physical_graph.graph,
+                source_index,
+                Some(target_index),
+                |e| e.weight().length,
+            );
 
-        shortest_path.get(target_index).copied()
+            shortest_path.get(&target_index).copied()
+        } else {
+            None
+        }
     }
 
     fn shortest_path_nodes(&self, start: NodeId, end: NodeId) -> Option<Vec<NodeId>> {
-        let start_index = self.node_indices.get(&start)?;
-        let end_index = self.node_indices.get(&end)?;
+        let source_index = self.physical_graph.id_to_index(start);
+        let target_index = self.physical_graph.id_to_index(end);
 
-        let heuristic = |index: NodeIndex| -> f64 {
-            let lat1 = self.graph[index].location.y;
-            let lon1 = self.graph[index].location.x;
-            let lat2 = self.graph[*end_index].location.y;
-            let lon2 = self.graph[*end_index].location.x;
+        if let (Some(&source_index), Some(&target_index)) = (source_index, target_index) {
+            let heuristic = |index: NodeIndex| -> f64 {
+                let lat1 = self.physical_graph.graph[index].location.y;
+                let lon1 = self.physical_graph.graph[index].location.x;
+                let lat2 = self.physical_graph.graph[target_index].location.y;
+                let lon2 = self.physical_graph.graph[target_index].location.x;
 
-            Location::new(lat1, lon1)
-                .distance_to(&Location::new(lat2, lon2))
-                .unwrap()
-                .meters()
-        };
+                Location::new(lat1, lon1)
+                    .distance_to(&Location::new(lat2, lon2))
+                    .unwrap()
+                    .meters()
+            };
 
-        let path = astar(
-            &self.graph,
-            *start_index,
-            |idx| idx == *end_index,
-            |e| *e.weight().length.borrow(),
-            heuristic,
-        );
+            let path = astar(
+                &self.physical_graph.graph,
+                source_index,
+                |idx| idx == target_index,
+                |e| *e.weight().length.borrow(),
+                heuristic,
+            );
 
-        path.map(|(_, path_indices)| {
-            path_indices
-                .into_iter()
-                .map(|idx| self.graph[idx].id)
-                .collect::<Vec<NodeId>>()
-        })
+            path.map(|(_, path_indices)| {
+                path_indices
+                    .into_iter()
+                    .map(|idx| self.physical_graph.graph[idx].id)
+                    .collect::<Vec<NodeId>>()
+            })
+        } else {
+            None
+        }
     }
 
     fn shortest_path_edges(&self, start: NodeId, end: NodeId) -> Option<Vec<EdgeId>> {

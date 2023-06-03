@@ -9,12 +9,11 @@ use anyhow::Result;
 pub use coordinate::Coordinate;
 use geo::{coord, Coord, LineString};
 use geoutils::Location;
-use petgraph::graph::Graph;
 use petgraph::stable_graph::NodeIndex;
-use petgraph::Undirected;
 pub use railway_element::RailwayElement;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
+use transit_grid::prelude::TransitNetworkModifier;
 use uom::si::length::meter;
 
 pub use self::railway_element::{count_node_elements, count_way_elements, ElementType};
@@ -73,16 +72,20 @@ impl RailwayGraphImporter for OverpassImporter {
 /// ];
 ///
 /// let railway_graph = from_railway_elements(&elements);
-/// println!("Created railway graph with {} nodes", railway_graph.graph.node_count());
+/// println!("Created railway graph with {} nodes", railway_graph.physical_graph.graph.node_count());
 /// ```
 pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
-    let mut graph = Graph::<RailwayNode, RailwayEdge, Undirected>::new_undirected();
+    let mut network = RailwayGraph::new();
     let mut node_indices = HashMap::new();
 
     let nodes = create_nodes(elements);
     for node in &nodes {
-        let node_index = graph.add_node(node.clone());
-        node_indices.insert(node.id, node_index);
+        let node_id = network.add_node(*node);
+
+        node_indices.insert(
+            node.id,
+            *network.physical_graph.id_to_index(node_id).unwrap(),
+        );
     }
 
     assert_eq!(nodes.len(), node_indices.len());
@@ -105,8 +108,10 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                     assert_ne!(node_index, next_node_index);
 
                     let linestring: Vec<_> = {
-                        let node1_coord: Coord<f64> = graph[node_index].location;
-                        let node2_coord: Coord<f64> = graph[next_node_index].location;
+                        let node1_coord: Coord<f64> =
+                            network.physical_graph.graph[node_index].location;
+                        let node2_coord: Coord<f64> =
+                            network.physical_graph.graph[next_node_index].location;
                         let reverse = node1_coord
                             .distance(&coord! {x: geometry[0].lon, y: geometry[0].lat})
                             > node2_coord
@@ -126,25 +131,20 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
                         }
                     };
 
-                    graph.add_edge(
-                        node_index,
-                        next_node_index,
-                        RailwayEdge {
-                            id: element.id as EdgeId,
-                            length,
-                            path: LineString::from(linestring),
-                            source: node_id.unwrap(),
-                            target: next_node_id.unwrap(),
-                        },
-                    );
+                    let edge = RailwayEdge {
+                        id: element.id as EdgeId,
+                        length,
+                        path: LineString::from(linestring),
+                        source: node_id.unwrap(),
+                        target: next_node_id.unwrap(),
+                    };
+
+                    network.add_edge(edge);
                 }
             }
         }
     }
-    RailwayGraph {
-        graph,
-        node_indices,
-    }
+    network
 }
 
 /// Find the next existing node ID and its index in the `node_indices` HashMap after the given `start` ID.
@@ -473,15 +473,15 @@ mod tests {
         ];
 
         let railway_graph = from_railway_elements(&elements);
-        assert_eq!(railway_graph.graph.node_count(), 3);
+        assert_eq!(railway_graph.physical_graph.graph.node_count(), 3);
 
-        let node_index_1 = railway_graph.node_indices.get(&1).unwrap();
-        let node_1 = &railway_graph.graph[*node_index_1];
+        let node_index_1 = railway_graph.physical_graph.id_to_index(1).unwrap();
+        let node_1 = &railway_graph.physical_graph.graph[*node_index_1];
         assert_eq!(node_1.location.y, 0.0);
         assert_eq!(node_1.location.x, 1.0);
 
-        let node_index_3 = railway_graph.node_indices.get(&3).unwrap();
-        let node_3 = &railway_graph.graph[*node_index_3];
+        let node_index_3 = railway_graph.physical_graph.id_to_index(3).unwrap();
+        let node_3 = &railway_graph.physical_graph.graph[*node_index_3];
         assert_eq!(node_3.location.y, 0.0);
         assert_eq!(node_3.location.x, 3.5);
     }
@@ -513,10 +513,10 @@ mod tests {
         });
 
         let railway_graph = OverpassImporter::import(&json_value).unwrap();
-        assert_eq!(railway_graph.graph.node_count(), 1);
+        assert_eq!(railway_graph.physical_graph.graph.node_count(), 1);
 
-        let node_index_1 = railway_graph.node_indices.get(&1).unwrap();
-        let node_1 = &railway_graph.graph[*node_index_1];
+        let node_index_1 = railway_graph.physical_graph.id_to_index(1).unwrap();
+        let node_1 = &railway_graph.physical_graph.graph[*node_index_1];
         assert_eq!(node_1.location.y, 50.1191127);
         assert_eq!(node_1.location.x, 8.6090232);
     }

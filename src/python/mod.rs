@@ -6,6 +6,7 @@ use pythonize::pythonize;
 
 use crate::importer::overpass_importer::OverpassImporter;
 use crate::importer::RailwayGraphImporter;
+use crate::railway_model::railway_graph::RailwayGraphExt;
 use crate::railway_model::RailwayGraph;
 use crate::types::{EdgeId, NodeId};
 
@@ -76,7 +77,7 @@ impl PyRailwayGraph {
     ///
     /// * The number of nodes in the railway graph.
     fn node_count(&self) -> usize {
-        self.inner.graph.node_count()
+        self.inner.physical_graph.graph.node_count()
     }
 
     /// Get the number of edges in the railway graph.
@@ -85,7 +86,7 @@ impl PyRailwayGraph {
     ///
     /// * The number of edges in the railway graph.
     fn edge_count(&self) -> usize {
-        self.inner.graph.edge_count()
+        self.inner.physical_graph.graph.edge_count()
     }
 
     /// Get a node by its ID from the railway graph.
@@ -99,7 +100,7 @@ impl PyRailwayGraph {
     /// * An optional `RailwayNode` instance if the node with the specified ID is found.
     fn get_node_by_id(&self, node_id: NodeId) -> Option<PyObject> {
         Some(Python::with_gil(|py| {
-            pythonize(py, &self.inner.get_node_by_id(node_id))
+            pythonize(py, &self.inner.get_node_by_id(node_id).unwrap())
                 .unwrap()
                 .to_object(py)
         }))

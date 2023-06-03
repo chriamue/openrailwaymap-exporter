@@ -71,7 +71,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let graph = OverpassImporter::import(&api_json_value).unwrap();
 
-    println!("Railway Graph: {:?}", &graph.graph.edge_count());
+    println!(
+        "Railway Graph: {:?}",
+        &graph.physical_graph.graph.edge_count()
+    );
 
     if let Some(file_path) = opt.output {
         let mut file = File::create(file_path)?;

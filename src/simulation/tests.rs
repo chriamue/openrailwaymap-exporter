@@ -80,11 +80,11 @@ fn test_simulation_with_agent() {
         .graph
         .get_next_node(train.position().unwrap(), train.next_target().unwrap())
         .unwrap();
-    let direction_node = &simulation.environment.graph.graph[*simulation
+    let direction_node = &simulation.environment.graph.physical_graph.graph[*simulation
         .environment
         .graph
-        .node_indices
-        .get(&next_node_id)
+        .physical_graph
+        .id_to_index(next_node_id)
         .unwrap()];
     let direction_coord = direction_node.location;
     let distance_to_travel = current_speed * Time::new::<second>(delta_time.as_secs_f64());

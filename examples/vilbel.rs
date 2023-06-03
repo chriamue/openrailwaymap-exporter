@@ -9,5 +9,5 @@ fn railway_elements() -> Vec<RailwayElement> {
 fn main() {
     let railway_elements = railway_elements();
     let graph = from_railway_elements(&railway_elements);
-    println!("{:?}", graph.graph);
+    println!("{:?}", graph.physical_graph.graph);
 }

@@ -10,8 +10,8 @@ use self::{
 };
 use crate::{
     algorithms::is_middle_coord_between,
-    prelude::RailwayGraph,
-    railway_algorithms::RailwayEdgeAlgos,
+    prelude::{RailwayGraph, RailwayGraphExt},
+    railway_algorithms::{RailwayEdgeAlgos, RailwayGraphAlgos},
     railway_objects::{GeoLocation, Movable, NextTarget, RailwayObject, Train},
     types::RailwayObjectId,
 };

@@ -2,6 +2,7 @@
 use super::{edge::SvgEdge, node::SvgNode};
 use crate::prelude::RailwayEdge;
 use crate::prelude::RailwayGraph;
+use crate::prelude::RailwayGraphExt;
 use crate::railway_algorithms::PathFinding;
 use crate::types::NodeId;
 use petgraph::visit::IntoNodeReferences;
@@ -47,7 +48,7 @@ impl Component for SvgComponent {
             let scale_y = ctx.props().view_height / (max_coord.y - min_coord.y);
 
             let svg_edges: Vec<Html> = graph
-                .graph
+                .physical_graph.graph
                 .edge_references()
                 .map(|edge| {
                     let edge_data = edge.weight();
@@ -59,13 +60,13 @@ impl Component for SvgComponent {
                 .collect();
 
             let svg_nodes: Vec<Html> = graph
-                .graph
+                .physical_graph.graph
                 .node_references()
                 .map(|node| {
                     let node_data = node.weight();
 
                     html! {
-                        <SvgNode node={node_data.clone()} scale_x={scale_x} scale_y={scale_y}
+                        <SvgNode node={*node_data} scale_x={scale_x} scale_y={scale_y}
                          min_coord={(min_coord.x, min_coord.y)} view_height={ctx.props().view_height}
                          on_select={ctx.props().on_select_node.clone()} />
                     }
@@ -84,6 +85,7 @@ impl Component for SvgComponent {
                         ids.into_iter()
                             .filter_map(|id| {
                                 graph
+                                    .physical_graph
                                     .graph
                                     .edge_references()
                                     .find(|edge| edge.weight().id == id)

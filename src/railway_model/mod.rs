@@ -11,4 +11,5 @@ mod railway_node;
 
 pub use railway_edge::RailwayEdge;
 pub use railway_graph::RailwayGraph;
+pub use railway_graph::RailwayGraphExt;
 pub use railway_node::RailwayNode;

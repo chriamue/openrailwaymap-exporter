@@ -120,7 +120,7 @@ pub fn select_graph_ui_system(
 ) {
     use std::sync::{Arc, RwLock};
 
-    use crate::simulation::Simulation;
+    use crate::{prelude::RailwayGraphExt, simulation::Simulation};
 
     egui::Window::new("Railway Area").show(contexts.ctx_mut(), |ui| {
         ui.label("Enter an Area:");
@@ -168,8 +168,8 @@ pub fn select_graph_ui_system(
 }
 
 pub fn display_selected_node_info(ui: &mut egui::Ui, graph: &RailwayGraph, node_id: NodeId) {
-    if let Some(node_index) = graph.node_indices.get(&node_id) {
-        let node = &graph.graph[*node_index];
+    if let Some(&node_index) = graph.physical_graph.id_to_index(node_id) {
+        let node = &graph.physical_graph.graph[node_index];
         ui.label(format!("ID: {}", node.id));
         ui.label(format!("Latitude: {}", node.location.y));
         ui.label(format!("Longitude: {}", node.location.x));
@@ -272,13 +272,13 @@ pub fn display_path_info(
     start_node_id: NodeId,
     end_node_id: NodeId,
 ) {
-    if let (Some(start_node_index), Some(end_node_index)) = (
-        graph.node_indices.get(&start_node_id),
-        graph.node_indices.get(&end_node_id),
-    ) {
-        let start_node = &graph.graph[*start_node_index];
+    let start_node_index = graph.physical_graph.id_to_index(start_node_id);
+    let end_node_index = graph.physical_graph.id_to_index(end_node_id);
+
+    if let (Some(&start_node_index), Some(&end_node_index)) = (start_node_index, end_node_index) {
+        let start_node = &graph.physical_graph.graph[start_node_index];
         ui.label(format!("Start: {}", start_node.id));
-        let end_node = &graph.graph[*end_node_index];
+        let end_node = &graph.physical_graph.graph[end_node_index];
         ui.label(format!("End: {}", end_node.id));
 
         if graph
