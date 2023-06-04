@@ -1,4 +1,5 @@
 use crate::prelude::RailwayGraph;
+use crate::types::NodeId;
 use yew::prelude::*;
 
 /// The `NodeContextMenu` component represents a context menu for a node.
@@ -12,12 +13,12 @@ pub enum Msg {
 /// The `Props` struct represents the properties of the `NodeContextMenu` component.
 #[derive(PartialEq, Properties, Clone)]
 pub struct Props {
-    pub node_id: Option<i64>,
+    pub node_id: Option<NodeId>,
     pub graph: Option<RailwayGraph>,
     /// The `on_from_here` property is an optional callback that will be called when the "From here" button is clicked.
-    pub on_from_here: Option<Callback<i64>>,
+    pub on_from_here: Option<Callback<NodeId>>,
     /// The `on_to_here` property is an optional callback that will be called when the "To here" button is clicked.
-    pub on_to_here: Option<Callback<i64>>,
+    pub on_to_here: Option<Callback<NodeId>>,
 }
 
 impl Component for NodeContextMenu {
@@ -51,10 +52,10 @@ impl Component for NodeContextMenu {
     fn view(&self, ctx: &Context<Self>) -> Html {
         match (ctx.props().node_id, &ctx.props().graph) {
             (Some(node_id), Some(graph)) => {
-                let node_index = graph.node_indices.get(&node_id).unwrap();
-                let node = graph.graph.node_weight(node_index.clone()).unwrap();
+                let node_index = graph.physical_graph.id_to_index(node_id).unwrap();
+                let node = graph.physical_graph.graph.node_weight(node_index.clone()).unwrap();
                 let node_id = format!("Node: {}\n", node.id,);
-                let node_coordinates = format!("Latitude: {}, Longitude: {}", node.lat, node.lon);
+                let node_coordinates = format!("Latitude: {}, Longitude: {}", node.location.y, node.location.x);
 
                 html! {
                     <div class="node-context-menu">

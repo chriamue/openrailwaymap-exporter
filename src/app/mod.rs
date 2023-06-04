@@ -11,6 +11,8 @@ use crate::exporter::svg::SvgComponent;
 use crate::importer::overpass_importer::from_railway_elements;
 use crate::importer::overpass_importer::{count_node_elements, count_way_elements, RailwayElement};
 use crate::prelude::{OverpassApiClient, RailwayApiClient, RailwayGraph};
+use crate::types::NodeId;
+use crate::railway_model::railway_graph::RailwayGraphExt;
 use wasm_bindgen::prelude::*;
 use web_sys::EventTarget;
 use web_sys::HtmlInputElement;
@@ -46,9 +48,9 @@ pub struct App {
     total_length: f64,
     show_svg: bool,
     graph: Option<RailwayGraph>,
-    selected_node_id: Option<i64>,
-    start_node_id: Option<i64>,
-    end_node_id: Option<i64>,
+    selected_node_id: Option<NodeId>,
+    start_node_id: Option<NodeId>,
+    end_node_id: Option<NodeId>,
 }
 
 /// Represents the messages that can be sent to the `App` component.
@@ -62,11 +64,11 @@ pub enum Msg {
     /// Toggle between svg and 3d.
     ToggleView,
     /// Node selected
-    NodeSelected(i64),
+    NodeSelected(NodeId),
     /// Start node selected.
-    StartNodeSelected(i64),
+    StartNodeSelected(NodeId),
     /// End node selected.
-    EndNodeSelected(i64),
+    EndNodeSelected(NodeId),
 }
 
 impl Component for App {

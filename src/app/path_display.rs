@@ -1,5 +1,6 @@
 use crate::railway_algorithms::PathFinding;
 use crate::railway_model::RailwayGraph;
+use crate::types::NodeId;
 use yew::prelude::*;
 
 /// `PathDisplay` is a Yew component that displays the shortest path and its length between
@@ -16,9 +17,9 @@ pub struct Props {
     /// The `RailwayGraph` for which to find the shortest path.
     pub graph: Option<RailwayGraph>,
     /// The ID of the start node for the path.
-    pub start_node_id: Option<i64>,
+    pub start_node_id: Option<NodeId>,
     /// The ID of the end node for the path.
-    pub end_node_id: Option<i64>,
+    pub end_node_id: Option<NodeId>,
 }
 
 impl Component for PathDisplay {
