@@ -53,9 +53,16 @@ impl Component for NodeContextMenu {
         match (ctx.props().node_id, &ctx.props().graph) {
             (Some(node_id), Some(graph)) => {
                 let node_index = graph.physical_graph.id_to_index(node_id).unwrap();
-                let node = graph.physical_graph.graph.node_weight(node_index.clone()).unwrap();
+                let node = graph
+                    .physical_graph
+                    .graph
+                    .node_weight(node_index.clone())
+                    .unwrap();
                 let node_id = format!("Node: {}\n", node.id,);
-                let node_coordinates = format!("Latitude: {}, Longitude: {}", node.location.y, node.location.x);
+                let node_coordinates = format!(
+                    "Latitude: {}, Longitude: {}",
+                    node.location.y, node.location.x
+                );
 
                 html! {
                     <div class="node-context-menu">

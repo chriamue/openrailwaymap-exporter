@@ -356,6 +356,9 @@ impl Simulation {
                             object.set_position(Some(next_node_id));
                         }
                         object.set_geo_location(Some(new_geo_location));
+                    } else {
+                        warn!("object {} has no next node, unsetting target", object.id());
+                        object.set_next_target(None);
                     }
                 } else {
                     warn!("object {} has no coordinates", object.id())

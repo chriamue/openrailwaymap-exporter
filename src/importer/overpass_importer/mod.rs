@@ -13,7 +13,7 @@ use petgraph::stable_graph::NodeIndex;
 pub use railway_element::RailwayElement;
 use serde_json::Value;
 use std::collections::{HashMap, HashSet};
-use transit_grid::prelude::TransitNetworkModifier;
+use transit_grid::prelude::{TransitNetworkModifier, TransitNetworkRepairer};
 use uom::si::length::meter;
 
 pub use self::railway_element::{count_node_elements, count_way_elements, ElementType};
@@ -144,6 +144,8 @@ pub fn from_railway_elements(elements: &[RailwayElement]) -> RailwayGraph {
             }
         }
     }
+    network.repair();
+    network.repair();
     network
 }
 

@@ -27,12 +27,16 @@ pub fn path_length(graph: &RailwayGraph, edges: &Vec<EdgeId>) -> Option<Length> 
 
 #[cfg(test)]
 mod tests {
+    use transit_grid::prelude::TransitNetworkRepairer;
+
     use super::*;
     use crate::{railway_algorithms::PathFinding, tests::test_graph_1};
 
     #[test]
     fn test_path_length() {
-        let graph = test_graph_1();
+        let mut graph = test_graph_1();
+        graph.repair();
+        graph.repair();
         let edges = graph.shortest_path_edges(1, 9).unwrap();
         let length = path_length(&graph, &edges).unwrap();
         assert_eq!(length.get::<meter>(), 2765.236);
