@@ -56,20 +56,20 @@ pub trait RailwayGraphAlgos {
 
 impl RailwayGraphAlgos for RailwayGraph {
     fn reachable_nodes(&self, start_node_id: NodeId) -> Vec<NodeId> {
-        let start_index = self.physical_graph.id_to_index(start_node_id);
-        if let Some(&start_index) = start_index {
-            let mut reachable_nodes = Vec::new();
-            let mut bfs = Bfs::new(&self.physical_graph.graph, start_index);
+        let start_indices = self.topology_graph.id_to_index(start_node_id);
 
-            while let Some(visited_node_index) = bfs.next(&self.physical_graph.graph) {
-                let visited_node_id = self
-                    .physical_graph
-                    .graph
-                    .node_weight(visited_node_index)
-                    .unwrap()
-                    .id;
-                if visited_node_id != start_node_id {
-                    reachable_nodes.push(visited_node_id);
+        if let Some((start_index_1, start_index_2)) = start_indices {
+            let mut reachable_nodes = Vec::new();
+
+            for &start_index in &[start_index_1, start_index_2] {
+                let mut bfs = Bfs::new(&self.topology_graph.graph, *start_index);
+
+                while let Some(visited_node_index) = bfs.next(&self.topology_graph.graph) {
+                    let visited_node_id =
+                        self.topology_graph.index_to_id(visited_node_index).unwrap();
+                    if *visited_node_id != start_node_id {
+                        reachable_nodes.push(*visited_node_id);
+                    }
                 }
             }
 
@@ -80,17 +80,19 @@ impl RailwayGraphAlgos for RailwayGraph {
     }
 
     fn reachable_edges(&self, start_node_id: NodeId) -> Vec<EdgeId> {
-        let start_index = self.physical_graph.id_to_index(start_node_id);
-        if let Some(&start_index) = start_index {
+        let start_index = self.topology_graph.id_to_index(start_node_id);
+        if let Some(&(start_index_1, start_index_2)) = start_index {
             let mut reachable_edges = Vec::new();
-            let mut bfs = Bfs::new(&self.physical_graph.graph, start_index);
+            for &start_index in &[start_index_1, start_index_2] {
+                let mut bfs = Bfs::new(&self.topology_graph.graph, start_index);
 
-            while let Some(visited_node_index) = bfs.next(&self.physical_graph.graph) {
-                let visited_node_edges = self.physical_graph.graph.edges(visited_node_index);
-                for edge in visited_node_edges {
-                    let edge_id = edge.weight().id;
-                    if !reachable_edges.contains(&edge_id) {
-                        reachable_edges.push(edge_id);
+                while let Some(visited_node_index) = bfs.next(&self.topology_graph.graph) {
+                    let visited_node_edges = self.topology_graph.graph.edges(visited_node_index);
+                    for edge in visited_node_edges {
+                        let edge_id = edge.weight().edge_id;
+                        if !reachable_edges.contains(&edge_id) {
+                            reachable_edges.push(edge_id);
+                        }
                     }
                 }
             }

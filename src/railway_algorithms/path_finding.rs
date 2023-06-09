@@ -60,10 +60,7 @@ impl PathFinding for RailwayGraph {
     }
 
     fn shortest_path_nodes(&self, start: NodeId, end: NodeId) -> Option<Vec<NodeId>> {
-        println!("Finding shortest path between {} and {}", start, end);
-        let path = self.find_shortest_path(start, end);
-        println!("Found path: {:?}", path);
-        path
+        self.find_shortest_path(start, end)
     }
 
     fn shortest_path_edges(&self, start: NodeId, end: NodeId) -> Option<Vec<EdgeId>> {
@@ -123,7 +120,7 @@ mod tests {
         assert_eq!(railway_graph.shortest_path_nodes(1, 2), Some(vec![1, 2]));
         assert_eq!(railway_graph.shortest_path_nodes(1, 3), Some(vec![1, 2, 3]));
         assert_eq!(railway_graph.shortest_path_nodes(2, 3), Some(vec![2, 3]));
-        // TODO: assert_eq!(railway_graph.shortest_path_nodes(1, 4), None);
+        assert_eq!(railway_graph.shortest_path_nodes(1, 4), None);
     }
 
     #[test]
@@ -135,6 +132,6 @@ mod tests {
         assert_eq!(railway_graph.shortest_path_edges(1, 2), Some(vec![4]));
         assert_eq!(railway_graph.shortest_path_edges(1, 3), Some(vec![4, 5]));
         assert_eq!(railway_graph.shortest_path_edges(2, 3), Some(vec![5]));
-        // TODO: assert_eq!(railway_graph.shortest_path_edges(1, 4), None);
+        assert_eq!(railway_graph.shortest_path_edges(1, 4), None);
     }
 }
