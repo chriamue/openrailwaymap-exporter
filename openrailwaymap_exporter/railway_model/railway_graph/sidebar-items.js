@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["RailwayGraph"]};
+window.SIDEBAR_ITEMS = {"trait":["RailwayGraphExt"],"type":["RailwayGraph"]};

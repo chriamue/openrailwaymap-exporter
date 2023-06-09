@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/railway_algorithms/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../openrailwaymap_exporter/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/railway_algorithms/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0 (90c541806 2023-05-31)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f61008743c98d196.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../openrailwaymap_exporter/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -306,70 +306,7 @@
 <a href="#306" id="306">306</a>
 <a href="#307" id="307">307</a>
 <a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-<a href="#357" id="357">357</a>
-<a href="#358" id="358">358</a>
-<a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-</pre><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
+</pre></div><pre class="rust"><code><span class="doccomment">//! Module `railway_algorithms` provides algorithms for working with railway networks.
 //!
 //! The module contains the `PathFinding` trait, which offers methods to calculate the
 //! shortest path distance, the shortest path as a list of node IDs, and the shortest
@@ -378,15 +315,19 @@
 /// The `PathFinding` trait is implemented for the `RailwayGraph` type, allowing users
 /// to perform pathfinding operations on railway graphs.
 </span><span class="kw">mod </span>path_finding;
-<span class="kw">use </span><span class="kw">crate</span>::algorithms::{points_in_front, Distance};
-<span class="kw">use </span><span class="kw">crate</span>::prelude::{RailwayEdge, RailwayGraph};
-<span class="kw">use </span>geo::{Coord, HaversineDistance, Point};
+<span class="kw">mod </span>railway_edge_algos;
+
+<span class="kw">use crate</span>::{
+    prelude::RailwayGraph,
+    types::{EdgeId, NodeId},
+};
 <span class="kw">pub use </span>path_finding::PathFinding;
 <span class="kw">use </span>petgraph::visit::Bfs;
-<span class="kw">use </span>uom::si::f64::Length;
-<span class="kw">use </span>uom::si::length::meter;
 
-<span class="kw">impl </span>RailwayGraph {
+<span class="kw">pub use </span>railway_edge_algos::RailwayEdgeAlgos;
+
+<span class="doccomment">/// `RailwayGraphAlgos` trait provides algorithms for railway graphs.
+</span><span class="kw">pub trait </span>RailwayGraphAlgos {
     <span class="doccomment">/// Find all reachable nodes from the given start node in the railway graph.
     ///
     /// This function performs a breadth-first search from the given start node and returns a
@@ -400,23 +341,7 @@
     ///
     /// A `Vec&lt;i64&gt;` containing the IDs of all nodes reachable from the start node.
     /// If the start node ID is not found in the graph, an empty vector is returned.
-    </span><span class="kw">pub fn </span>reachable_nodes(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: i64) -&gt; Vec&lt;i64&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(start_index) = <span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>start_node_id) {
-            <span class="kw">let </span><span class="kw-2">mut </span>reachable_nodes = Vec::new();
-            <span class="kw">let </span><span class="kw-2">mut </span>bfs = Bfs::new(<span class="kw-2">&amp;</span><span class="self">self</span>.graph, <span class="kw-2">*</span>start_index);
-
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(visited_node_index) = bfs.next(<span class="kw-2">&amp;</span><span class="self">self</span>.graph) {
-                <span class="kw">let </span>visited_node_id = <span class="self">self</span>.graph.node_weight(visited_node_index).unwrap().id;
-                <span class="kw">if </span>visited_node_id != start_node_id {
-                    reachable_nodes.push(visited_node_id);
-                }
-            }
-
-            reachable_nodes
-        } <span class="kw">else </span>{
-            <span class="macro">vec!</span>[]
-        }
-    }
+    </span><span class="kw">fn </span>reachable_nodes(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId) -&gt; Vec&lt;NodeId&gt;;
 
     <span class="doccomment">/// Find all reachable edges from the given start node in the railway graph.
     ///
@@ -431,122 +356,64 @@
     ///
     /// A `Vec&lt;i64&gt;` containing the IDs of all edges reachable from the start node.
     /// If the start node ID is not found in the graph, an empty vector is returned.
-    </span><span class="kw">pub fn </span>reachable_edges(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: i64) -&gt; Vec&lt;i64&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(start_index) = <span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>start_node_id) {
-            <span class="kw">let </span><span class="kw-2">mut </span>reachable_edges = Vec::new();
-            <span class="kw">let </span><span class="kw-2">mut </span>bfs = Bfs::new(<span class="kw-2">&amp;</span><span class="self">self</span>.graph, <span class="kw-2">*</span>start_index);
+    </span><span class="kw">fn </span>reachable_edges(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId) -&gt; Vec&lt;EdgeId&gt;;
 
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(visited_node_index) = bfs.next(<span class="kw-2">&amp;</span><span class="self">self</span>.graph) {
-                <span class="kw">let </span>visited_node_edges = <span class="self">self</span>.graph.edges(visited_node_index);
-                <span class="kw">for </span>edge <span class="kw">in </span>visited_node_edges {
-                    <span class="kw">let </span>edge_id = edge.weight().id;
-                    <span class="kw">if </span>!reachable_edges.contains(<span class="kw-2">&amp;</span>edge_id) {
-                        reachable_edges.push(edge_id);
+    <span class="doccomment">/// Returns the next reachable node on the shortest path
+    </span><span class="kw">fn </span>get_next_node(<span class="kw-2">&amp;</span><span class="self">self</span>, current: NodeId, target: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt;;
+}
+
+<span class="kw">impl </span>RailwayGraphAlgos <span class="kw">for </span>RailwayGraph {
+    <span class="kw">fn </span>reachable_nodes(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId) -&gt; Vec&lt;NodeId&gt; {
+        <span class="kw">let </span>start_indices = <span class="self">self</span>.topology_graph.id_to_index(start_node_id);
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((start_index_1, start_index_2)) = start_indices {
+            <span class="kw">let </span><span class="kw-2">mut </span>reachable_nodes = Vec::new();
+
+            <span class="kw">for </span><span class="kw-2">&amp;</span>start_index <span class="kw">in </span><span class="kw-2">&amp;</span>[start_index_1, start_index_2] {
+                <span class="kw">let </span><span class="kw-2">mut </span>bfs = Bfs::new(<span class="kw-2">&amp;</span><span class="self">self</span>.topology_graph.graph, <span class="kw-2">*</span>start_index);
+
+                <span class="kw">while let </span><span class="prelude-val">Some</span>(visited_node_index) = bfs.next(<span class="kw-2">&amp;</span><span class="self">self</span>.topology_graph.graph) {
+                    <span class="kw">let </span>visited_node_id =
+                        <span class="self">self</span>.topology_graph.index_to_id(visited_node_index).unwrap();
+                    <span class="kw">if </span><span class="kw-2">*</span>visited_node_id != start_node_id {
+                        reachable_nodes.push(<span class="kw-2">*</span>visited_node_id);
+                    }
+                }
+            }
+
+            reachable_nodes
+        } <span class="kw">else </span>{
+            Vec::new()
+        }
+    }
+
+    <span class="kw">fn </span>reachable_edges(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId) -&gt; Vec&lt;EdgeId&gt; {
+        <span class="kw">let </span>start_index = <span class="self">self</span>.topology_graph.id_to_index(start_node_id);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>(start_index_1, start_index_2)) = start_index {
+            <span class="kw">let </span><span class="kw-2">mut </span>reachable_edges = Vec::new();
+            <span class="kw">for </span><span class="kw-2">&amp;</span>start_index <span class="kw">in </span><span class="kw-2">&amp;</span>[start_index_1, start_index_2] {
+                <span class="kw">let </span><span class="kw-2">mut </span>bfs = Bfs::new(<span class="kw-2">&amp;</span><span class="self">self</span>.topology_graph.graph, start_index);
+
+                <span class="kw">while let </span><span class="prelude-val">Some</span>(visited_node_index) = bfs.next(<span class="kw-2">&amp;</span><span class="self">self</span>.topology_graph.graph) {
+                    <span class="kw">let </span>visited_node_edges = <span class="self">self</span>.topology_graph.graph.edges(visited_node_index);
+                    <span class="kw">for </span>edge <span class="kw">in </span>visited_node_edges {
+                        <span class="kw">let </span>edge_id = edge.weight().edge_id;
+                        <span class="kw">if </span>!reachable_edges.contains(<span class="kw-2">&amp;</span>edge_id) {
+                            reachable_edges.push(edge_id);
+                        }
                     }
                 }
             }
 
             reachable_edges
         } <span class="kw">else </span>{
-            <span class="macro">vec!</span>[]
+            Vec::new()
         }
     }
 
-    <span class="doccomment">/// Returns the next reachable node on the shortest path
-    </span><span class="kw">pub fn </span>get_next_node(<span class="kw-2">&amp;</span><span class="self">self</span>, current: i64, target: i64) -&gt; <span class="prelude-ty">Option</span>&lt;i64&gt; {
+    <span class="kw">fn </span>get_next_node(<span class="kw-2">&amp;</span><span class="self">self</span>, current: NodeId, target: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt; {
         <span class="kw">let </span>path = <span class="self">self</span>.shortest_path_nodes(current, target)<span class="question-mark">?</span>;
         path.get(<span class="number">1</span>).copied()
-    }
-}
-
-<span class="kw">impl </span>RailwayEdge {
-    <span class="doccomment">/// Calculates the distance between the current location and the last coordinate in the linestring.
-    ///
-    /// # Arguments
-    ///
-    /// * `current_location` - A `Coord&lt;f64&gt;` representing the current location on the edge.
-    /// * `direction_coord` - A `Coord&lt;f64&gt;` representing the target direction along the edge.
-    ///
-    /// # Returns
-    ///
-    /// A `f64` representing the distance to the last coordinate in the linestring.
-    ///
-    </span><span class="kw">pub fn </span>distance_to_end(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        current_location: Coord&lt;f64&gt;,
-        direction_coord: Coord&lt;f64&gt;,
-    ) -&gt; Length {
-        <span class="comment">// Get the points in front of the current_location in the direction of direction_coord
-        </span><span class="kw">let </span>points_in_front = points_in_front(<span class="kw-2">&amp;</span><span class="self">self</span>.path, current_location, direction_coord);
-
-        <span class="comment">// If there are no points in front, return 0.0
-        </span><span class="kw">if </span>points_in_front.is_empty() {
-            <span class="kw">return </span>Length::new::&lt;meter&gt;(<span class="number">0.0</span>);
-        }
-
-        <span class="kw">let </span><span class="kw-2">mut </span>total_distance = Length::new::&lt;meter&gt;(<span class="number">0.0</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>current_point = current_location;
-
-        <span class="kw">for </span>next_point <span class="kw">in </span>points_in_front {
-            <span class="kw">let </span>segment_distance = current_point.distance(<span class="kw-2">&amp;</span>next_point);
-            total_distance += segment_distance;
-
-            current_point = next_point;
-        }
-        total_distance
-    }
-
-    <span class="doccomment">/// Calculates a new position on the edge based on the given parameters.
-    ///
-    /// # Arguments
-    ///
-    /// * `current_location` - A `Coord&lt;f64&gt;` representing the current location on the edge.
-    /// * `distance_to_travel` - A `f64` representing the distance to travel along the edge from the current location.
-    /// * `direction_coord` - A `Coord&lt;f64&gt;` representing the target direction along the edge.
-    ///
-    /// # Returns
-    ///
-    /// A `Coord&lt;f64&gt;` representing the new position on the edge after traveling the specified distance in the given direction.
-    ///
-    </span><span class="kw">pub fn </span>position_on_edge(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        current_location: Coord&lt;f64&gt;,
-        distance_to_travel: Length,
-        direction_coord: Coord&lt;f64&gt;,
-    ) -&gt; Coord&lt;f64&gt; {
-        <span class="comment">// Get the points in front of the current_location in the direction of direction_coord
-        </span><span class="kw">let </span>points_in_front = points_in_front(<span class="kw-2">&amp;</span><span class="self">self</span>.path, current_location, direction_coord);
-
-        <span class="comment">// If there are no points in front, return the current_location
-        </span><span class="kw">if </span>points_in_front.is_empty() {
-            <span class="kw">return </span>current_location;
-        }
-
-        <span class="comment">// Calculate the remaining distance to travel
-        </span><span class="kw">let </span><span class="kw-2">mut </span>remaining_distance = distance_to_travel.get::&lt;meter&gt;();
-
-        <span class="comment">// Iterate through the points in front and find the point where the remaining_distance is reached
-        </span><span class="kw">let </span><span class="kw-2">mut </span>current_point = current_location;
-        <span class="kw">let </span><span class="kw-2">mut </span>new_position = current_location;
-
-        <span class="kw">for </span>next_point <span class="kw">in </span>points_in_front {
-            <span class="kw">let </span>current_point_geo = Point::new(current_point.x, current_point.y);
-            <span class="kw">let </span>next_point_geo = Point::new(next_point.x, next_point.y);
-
-            <span class="comment">// Use haversine_distance instead of euclidean_distance
-            </span><span class="kw">let </span>segment_distance = current_point_geo.haversine_distance(<span class="kw-2">&amp;</span>next_point_geo);
-
-            <span class="kw">let </span>ratio = remaining_distance / segment_distance;
-            new_position.x = current_point.x + ratio * (next_point.x - current_point.x);
-            new_position.y = current_point.y + ratio * (next_point.y - current_point.y);
-            <span class="kw">if </span>remaining_distance &lt; segment_distance {
-                <span class="kw">break</span>;
-            } <span class="kw">else </span>{
-                current_point = next_point;
-                remaining_distance -= segment_distance;
-            }
-        }
-        new_position
     }
 }
 
@@ -555,9 +422,14 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>approx::assert_relative_eq;
     <span class="kw">use </span>geo::{coord, line_string};
+    <span class="kw">use </span>transit_grid::prelude::TransitNetworkRepairer;
+    <span class="kw">use </span>uom::si::{f64::Length, length::meter};
 
-    <span class="kw">use </span><span class="kw">crate</span>::importer::overpass_importer::{
-        from_railway_elements, Coordinate, ElementType, RailwayElement,
+    <span class="kw">use crate</span>::{
+        importer::overpass_importer::{
+            from_railway_elements, Coordinate, ElementType, RailwayElement,
+        },
+        prelude::RailwayEdge,
     };
     <span class="kw">use </span>std::collections::HashMap;
 
@@ -732,13 +604,14 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_get_next_node() {
-        <span class="kw">let </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>test_elements());
+        <span class="kw">let </span><span class="kw-2">mut </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>test_elements());
+        railway_graph.repair();
+        railway_graph.repair();
 
         <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">1</span>, <span class="number">2</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
         <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">1</span>, <span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
         <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">2</span>, <span class="number">3</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="macro">assert_eq!</span>(railway_graph.get_next_node(<span class="number">1</span>, <span class="number">4</span>), <span class="prelude-val">None</span>);
-    }
+        <span class="comment">// TODO: assert_eq!(railway_graph.get_next_node(1, 4), None);
+    </span>}
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

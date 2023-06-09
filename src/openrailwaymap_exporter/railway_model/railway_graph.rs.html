@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/railway_model/railway_graph.rs`."><title>railway_graph.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../openrailwaymap_exporter/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/railway_model/railway_graph.rs`."><title>railway_graph.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0 (90c541806 2023-05-31)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f61008743c98d196.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../openrailwaymap_exporter/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -519,41 +519,26 @@
 <a href="#519" id="519">519</a>
 <a href="#520" id="520">520</a>
 <a href="#521" id="521">521</a>
-</pre><pre class="rust"><code><span class="kw">use </span>geo::{coord, Coord};
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>geo::{coord, Coord};
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
-<span class="kw">use </span>petgraph::{stable_graph::NodeIndex, Graph, Undirected};
-<span class="kw">use </span>std::collections::HashMap;
+<span class="kw">use </span>transit_grid::prelude::TransitNetwork;
 
 <span class="kw">use </span><span class="kw">crate</span>::types::{EdgeId, NodeId};
 
 <span class="kw">use super</span>::{RailwayEdge, RailwayNode};
 
-<span class="doccomment">/// `RailwayGraph` represents a graph structure for railway networks.
-///
-/// The graph consists of nodes representing railway stations and junctions, and edges representing
-/// the railway segments between the nodes. It also stores the node indices as a HashMap for easy
-/// retrieval.
-</span><span class="attr">#[derive(Debug, Clone, Default)]
-</span><span class="kw">pub struct </span>RailwayGraph {
-    <span class="doccomment">/// The internal graph used to represent the railway network.
-    ///
-    /// The graph consists of `RailwayNode` instances as nodes and `RailwayEdge` instances as edges.
-    /// It is an undirected graph.
-    </span><span class="kw">pub </span>graph: Graph&lt;RailwayNode, RailwayEdge, Undirected&gt;,
+<span class="doccomment">/// A RailwayGraph is a TransitNetwork with RailwayNode and RailwayEdge as node and edge types.
+</span><span class="kw">pub type </span>RailwayGraph = TransitNetwork&lt;Coord, f64&gt;;
 
-    <span class="doccomment">/// A HashMap that maps node IDs to their corresponding indices in the graph.
-    ///
-    /// This HashMap allows for quick and easy retrieval of node indices based on their IDs.
-    </span><span class="kw">pub </span>node_indices: HashMap&lt;i64, NodeIndex&gt;,
-}
-
-<span class="kw">impl </span>PartialEq <span class="kw">for </span>RailwayGraph {
-    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
-        <span class="self">self</span>.node_indices.eq(<span class="kw-2">&amp;</span>other.node_indices)
-    }
-}
-
-<span class="kw">impl </span>RailwayGraph {
+<span class="doccomment">/// An extension trait for the RailwayGraph.
+</span><span class="kw">pub trait </span>RailwayGraphExt {
     <span class="doccomment">/// Retrieve an edge from the graph by its ID.
     ///
     /// # Arguments
@@ -564,14 +549,7 @@
     ///
     /// An `Option&lt;RailwayEdge&gt;` that contains the edge if found, or `None` if not found.
     ///
-    </span><span class="kw">pub fn </span>get_edge_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: EdgeId) -&gt; <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt; {
-        <span class="kw">for </span>edge <span class="kw">in </span><span class="self">self</span>.graph.edge_references() {
-            <span class="kw">if </span>edge.weight().id == id {
-                <span class="kw">return </span><span class="prelude-val">Some</span>(edge.weight().clone());
-            }
-        }
-        <span class="prelude-val">None
-    </span>}
+    </span><span class="kw">fn </span>get_edge_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: EdgeId) -&gt; <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt;;
 
     <span class="doccomment">/// Returns a reference to a RailwayNode with the specified NodeId if it exists in the graph.
     ///
@@ -585,10 +563,7 @@
     /// # Returns
     ///
     /// An Option containing a reference to the RailwayNode if it exists, otherwise None.
-    </span><span class="kw">pub fn </span>get_node_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayNode&gt; {
-        <span class="kw">let </span>node_index = <span class="kw-2">*</span><span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>id)<span class="question-mark">?</span>;
-        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.graph[node_index])
-    }
+    </span><span class="kw">fn </span>get_node_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayNode&gt;;
 
     <span class="doccomment">/// Retrieve the railway edge between two nodes.
     ///
@@ -602,14 +577,7 @@
     /// An `Option&lt;&amp;RailwayEdge&gt;` that contains the railway edge connecting the two nodes if it exists,
     /// or `None` if no such edge exists.
     ///
-    </span><span class="kw">pub fn </span>railway_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId, end_node_id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt; {
-        <span class="kw">let </span>start_node_index = <span class="kw-2">*</span><span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>start_node_id)<span class="question-mark">?</span>;
-        <span class="kw">let </span>end_node_index = <span class="kw-2">*</span><span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>end_node_id)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>edge_index = <span class="self">self</span>.graph.find_edge(start_node_index, end_node_index)<span class="question-mark">?</span>;
-        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.graph[edge_index])
-    }
-
+    </span><span class="kw">fn </span>railway_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId, end_node_id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt;;
     <span class="doccomment">/// Retrieve the edges connected to a node by its ID.
     ///
     /// # Arguments
@@ -620,15 +588,7 @@
     ///
     /// A `Vec&lt;&amp;RailwayEdge&gt;` containing the edges connected to the node, or an empty vector if the node is not found.
     ///
-    </span><span class="kw">pub fn </span>get_edges_of_node(<span class="kw-2">&amp;</span><span class="self">self</span>, node_id: NodeId) -&gt; Vec&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt; {
-        <span class="kw">let </span>node_index = <span class="kw">match </span><span class="self">self</span>.node_indices.get(<span class="kw-2">&amp;</span>node_id) {
-            <span class="prelude-val">Some</span>(index) =&gt; <span class="kw-2">*</span>index,
-            <span class="prelude-val">None </span>=&gt; <span class="kw">return </span>Vec::new(),
-        };
-
-        <span class="self">self</span>.graph.edges(node_index).map(|e| e.weight()).collect()
-    }
-
+    </span><span class="kw">fn </span>get_edges_of_node(<span class="kw-2">&amp;</span><span class="self">self</span>, node_id: NodeId) -&gt; Vec&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt;;
     <span class="doccomment">/// Calculate the bounding box of the graph.
     ///
     /// The bounding box is represented as a tuple containing the minimum and maximum
@@ -639,15 +599,81 @@
     /// A tuple containing two `Coordinate` structs representing the minimum and maximum coordinates
     /// of the bounding box of the graph.
     ///
-    </span><span class="kw">pub fn </span>bounding_box(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Coord, Coord) {
+    </span><span class="kw">fn </span>bounding_box(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Coord, Coord);
+    <span class="doccomment">/// Calculate the total length of the railway network.
+    ///
+    /// The total length is the sum of the lengths of all edges in the graph.
+    ///
+    /// # Returns
+    ///
+    /// A `f64` value representing the total length of the railway network in meters.
+    ///
+    </span><span class="kw">fn </span>total_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
+    <span class="doccomment">/// Returns the nearest node to the given position on the specified edge.
+    ///
+    /// # Arguments
+    ///
+    /// * `edge_id` - The ID of the edge.
+    /// * `position_on_edge` - The position on the edge, ranging from 0.0 to 1.0.
+    /// * `current_node_id` - An optional `NodeId` of the current node to determine the start node.
+    ///
+    /// # Returns
+    ///
+    /// An `Option&lt;NodeId&gt;` containing the ID of the nearest node if found, or `None` if the edge is not found.
+    </span><span class="kw">fn </span>nearest_node(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        edge_id: EdgeId,
+        position_on_edge: f64,
+        current_node_id: <span class="prelude-ty">Option</span>&lt;NodeId&gt;,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt;;
+}
+
+<span class="kw">impl </span>RailwayGraphExt <span class="kw">for </span>RailwayGraph {
+    <span class="kw">fn </span>get_edge_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: EdgeId) -&gt; <span class="prelude-ty">Option</span>&lt;RailwayEdge&gt; {
+        <span class="kw">for </span>edge <span class="kw">in </span><span class="self">self</span>.physical_graph.graph.edge_references() {
+            <span class="kw">if </span>edge.weight().id == id {
+                <span class="kw">return </span><span class="prelude-val">Some</span>(edge.weight().clone());
+            }
+        }
+        <span class="prelude-val">None
+    </span>}
+
+    <span class="kw">fn </span>get_node_by_id(<span class="kw-2">&amp;</span><span class="self">self</span>, id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayNode&gt; {
+        <span class="kw">let </span>node_index = <span class="self">self</span>.physical_graph.id_to_index(id);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(node_index) = node_index {
+            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.physical_graph.graph[<span class="kw-2">*</span>node_index]);
+        }
+        <span class="prelude-val">None
+    </span>}
+
+    <span class="kw">fn </span>railway_edge(<span class="kw-2">&amp;</span><span class="self">self</span>, start_node_id: NodeId, end_node_id: NodeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt; {
+        <span class="self">self</span>.physical_graph
+            .get_transit_edge(start_node_id, end_node_id)
+    }
+
+    <span class="kw">fn </span>get_edges_of_node(<span class="kw-2">&amp;</span><span class="self">self</span>, node_id: NodeId) -&gt; Vec&lt;<span class="kw-2">&amp;</span>RailwayEdge&gt; {
+        <span class="kw">let </span>node_index = <span class="self">self</span>.physical_graph.id_to_index(node_id);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>node_index) = node_index {
+            <span class="kw">return </span><span class="self">self
+                </span>.physical_graph
+                .graph
+                .edges(node_index)
+                .map(|e| e.weight())
+                .collect();
+        } <span class="kw">else </span>{
+            Vec::new()
+        }
+    }
+
+    <span class="kw">fn </span>bounding_box(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (Coord, Coord) {
         <span class="kw">let </span><span class="kw-2">mut </span>min_lat = std::f64::MAX;
         <span class="kw">let </span><span class="kw-2">mut </span>min_lon = std::f64::MAX;
         <span class="kw">let </span><span class="kw-2">mut </span>max_lat = std::f64::MIN;
         <span class="kw">let </span><span class="kw-2">mut </span>max_lon = std::f64::MIN;
 
-        <span class="kw">for </span>node <span class="kw">in </span><span class="self">self</span>.graph.node_references() {
-            <span class="kw">let </span>lat = node.<span class="number">1</span>.lat;
-            <span class="kw">let </span>lon = node.<span class="number">1</span>.lon;
+        <span class="kw">for </span>node <span class="kw">in </span><span class="self">self</span>.physical_graph.graph.node_references() {
+            <span class="kw">let </span>lat = node.<span class="number">1</span>.location.y;
+            <span class="kw">let </span>lon = node.<span class="number">1</span>.location.x;
 
             min_lat = min_lat.min(lat);
             min_lon = min_lon.min(lon);
@@ -661,68 +687,51 @@
         )
     }
 
-    <span class="doccomment">/// Calculate the total length of the railway network.
-    ///
-    /// The total length is the sum of the lengths of all edges in the graph.
-    ///
-    /// # Returns
-    ///
-    /// A `f64` value representing the total length of the railway network in meters.
-    ///
-    </span><span class="kw">pub fn </span>total_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
-        <span class="self">self</span>.graph
+    <span class="kw">fn </span>total_length(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64 {
+        <span class="self">self</span>.physical_graph
+            .graph
             .edge_references()
             .map(|edge| edge.weight().length)
             .sum()
     }
 
-    <span class="doccomment">/// Returns the nearest node to the given position on the specified edge.
-    ///
-    /// # Arguments
-    ///
-    /// * `edge_id` - The ID of the edge.
-    /// * `position_on_edge` - The position on the edge, ranging from 0.0 to 1.0.
-    /// * `current_node_id` - An optional `NodeId` of the current node to determine the start node.
-    ///
-    /// # Returns
-    ///
-    /// An `Option&lt;NodeId&gt;` containing the ID of the nearest node if found, or `None` if the edge is not found.
-    </span><span class="kw">pub fn </span>nearest_node(
+    <span class="kw">fn </span>nearest_node(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         edge_id: EdgeId,
         position_on_edge: f64,
         current_node_id: <span class="prelude-ty">Option</span>&lt;NodeId&gt;,
     ) -&gt; <span class="prelude-ty">Option</span>&lt;NodeId&gt; {
         <span class="comment">// Find the edge indices in the petgraph
-        </span><span class="kw">let </span><span class="kw-2">mut </span>edge_indices = <span class="self">self</span>.graph.edge_indices();
-        <span class="kw">let </span>edge_index = edge_indices.find(|idx| <span class="self">self</span>.graph[<span class="kw-2">*</span>idx].id == edge_id)<span class="question-mark">?</span>;
+        </span><span class="kw">let </span><span class="kw-2">mut </span>edge_indices = <span class="self">self</span>.physical_graph.graph.edge_indices();
+        <span class="kw">let </span>edge_index = edge_indices.find(|idx| <span class="self">self</span>.physical_graph.graph[<span class="kw-2">*</span>idx].id == edge_id)<span class="question-mark">?</span>;
 
         <span class="comment">// Get the start and end nodes of the edge
-        </span><span class="kw">let </span>(<span class="kw-2">mut </span>start_node_index, <span class="kw-2">mut </span>end_node_index) = <span class="self">self</span>.graph.edge_endpoints(edge_index)<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>(<span class="kw-2">mut </span>start_node_index, <span class="kw-2">mut </span>end_node_index) =
+            <span class="self">self</span>.physical_graph.graph.edge_endpoints(edge_index)<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(current_node_id) = current_node_id {
-            <span class="kw">if </span>current_node_id == <span class="self">self</span>.graph[end_node_index].id {
+            <span class="kw">if </span>current_node_id == <span class="self">self</span>.physical_graph.graph[end_node_index].id {
                 std::mem::swap(<span class="kw-2">&amp;mut </span>start_node_index, <span class="kw-2">&amp;mut </span>end_node_index);
             }
         }
 
-        <span class="kw">let </span>start_node = <span class="kw-2">&amp;</span><span class="self">self</span>.graph[start_node_index];
-        <span class="kw">let </span>end_node = <span class="kw-2">&amp;</span><span class="self">self</span>.graph[end_node_index];
+        <span class="kw">let </span>start_node = <span class="kw-2">&amp;</span><span class="self">self</span>.physical_graph.graph[start_node_index];
+        <span class="kw">let </span>end_node = <span class="kw-2">&amp;</span><span class="self">self</span>.physical_graph.graph[end_node_index];
 
         <span class="comment">// Clamp position_on_edge to the range [0.0, 1.0].
         </span><span class="kw">let </span>position_on_edge = position_on_edge.max(<span class="number">0.0</span>).min(<span class="number">1.0</span>);
 
         <span class="comment">// Calculate the coordinates of the point on the edge.
-        </span><span class="kw">let </span>start_coord = <span class="macro">coord! </span>{x: start_node.lon, y: start_node.lat};
-        <span class="kw">let </span>end_coord = <span class="macro">coord! </span>{ x:end_node.lon, y: end_node.lat};
+        </span><span class="kw">let </span>start_coord = start_node.location;
+        <span class="kw">let </span>end_coord = end_node.location;
         <span class="kw">let </span>point_on_edge = start_coord + (end_coord - start_coord) * position_on_edge;
 
         <span class="comment">// Find the nearest node to the point on the edge.
         </span><span class="kw">let </span><span class="kw-2">mut </span>nearest_node_index = <span class="prelude-val">None</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>nearest_distance = f64::MAX;
-        <span class="kw">for </span>node_index <span class="kw">in </span><span class="self">self</span>.graph.node_indices() {
-            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.graph[node_index];
-            <span class="kw">let </span>coord = <span class="macro">coord! </span>{x: node.lon, y: node.lat};
+        <span class="kw">for </span>node_index <span class="kw">in </span><span class="self">self</span>.physical_graph.graph.node_indices() {
+            <span class="kw">let </span>node = <span class="kw-2">&amp;</span><span class="self">self</span>.physical_graph.graph[node_index];
+            <span class="kw">let </span>coord = node.location;
             <span class="kw">let </span>distance = point_distance(<span class="kw-2">&amp;</span>point_on_edge, <span class="kw-2">&amp;</span>coord);
 
             <span class="kw">if </span>distance &lt; nearest_distance {
@@ -731,7 +740,7 @@
             }
         }
 
-        nearest_node_index.map(|index| <span class="self">self</span>.graph[index].id)
+        nearest_node_index.map(|index| <span class="self">self</span>.physical_graph.graph[index].id)
     }
 }
 
@@ -743,8 +752,11 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span><span class="kw">crate</span>::importer::overpass_importer::{
-        from_railway_elements, Coordinate, ElementType, RailwayElement,
+    <span class="kw">use crate</span>::{
+        importer::overpass_importer::{
+            from_railway_elements, Coordinate, ElementType, RailwayElement,
+        },
+        prelude::RailwayGraphExt,
     };
     <span class="kw">use </span>geo::coord;
     <span class="kw">use </span>std::collections::HashMap;
@@ -904,6 +916,8 @@
 
         <span class="kw">let </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>elements);
 
+        <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, railway_graph.physical_graph.graph);
+
         <span class="comment">// Test for a valid edge.
         </span><span class="kw">let </span>edge = railway_graph.railway_edge(<span class="number">1</span>, <span class="number">2</span>);
         <span class="macro">assert!</span>(edge.is_some());
@@ -1040,5 +1054,4 @@
         <span class="macro">assert_eq!</span>(nearest_node_id, <span class="prelude-val">None</span>);
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

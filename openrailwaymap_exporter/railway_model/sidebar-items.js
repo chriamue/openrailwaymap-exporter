@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["railway_graph"],"struct":["RailwayEdge","RailwayNode"]};
+window.SIDEBAR_ITEMS = {"mod":["railway_graph"],"type":["RailwayEdge","RailwayNode"]};

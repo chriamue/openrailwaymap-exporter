@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/importer/overpass_importer/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../openrailwaymap_exporter/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/importer/overpass_importer/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0 (90c541806 2023-05-31)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-f61008743c98d196.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../openrailwaymap_exporter/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -687,22 +687,26 @@
 <a href="#687" id="687">687</a>
 <a href="#688" id="688">688</a>
 <a href="#689" id="689">689</a>
-</pre><pre class="rust"><code><span class="doccomment">//! `OverpassImporter` is a struct that implements the `RailwayGraphImporter` trait for importing
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+</pre></div><pre class="rust"><code><span class="doccomment">//! `OverpassImporter` is a struct that implements the `RailwayGraphImporter` trait for importing
 //! railway graph data from the Overpass API.
 </span><span class="kw">mod </span>coordinate;
 <span class="kw">mod </span>railway_element;
 <span class="kw">use </span><span class="kw">crate</span>::algorithms::Distance;
 <span class="kw">use </span><span class="kw">crate</span>::railway_model::{RailwayEdge, RailwayGraph, RailwayNode};
+<span class="kw">use </span><span class="kw">crate</span>::types::{EdgeId, NodeId};
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">pub use </span>coordinate::Coordinate;
 <span class="kw">use </span>geo::{coord, Coord, LineString};
 <span class="kw">use </span>geoutils::Location;
-<span class="kw">use </span>petgraph::graph::Graph;
 <span class="kw">use </span>petgraph::stable_graph::NodeIndex;
-<span class="kw">use </span>petgraph::Undirected;
 <span class="kw">pub use </span>railway_element::RailwayElement;
 <span class="kw">use </span>serde_json::Value;
 <span class="kw">use </span>std::collections::{HashMap, HashSet};
+<span class="kw">use </span>transit_grid::prelude::{TransitNetworkModifier, TransitNetworkRepairer};
 <span class="kw">use </span>uom::si::length::meter;
 
 <span class="kw">pub use </span><span class="self">self</span>::railway_element::{count_node_elements, count_way_elements, ElementType};
@@ -761,16 +765,20 @@
 /// ];
 ///
 /// let railway_graph = from_railway_elements(&amp;elements);
-/// println!(&quot;Created railway graph with {} nodes&quot;, railway_graph.graph.node_count());
+/// println!(&quot;Created railway graph with {} nodes&quot;, railway_graph.physical_graph.graph.node_count());
 /// ```
 </span><span class="kw">pub fn </span>from_railway_elements(elements: <span class="kw-2">&amp;</span>[RailwayElement]) -&gt; RailwayGraph {
-    <span class="kw">let </span><span class="kw-2">mut </span>graph = Graph::&lt;RailwayNode, RailwayEdge, Undirected&gt;::new_undirected();
+    <span class="kw">let </span><span class="kw-2">mut </span>network = RailwayGraph::new();
     <span class="kw">let </span><span class="kw-2">mut </span>node_indices = HashMap::new();
 
     <span class="kw">let </span>nodes = create_nodes(elements);
     <span class="kw">for </span>node <span class="kw">in </span><span class="kw-2">&amp;</span>nodes {
-        <span class="kw">let </span>node_index = graph.add_node(node.clone());
-        node_indices.insert(node.id, node_index);
+        <span class="kw">let </span>node_id = network.add_node(<span class="kw-2">*</span>node);
+
+        node_indices.insert(
+            node.id,
+            <span class="kw-2">*</span>network.physical_graph.id_to_index(node_id).unwrap(),
+        );
     }
 
     <span class="macro">assert_eq!</span>(nodes.len(), node_indices.len());
@@ -778,20 +786,25 @@
     <span class="kw">for </span>element <span class="kw">in </span>elements.iter() {
         <span class="kw">if let </span>ElementType::Way = element.element_type {
             <span class="kw">if let </span>(<span class="prelude-val">Some</span>(nodes_ids), <span class="prelude-val">Some</span>(geometry)) = (<span class="kw-2">&amp;</span>element.nodes, <span class="kw-2">&amp;</span>element.geometry) {
+                <span class="kw">let </span>nodes_ids: Vec&lt;NodeId&gt; = nodes_ids
+                    .iter()
+                    .map(|id| NodeId::try_from(<span class="kw-2">*</span>id).unwrap())
+                    .collect();
                 <span class="kw">let </span>length = calculate_geometry_length(geometry);
 
-                <span class="kw">let </span>(node_id, node_index) = find_next_existing_node(<span class="prelude-val">None</span>, nodes_ids, <span class="kw-2">&amp;</span>node_indices);
+                <span class="kw">let </span>(node_id, node_index) =
+                    find_next_existing_node(<span class="prelude-val">None</span>, <span class="kw-2">&amp;</span>nodes_ids, <span class="kw-2">&amp;</span>node_indices);
                 <span class="kw">let </span>(next_node_id, next_node_index) =
-                    find_next_existing_node(node_id, nodes_ids, <span class="kw-2">&amp;</span>node_indices);
+                    find_next_existing_node(node_id, <span class="kw-2">&amp;</span>nodes_ids, <span class="kw-2">&amp;</span>node_indices);
 
                 <span class="kw">if let </span>(<span class="prelude-val">Some</span>(node_index), <span class="prelude-val">Some</span>(next_node_index)) = (node_index, next_node_index) {
                     <span class="macro">assert_ne!</span>(node_index, next_node_index);
 
                     <span class="kw">let </span>linestring: Vec&lt;<span class="kw">_</span>&gt; = {
                         <span class="kw">let </span>node1_coord: Coord&lt;f64&gt; =
-                            <span class="macro">coord! </span>{x: graph[node_index].lon, y: graph[node_index].lat};
+                            network.physical_graph.graph[node_index].location;
                         <span class="kw">let </span>node2_coord: Coord&lt;f64&gt; =
-                            <span class="macro">coord! </span>{x: graph[next_node_index].lon, y: graph[next_node_index].lat};
+                            network.physical_graph.graph[next_node_index].location;
                         <span class="kw">let </span>reverse = node1_coord
                             .distance(<span class="kw-2">&amp;</span><span class="macro">coord! </span>{x: geometry[<span class="number">0</span>].lon, y: geometry[<span class="number">0</span>].lat})
                             &gt; node2_coord
@@ -811,25 +824,22 @@
                         }
                     };
 
-                    graph.add_edge(
-                        node_index,
-                        next_node_index,
-                        RailwayEdge {
-                            id: element.id,
-                            length,
-                            path: LineString::from(linestring),
-                            source: node_id.unwrap(),
-                            target: next_node_id.unwrap(),
-                        },
-                    );
+                    <span class="kw">let </span>edge = RailwayEdge {
+                        id: element.id <span class="kw">as </span>EdgeId,
+                        length,
+                        path: LineString::from(linestring),
+                        source: node_id.unwrap(),
+                        target: next_node_id.unwrap(),
+                    };
+
+                    network.add_edge(edge);
                 }
             }
         }
     }
-    RailwayGraph {
-        graph,
-        node_indices,
-    }
+    network.repair();
+    network.repair();
+    network
 }
 
 <span class="doccomment">/// Find the next existing node ID and its index in the `node_indices` HashMap after the given `start` ID.
@@ -868,10 +878,10 @@
 /// assert_eq!(find_next_existing_node(None, &amp;node_ids, &amp;node_indices), (Some(1), Some(NodeIndex::new(0))));
 /// ```
 </span><span class="kw">pub fn </span>find_next_existing_node(
-    start: <span class="prelude-ty">Option</span>&lt;i64&gt;,
-    node_ids: <span class="kw-2">&amp;</span>[i64],
-    node_indices: <span class="kw-2">&amp;</span>HashMap&lt;i64, NodeIndex&gt;,
-) -&gt; (<span class="prelude-ty">Option</span>&lt;i64&gt;, <span class="prelude-ty">Option</span>&lt;NodeIndex&gt;) {
+    start: <span class="prelude-ty">Option</span>&lt;NodeId&gt;,
+    node_ids: <span class="kw-2">&amp;</span>[NodeId],
+    node_indices: <span class="kw-2">&amp;</span>HashMap&lt;NodeId, NodeIndex&gt;,
+) -&gt; (<span class="prelude-ty">Option</span>&lt;NodeId&gt;, <span class="prelude-ty">Option</span>&lt;NodeIndex&gt;) {
     <span class="kw">let </span>start_pos = start.and_then(|start_id| node_ids.iter().position(|<span class="kw-2">&amp;</span>id| id == start_id));
 
     <span class="kw">for </span>(pos, <span class="kw-2">&amp;</span>id) <span class="kw">in </span>node_ids.iter().enumerate() {
@@ -971,7 +981,7 @@
 /// ```
 </span><span class="kw">pub fn </span>create_nodes(elements: <span class="kw-2">&amp;</span>[RailwayElement]) -&gt; Vec&lt;RailwayNode&gt; {
     <span class="kw">let </span>nodes = create_nodes_from_node_elements(elements);
-    <span class="kw">let </span><span class="kw-2">mut </span>node_ids: HashSet&lt;i64&gt; = node_ids_from_nodes(<span class="kw-2">&amp;</span>nodes);
+    <span class="kw">let </span><span class="kw-2">mut </span>node_ids: HashSet&lt;NodeId&gt; = node_ids_from_nodes(<span class="kw-2">&amp;</span>nodes);
     <span class="kw">let </span>implicit_nodes = create_nodes_from_way_elements_without_existing(elements, <span class="kw-2">&amp;mut </span>node_ids);
     [nodes, implicit_nodes].concat()
 }
@@ -983,9 +993,8 @@
         <span class="kw">if let </span>ElementType::Node = element.element_type {
             <span class="kw">if let </span>(<span class="prelude-val">Some</span>(lat), <span class="prelude-val">Some</span>(lon)) = (element.lat, element.lon) {
                 <span class="kw">let </span>node = RailwayNode {
-                    id: element.id,
-                    lat,
-                    lon,
+                    id: NodeId::try_from(element.id).unwrap(),
+                    location: <span class="macro">coord! </span>{ x: lon, y: lat},
                 };
                 nodes.push(node);
             }
@@ -994,19 +1003,19 @@
     nodes
 }
 
-<span class="kw">fn </span>node_ids_from_nodes(nodes: <span class="kw-2">&amp;</span>[RailwayNode]) -&gt; HashSet&lt;i64&gt; {
+<span class="kw">fn </span>node_ids_from_nodes(nodes: <span class="kw-2">&amp;</span>[RailwayNode]) -&gt; HashSet&lt;NodeId&gt; {
     nodes.iter().map(|node| node.id).collect()
 }
 
-<span class="kw">fn </span>create_node_id_to_element_ids_map(elements: <span class="kw-2">&amp;</span>[RailwayElement]) -&gt; HashMap&lt;i64, Vec&lt;i64&gt;&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>node_id_to_element_ids: HashMap&lt;i64, Vec&lt;i64&gt;&gt; = HashMap::new();
+<span class="kw">fn </span>create_node_id_to_element_ids_map(elements: <span class="kw-2">&amp;</span>[RailwayElement]) -&gt; HashMap&lt;NodeId, Vec&lt;i64&gt;&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>node_id_to_element_ids: HashMap&lt;NodeId, Vec&lt;i64&gt;&gt; = HashMap::new();
 
     <span class="kw">for </span>element <span class="kw">in </span>elements {
         <span class="kw">if let </span>ElementType::Way = element.element_type {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(element_nodes) = <span class="kw-2">&amp;</span>element.nodes {
                 <span class="kw">for </span>node_id <span class="kw">in </span>element_nodes {
                     node_id_to_element_ids
-                        .entry(<span class="kw-2">*</span>node_id)
+                        .entry(NodeId::try_from(<span class="kw-2">*</span>node_id).unwrap())
                         .or_insert_with(Vec::new)
                         .push(element.id);
                 }
@@ -1042,7 +1051,7 @@
 /// A vector of railway nodes created from the input railway elements.
 </span><span class="kw">pub fn </span>create_nodes_from_way_elements_without_existing(
     elements: <span class="kw-2">&amp;</span>[RailwayElement],
-    node_ids: <span class="kw-2">&amp;mut </span>HashSet&lt;i64&gt;,
+    node_ids: <span class="kw-2">&amp;mut </span>HashSet&lt;NodeId&gt;,
 ) -&gt; Vec&lt;RailwayNode&gt; {
     <span class="kw">let </span>node_id_to_element_ids = create_node_id_to_element_ids_map(elements);
     <span class="kw">let </span>id_to_element_map = create_id_to_element_map(elements);
@@ -1077,8 +1086,7 @@
 
                     <span class="kw">let </span>node = RailwayNode {
                         id: node_id,
-                        lat: closest_coords.<span class="number">0</span>.y,
-                        lon: closest_coords.<span class="number">0</span>.x,
+                        location: <span class="macro">coord! </span>{ x: closest_coords.<span class="number">0</span>.x, y: closest_coords.<span class="number">0</span>.y},
                     };
 
                     new_nodes.push(node);
@@ -1160,17 +1168,17 @@
         ];
 
         <span class="kw">let </span>railway_graph = from_railway_elements(<span class="kw-2">&amp;</span>elements);
-        <span class="macro">assert_eq!</span>(railway_graph.graph.node_count(), <span class="number">3</span>);
+        <span class="macro">assert_eq!</span>(railway_graph.physical_graph.graph.node_count(), <span class="number">3</span>);
 
-        <span class="kw">let </span>node_index_1 = railway_graph.node_indices.get(<span class="kw-2">&amp;</span><span class="number">1</span>).unwrap();
-        <span class="kw">let </span>node_1 = <span class="kw-2">&amp;</span>railway_graph.graph[<span class="kw-2">*</span>node_index_1];
-        <span class="macro">assert_eq!</span>(node_1.lat, <span class="number">0.0</span>);
-        <span class="macro">assert_eq!</span>(node_1.lon, <span class="number">1.0</span>);
+        <span class="kw">let </span>node_index_1 = railway_graph.physical_graph.id_to_index(<span class="number">1</span>).unwrap();
+        <span class="kw">let </span>node_1 = <span class="kw-2">&amp;</span>railway_graph.physical_graph.graph[<span class="kw-2">*</span>node_index_1];
+        <span class="macro">assert_eq!</span>(node_1.location.y, <span class="number">0.0</span>);
+        <span class="macro">assert_eq!</span>(node_1.location.x, <span class="number">1.0</span>);
 
-        <span class="kw">let </span>node_index_3 = railway_graph.node_indices.get(<span class="kw-2">&amp;</span><span class="number">3</span>).unwrap();
-        <span class="kw">let </span>node_3 = <span class="kw-2">&amp;</span>railway_graph.graph[<span class="kw-2">*</span>node_index_3];
-        <span class="macro">assert_eq!</span>(node_3.lat, <span class="number">0.0</span>);
-        <span class="macro">assert_eq!</span>(node_3.lon, <span class="number">3.5</span>);
+        <span class="kw">let </span>node_index_3 = railway_graph.physical_graph.id_to_index(<span class="number">3</span>).unwrap();
+        <span class="kw">let </span>node_3 = <span class="kw-2">&amp;</span>railway_graph.physical_graph.graph[<span class="kw-2">*</span>node_index_3];
+        <span class="macro">assert_eq!</span>(node_3.location.y, <span class="number">0.0</span>);
+        <span class="macro">assert_eq!</span>(node_3.location.x, <span class="number">3.5</span>);
     }
 
     <span class="attr">#[test]
@@ -1200,12 +1208,12 @@
         });
 
         <span class="kw">let </span>railway_graph = OverpassImporter::import(<span class="kw-2">&amp;</span>json_value).unwrap();
-        <span class="macro">assert_eq!</span>(railway_graph.graph.node_count(), <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(railway_graph.physical_graph.graph.node_count(), <span class="number">1</span>);
 
-        <span class="kw">let </span>node_index_1 = railway_graph.node_indices.get(<span class="kw-2">&amp;</span><span class="number">1</span>).unwrap();
-        <span class="kw">let </span>node_1 = <span class="kw-2">&amp;</span>railway_graph.graph[<span class="kw-2">*</span>node_index_1];
-        <span class="macro">assert_eq!</span>(node_1.lat, <span class="number">50.1191127</span>);
-        <span class="macro">assert_eq!</span>(node_1.lon, <span class="number">8.6090232</span>);
+        <span class="kw">let </span>node_index_1 = railway_graph.physical_graph.id_to_index(<span class="number">1</span>).unwrap();
+        <span class="kw">let </span>node_1 = <span class="kw-2">&amp;</span>railway_graph.physical_graph.graph[<span class="kw-2">*</span>node_index_1];
+        <span class="macro">assert_eq!</span>(node_1.location.y, <span class="number">50.1191127</span>);
+        <span class="macro">assert_eq!</span>(node_1.location.x, <span class="number">8.6090232</span>);
     }
 
     <span class="attr">#[test]
@@ -1271,13 +1279,13 @@
 
         <span class="kw">let </span>node_a = <span class="kw-2">&amp;</span>nodes[<span class="number">0</span>];
         <span class="macro">assert_eq!</span>(node_a.id, <span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(node_a.lat, <span class="number">50.1191127</span>);
-        <span class="macro">assert_eq!</span>(node_a.lon, <span class="number">8.6090232</span>);
+        <span class="macro">assert_eq!</span>(node_a.location.y, <span class="number">50.1191127</span>);
+        <span class="macro">assert_eq!</span>(node_a.location.x, <span class="number">8.6090232</span>);
 
         <span class="kw">let </span>node_b = <span class="kw-2">&amp;</span>nodes[<span class="number">1</span>];
         <span class="macro">assert_eq!</span>(node_b.id, <span class="number">3</span>);
-        <span class="macro">assert_eq!</span>(node_b.lat, <span class="number">50.1191177</span>);
-        <span class="macro">assert_eq!</span>(node_b.lon, <span class="number">8.6090237</span>);
+        <span class="macro">assert_eq!</span>(node_b.location.y, <span class="number">50.1191177</span>);
+        <span class="macro">assert_eq!</span>(node_b.location.x, <span class="number">8.6090237</span>);
     }
 
     <span class="attr">#[test]
@@ -1329,8 +1337,8 @@
 
         <span class="kw">let </span>node_a = <span class="kw-2">&amp;</span>nodes[<span class="number">0</span>];
         <span class="macro">assert_eq!</span>(node_a.id, <span class="number">3</span>);
-        <span class="macro">assert_eq!</span>(node_a.lat, <span class="number">50.1191127</span>);
-        <span class="macro">assert_eq!</span>(node_a.lon, <span class="number">8.6090232</span>);
+        <span class="macro">assert_eq!</span>(node_a.location.y, <span class="number">50.1191127</span>);
+        <span class="macro">assert_eq!</span>(node_a.location.x, <span class="number">8.6090232</span>);
     }
 
     <span class="attr">#[test]
@@ -1376,5 +1384,4 @@
         <span class="macro">assert_eq!</span>(nodes.len(), <span class="number">20</span>);
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="openrailwaymap_exporter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

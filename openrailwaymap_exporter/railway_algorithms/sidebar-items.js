@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["PathFinding"]};
+window.SIDEBAR_ITEMS = {"trait":["PathFinding","RailwayEdgeAlgos","RailwayGraphAlgos"]};
