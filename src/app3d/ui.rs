@@ -26,6 +26,7 @@ use crate::types::NodeId;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
+use bevy_polyline::prelude::{Polyline, PolylineMaterial};
 use uom::si::length::meter;
 use uom::si::velocity::kilometer_per_hour;
 
@@ -117,6 +118,8 @@ pub fn select_graph_ui_system(
     mut projection: ResMut<Projection>,
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
+    polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    polylines: ResMut<Assets<Polyline>>,
 ) {
     use std::sync::{Arc, RwLock};
 
@@ -161,6 +164,8 @@ pub fn select_graph_ui_system(
                     projection.into(),
                     meshes,
                     materials,
+                    polyline_materials,
+                    polylines,
                 );
             });
         }

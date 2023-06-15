@@ -16,6 +16,7 @@ use bevy_egui::EguiPlugin;
 use bevy_mod_picking::PickingEvent;
 use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
 use bevy_obj::ObjPlugin;
+use bevy_polyline::prelude::{Polyline, PolylineBundle, PolylineMaterial};
 use bevy_polyline::PolylinePlugin;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
@@ -229,6 +230,8 @@ fn display_graph(
     projection: Res<Projection>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    mut polylines: ResMut<Assets<Polyline>>,
 ) {
     if let Some(graph) = &app_resource.graph {
         // Clear previous edges and nodes
@@ -247,27 +250,17 @@ fn display_graph(
                 let start = projection.project(coords[0]).unwrap();
                 let end = projection.project(coords[1]).unwrap();
 
-                let diff = end - start;
-                let distance = (diff.x * diff.x + diff.y * diff.y).sqrt();
-
-                let angle = diff.y.atan2(diff.x);
-
                 commands
-                    .spawn(PbrBundle {
-                        mesh: meshes.add(Mesh::from(shape::Box {
-                            min_x: 0.0,
-                            max_x: distance,
-                            min_y: -0.2,
-                            max_y: 0.2,
-                            min_z: -0.2,
-                            max_z: 0.2,
-                        })),
-                        material: materials.add(StandardMaterial {
-                            base_color: Color::BLUE,
-                            ..Default::default()
+                    .spawn(PolylineBundle {
+                        polyline: polylines.add(Polyline {
+                            vertices: vec![start, end],
                         }),
-                        transform: Transform::from_translation(start)
-                            .mul_transform(Transform::from_rotation(Quat::from_rotation_z(angle))),
+                        material: polyline_materials.add(PolylineMaterial {
+                            width: 2.0,
+                            color: Color::BLUE,
+                            perspective: false,
+                            depth_bias: -0.0002,
+                        }),
                         ..Default::default()
                     })
                     .insert(Edge { id: edge_data.id });
