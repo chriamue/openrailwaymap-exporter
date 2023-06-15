@@ -293,6 +293,11 @@
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
 <a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
 </pre></div><pre class="rust"><code><span class="attr">#![cfg_attr(
     target_arch = <span class="string">&quot;wasm32&quot;</span>,
     allow(dead_code, unused_imports, unused_variables, unused_mut)
@@ -321,6 +326,7 @@
 <span class="kw">use </span>bevy::prelude::Commands;
 <span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
 <span class="kw">use </span>bevy_egui::{egui, EguiContexts};
+<span class="kw">use </span>bevy_polyline::prelude::{Polyline, PolylineMaterial};
 <span class="kw">use </span>uom::si::length::meter;
 <span class="kw">use </span>uom::si::velocity::kilometer_per_hour;
 
@@ -412,6 +418,8 @@
     <span class="kw-2">mut </span>projection: ResMut&lt;Projection&gt;,
     meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+    polyline_materials: ResMut&lt;Assets&lt;PolylineMaterial&gt;&gt;,
+    polylines: ResMut&lt;Assets&lt;Polyline&gt;&gt;,
 ) {
     <span class="kw">use </span>std::sync::{Arc, RwLock};
 
@@ -456,6 +464,8 @@
                     projection.into(),
                     meshes,
                     materials,
+                    polyline_materials,
+                    polylines,
                 );
             });
         }

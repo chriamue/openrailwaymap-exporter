@@ -329,13 +329,6 @@
 <a href="#329" id="329">329</a>
 <a href="#330" id="330">330</a>
 <a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -354,6 +347,7 @@
 <span class="kw">use </span>bevy_mod_picking::PickingEvent;
 <span class="kw">use </span>bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
 <span class="kw">use </span>bevy_obj::ObjPlugin;
+<span class="kw">use </span>bevy_polyline::prelude::{Polyline, PolylineBundle, PolylineMaterial};
 <span class="kw">use </span>bevy_polyline::PolylinePlugin;
 <span class="kw">use </span>petgraph::visit::IntoNodeReferences;
 <span class="kw">use </span>petgraph::visit::NodeRef;
@@ -567,6 +561,8 @@
     projection: Res&lt;Projection&gt;,
     <span class="kw-2">mut </span>meshes: ResMut&lt;Assets&lt;Mesh&gt;&gt;,
     <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+    <span class="kw-2">mut </span>polyline_materials: ResMut&lt;Assets&lt;PolylineMaterial&gt;&gt;,
+    <span class="kw-2">mut </span>polylines: ResMut&lt;Assets&lt;Polyline&gt;&gt;,
 ) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
         <span class="comment">// Clear previous edges and nodes
@@ -585,27 +581,17 @@
                 <span class="kw">let </span>start = projection.project(coords[<span class="number">0</span>]).unwrap();
                 <span class="kw">let </span>end = projection.project(coords[<span class="number">1</span>]).unwrap();
 
-                <span class="kw">let </span>diff = end - start;
-                <span class="kw">let </span>distance = (diff.x * diff.x + diff.y * diff.y).sqrt();
-
-                <span class="kw">let </span>angle = diff.y.atan2(diff.x);
-
                 commands
-                    .spawn(PbrBundle {
-                        mesh: meshes.add(Mesh::from(shape::Box {
-                            min_x: <span class="number">0.0</span>,
-                            max_x: distance,
-                            min_y: -<span class="number">0.2</span>,
-                            max_y: <span class="number">0.2</span>,
-                            min_z: -<span class="number">0.2</span>,
-                            max_z: <span class="number">0.2</span>,
-                        })),
-                        material: materials.add(StandardMaterial {
-                            base_color: Color::BLUE,
-                            ..Default::default()
+                    .spawn(PolylineBundle {
+                        polyline: polylines.add(Polyline {
+                            vertices: <span class="macro">vec!</span>[start, end],
                         }),
-                        transform: Transform::from_translation(start)
-                            .mul_transform(Transform::from_rotation(Quat::from_rotation_z(angle))),
+                        material: polyline_materials.add(PolylineMaterial {
+                            width: <span class="number">2.0</span>,
+                            color: Color::BLUE,
+                            perspective: <span class="bool-val">false</span>,
+                            depth_bias: -<span class="number">0.0002</span>,
+                        }),
                         ..Default::default()
                     })
                     .insert(Edge { id: edge_data.id });
