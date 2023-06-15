@@ -128,7 +128,17 @@ pub fn init_with_graph(graph: RailwayGraph) {
         simulation: Some(Arc::new(RwLock::new(Simulation::new(graph)))),
     };
     let mut app = App::new();
-    app.add_plugins(DefaultPlugins);
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            title: "Railwaymap".into(),
+            resolution: (1000., 1000.).into(),
+            fit_canvas_to_parent: true,
+            prevent_default_event_handling: true,
+            canvas: Some("#bevy".to_string()),
+            ..default()
+        }),
+        ..default()
+    }));
     setup_app(&mut app, app_resource);
     app.insert_resource(projection)
         .add_startup_system(display_graph)

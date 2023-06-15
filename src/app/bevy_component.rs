@@ -29,7 +29,7 @@ impl Component for BevyComponent {
 
     fn view(&self, _: &Context<Self>) -> Html {
         html! {
-            <></>
+            <canvas id="bevy"></canvas>
         }
     }
 
