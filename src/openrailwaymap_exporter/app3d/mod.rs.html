@@ -329,6 +329,16 @@
 <a href="#329" id="329">329</a>
 <a href="#330" id="330">330</a>
 <a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The `app3d` module provides functionality to visualize railway graphs in 3D.
 //!
 //! It includes functions to initialize a Bevy application with a given `RailwayGraph` or a default one,
@@ -459,7 +469,17 @@
         simulation: <span class="prelude-val">Some</span>(Arc::new(RwLock::new(Simulation::new(graph)))),
     };
     <span class="kw">let </span><span class="kw-2">mut </span>app = App::new();
-    app.add_plugins(DefaultPlugins);
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: <span class="prelude-val">Some</span>(Window {
+            title: <span class="string">&quot;Railwaymap&quot;</span>.into(),
+            resolution: (<span class="number">1000.</span>, <span class="number">1000.</span>).into(),
+            fit_canvas_to_parent: <span class="bool-val">true</span>,
+            prevent_default_event_handling: <span class="bool-val">true</span>,
+            canvas: <span class="prelude-val">Some</span>(<span class="string">&quot;#bevy&quot;</span>.to_string()),
+            ..default()
+        }),
+        ..default()
+    }));
     setup_app(<span class="kw-2">&amp;mut </span>app, app_resource);
     app.insert_resource(projection)
         .add_startup_system(display_graph)
