@@ -49,13 +49,8 @@
 <a href="#49" id="49">49</a>
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
-<a href="#52" id="52">52</a>
-<a href="#53" id="53">53</a>
-<a href="#54" id="54">54</a>
-<a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>bevy::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>bevy_polyline::prelude::PolylineMaterial;
 
 <span class="kw">use crate</span>::{
     railway_algorithms::{PathFinding, RailwayGraphAlgos},
@@ -72,9 +67,9 @@
 
 <span class="kw">pub fn </span>show_edges_on_path(
     app_resource: Res&lt;AppResource&gt;,
-    <span class="kw-2">mut </span>edge_query: Query&lt;(<span class="kw-2">&amp;</span>Edge, <span class="kw-2">&amp;mut </span>Handle&lt;StandardMaterial&gt;)&gt;,
+    <span class="kw-2">mut </span>edge_query: Query&lt;(<span class="kw-2">&amp;</span>Edge, <span class="kw-2">&amp;mut </span>Handle&lt;PolylineMaterial&gt;)&gt;,
     selected_node: Res&lt;SelectedNode&gt;,
-    <span class="kw-2">mut </span>materials: ResMut&lt;Assets&lt;StandardMaterial&gt;&gt;,
+    <span class="kw-2">mut </span>polyline_materials: ResMut&lt;Assets&lt;PolylineMaterial&gt;&gt;,
 ) {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(graph) = <span class="kw-2">&amp;</span>app_resource.graph {
         <span class="kw">if let </span>(<span class="prelude-val">Some</span>(start_node_id), <span class="prelude-val">Some</span>(end_node_id)) =
@@ -93,19 +88,12 @@
                     <span class="kw">let </span>is_path_edge = path_edge_ids
                         .iter()
                         .any(|railway_edge| <span class="kw-2">*</span>railway_edge == edge_data.id);
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(material) = materials.get_mut(<span class="kw-2">&amp;</span>material_handle) {
-                        material.base_color = <span class="kw">if </span>is_path_edge {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(material) = polyline_materials.get_mut(<span class="kw-2">&amp;</span>material_handle) {
+                        material.color = <span class="kw">if </span>is_path_edge {
                             Color::RED
                         } <span class="kw">else </span>{
                             Color::BLUE
                         };
-                    } <span class="kw">else if </span>is_path_edge {
-                        <span class="kw">let </span>new_material = StandardMaterial {
-                            base_color: Color::RED,
-                            ..Default::default()
-                        };
-                        <span class="kw">let </span>new_material_handle = materials.add(new_material);
-                        <span class="kw-2">*</span>material_handle = new_material_handle;
                     }
                 }
             }
