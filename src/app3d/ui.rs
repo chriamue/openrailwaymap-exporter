@@ -6,7 +6,7 @@
 use super::nodes::SelectedNode;
 use super::train_agent::{clone_train_from_app, TrainAgent};
 use super::{display_graph, SelectedTrain};
-use super::{AppResource, Edge, Node, Projection};
+use super::{AppResource, Node, Projection};
 use super::{InteractionMode, InteractionModeResource};
 #[cfg(feature = "ai")]
 use crate::ai::TrainAgentAI;
@@ -26,7 +26,6 @@ use crate::types::NodeId;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
-use bevy_polyline::prelude::{Polyline, PolylineMaterial};
 use uom::si::length::meter;
 use uom::si::velocity::kilometer_per_hour;
 
@@ -38,8 +37,8 @@ pub struct UiUpdateTimer {
 
 pub fn add_ui_systems_to_app(app: &mut App) {
     #[cfg(not(target_arch = "wasm32"))]
-    app.add_system(select_graph_ui_system);
-    app.add_system(selection_ui_system);
+    app.add_systems(Update, (select_graph_ui_system,));
+    app.add_systems(Update, (selection_ui_system,));
     app.insert_resource(UiUpdateTimer::default());
 }
 
@@ -113,13 +112,10 @@ pub fn select_graph_ui_system(
     mut contexts: EguiContexts,
     commands: Commands,
     mut app_resource: ResMut<AppResource>,
-    edge_query: Query<Entity, With<Edge>>,
     node_query: Query<Entity, With<Node>>,
     mut projection: ResMut<Projection>,
     meshes: ResMut<Assets<Mesh>>,
     materials: ResMut<Assets<StandardMaterial>>,
-    polyline_materials: ResMut<Assets<PolylineMaterial>>,
-    polylines: ResMut<Assets<Polyline>>,
 ) {
     use std::sync::{Arc, RwLock};
 
@@ -159,13 +155,10 @@ pub fn select_graph_ui_system(
                 display_graph(
                     commands,
                     app_resource.into(),
-                    edge_query,
                     node_query,
                     projection.into(),
                     meshes,
                     materials,
-                    polyline_materials,
-                    polylines,
                 );
             });
         }

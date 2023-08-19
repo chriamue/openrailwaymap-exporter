@@ -9,7 +9,7 @@ use bevy_console::{
 use clap::Parser;
 
 pub fn add_console_to_app(app: &mut App) {
-    app.add_plugin(ConsolePlugin);
+    app.add_plugins(ConsolePlugin);
     app.add_console_command::<DebugCommand, _>(debug_command);
     app.add_console_command::<PauseCommand, _>(pause_command);
     app.add_console_command::<SetSpeedupCommand, _>(set_speedup_command);

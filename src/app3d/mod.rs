@@ -7,17 +7,17 @@
 
 use std::sync::{Arc, RwLock};
 
-use crate::app3d::train_agent::TrainAgent;
 use crate::prelude::{RailwayGraph, RailwayGraphExt};
 use crate::simulation::Simulation;
 use bevy::input::Input;
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_mod_picking::PickingEvent;
-use bevy_mod_picking::{DefaultPickingPlugins, PickableBundle};
+use bevy_mod_picking::prelude::{On, Pointer};
+use bevy_mod_picking::{
+    prelude::{Click, RaycastPickTarget},
+    DefaultPickingPlugins, PickableBundle,
+};
 use bevy_obj::ObjPlugin;
-use bevy_polyline::prelude::{Polyline, PolylineBundle, PolylineMaterial};
-use bevy_polyline::PolylinePlugin;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
 
@@ -27,7 +27,6 @@ mod nodes;
 mod train_agent;
 mod ui;
 
-use edges::Edge;
 use nodes::Node;
 
 #[cfg(target_arch = "wasm32")]
@@ -84,24 +83,29 @@ pub struct InteractionModeResource {
 ///
 pub fn setup_app(app: &mut App, app_resource: AppResource) {
     app.add_plugins(camera::CameraPlugins)
-        .add_plugin(EguiPlugin)
+        .add_plugins(EguiPlugin)
         .add_plugins(DefaultPickingPlugins)
-        .add_plugin(PolylinePlugin)
-        .add_plugin(ObjPlugin)
+        .add_plugins(ObjPlugin)
         .insert_resource(app_resource)
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())
         .insert_resource(InteractionModeResource::default())
         .insert_resource(DebugResource::default())
-        .add_startup_system(setup)
-        .add_startup_system(camera::setup_camera)
-        .add_system(update_look_at_position_system)
-        .add_system(nodes::select_node_system)
-        .add_system(select_train_system)
-        .add_system(edges::show_edges_on_path)
-        .add_system(train_agent::update_train_position_system)
-        .add_system(train_agent::update_train_agent_line_system)
-        .add_system(update_simulation_system);
+        .add_systems(Startup, (setup, camera::setup_camera))
+        .add_systems(
+            Update,
+            (
+                update_look_at_position_system,
+                nodes::select_node_system,
+                edges::show_edges,
+                train_agent::update_train_position_system,
+                train_agent::update_train_agent_line_system,
+                train_agent::select_train_system,
+                update_simulation_system,
+            ),
+        )
+        .add_event::<train_agent::TrainSelectedEvent>()
+        .add_event::<nodes::NodeSelectedEvent>();
     ui::add_ui_systems_to_app(app);
     console::add_console_to_app(app);
 }
@@ -141,7 +145,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
     }));
     setup_app(&mut app, app_resource);
     app.insert_resource(projection)
-        .add_startup_system(display_graph)
+        .add_systems(Startup, (display_graph,))
         .run()
 }
 
@@ -235,46 +239,15 @@ fn update_look_at_position_system(
 fn display_graph(
     mut commands: Commands,
     app_resource: Res<AppResource>,
-    edge_query: Query<Entity, With<edges::Edge>>,
     node_query: Query<Entity, With<nodes::Node>>,
     projection: Res<Projection>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
-    mut polylines: ResMut<Assets<Polyline>>,
 ) {
     if let Some(graph) = &app_resource.graph {
         // Clear previous edges and nodes
-        for entity in edge_query.iter() {
-            commands.entity(entity).despawn();
-        }
         for entity in node_query.iter() {
             commands.entity(entity).despawn();
-        }
-        // Display edges
-        for edge in graph.physical_graph.graph.edge_references() {
-            let edge_data = edge.weight();
-            let path = &edge_data.path.0;
-
-            for coords in path.windows(2) {
-                let start = projection.project(coords[0]).unwrap();
-                let end = projection.project(coords[1]).unwrap();
-
-                commands
-                    .spawn(PolylineBundle {
-                        polyline: polylines.add(Polyline {
-                            vertices: vec![start, end],
-                        }),
-                        material: polyline_materials.add(PolylineMaterial {
-                            width: 2.0,
-                            color: Color::BLUE,
-                            perspective: false,
-                            depth_bias: -0.0002,
-                        }),
-                        ..Default::default()
-                    })
-                    .insert(Edge { id: edge_data.id });
-            }
         }
 
         // Display nodes
@@ -301,41 +274,11 @@ fn display_graph(
                             ..Default::default()
                         },
                         PickableBundle::default(),
+                        RaycastPickTarget::default(),
+                        On::<Pointer<Click>>::send_event::<nodes::NodeSelectedEvent>(),
                     ))
                     .insert(nodes::Node { id: node_data.id });
             }
         }
-    }
-}
-
-#[allow(clippy::too_many_arguments)]
-fn select_train_system(
-    mut events: EventReader<PickingEvent>,
-    q_train: Query<(Entity, &TrainAgent, &Children)>,
-    mut selected_train: ResMut<SelectedTrain>,
-) {
-    let mut selection = None;
-    for event in events.iter() {
-        match event {
-            PickingEvent::Selection(_e) => (),
-            PickingEvent::Hover(_e) => (),
-            PickingEvent::Clicked(e) => {
-                for (entity, train, children) in q_train.iter() {
-                    if e == &entity {
-                        selection = Some(train.id);
-                    } else {
-                        for entity in children.iter() {
-                            if e == entity {
-                                selection = Some(train.id);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    if let Some(id) = selection {
-        selected_train.train_agent_id = Some(id);
     }
 }

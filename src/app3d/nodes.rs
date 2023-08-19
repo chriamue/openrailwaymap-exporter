@@ -1,11 +1,13 @@
 use bevy::prelude::*;
-use bevy_mod_picking::{PickableBundle, PickingEvent};
 
 use crate::{
     app3d::train_agent::{self, create_new_train_id, create_train, TrainAgent},
     prelude::RailwayGraphExt,
     types::NodeId,
 };
+use bevy_eventlistener::callbacks::ListenerInput;
+use bevy_mod_picking::prelude::Pointer;
+use bevy_mod_picking::{prelude::Click, PickableBundle};
 
 use super::{AppResource, InteractionMode, InteractionModeResource};
 
@@ -22,9 +24,18 @@ pub struct SelectedNode {
     pub end_node_id: Option<NodeId>,
 }
 
+#[derive(Debug, Component, Event)]
+pub struct NodeSelectedEvent(Entity);
+
+impl From<ListenerInput<Pointer<Click>>> for NodeSelectedEvent {
+    fn from(click_event: ListenerInput<Pointer<Click>>) -> Self {
+        Self(click_event.target)
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn select_node_system(
-    mut events: EventReader<PickingEvent>,
+    mut events: EventReader<NodeSelectedEvent>,
     app_resource: Res<AppResource>,
     mut selected_node: ResMut<SelectedNode>,
     q_node: Query<(Entity, &Node, &Transform), Without<Camera>>,
@@ -34,17 +45,9 @@ pub fn select_node_system(
     asset_server: Res<AssetServer>,
 ) {
     let mut selection = None;
-    for event in events.iter() {
-        match event {
-            PickingEvent::Selection(_e) => (),
-            PickingEvent::Hover(_e) => (),
-            PickingEvent::Clicked(e) => {
-                for (entity, node, transform) in q_node.iter() {
-                    if e == &entity {
-                        selection = Some((entity, node.id, *transform));
-                    }
-                }
-            }
+    for select_event in events.iter() {
+        if let Ok((entity, node, transform)) = q_node.get(select_event.0) {
+            selection = Some((entity, node.id, *transform));
         }
     }
 

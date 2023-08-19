@@ -15,30 +15,42 @@ crate-type = ["cdylib", "rlib"]
 [features]
 default = ["app3d", "ai"]
 ai = ["rurel"]
-app3d = ["ai", "bevy", "bevy_console", "bevy_egui", "bevy_mod_picking", "bevy_obj", "bevy_panorbit_camera", "bevy_polyline"]
+app3d = ["ai", "bevy", "bevy_console", "bevy_egui", "bevy_mod_picking", "bevy_obj", "bevy_panorbit_camera"]
 cucumber = []
 python = ["pyo3", "pyo3-asyncio", "pythonize"]
 
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1.68"
-bevy = { version = "0.10.1", optional = true, default-features = false, features = [
+bevy = { version = "0.11.0", default-features = false, optional = true, features = [
+    "bevy_asset",
     "bevy_core_pipeline",
-    "bevy_render",
     "bevy_sprite",
     "bevy_pbr",
+    "bevy_winit",
+    "jpeg",
+    "ktx2",
+    "png",
+    "tonemapping_luts",
+    "webgl2",
     "x11",
+    "zstd",
 ] }
-bevy_console = { version = "0.7.0", optional = true }
-bevy_egui = { version = "0.20.2", optional = true }
-bevy_mod_picking = { version = "0.12.0", optional = true }
-bevy_obj = { version = "0.10.1", optional = true }
-bevy_panorbit_camera = { version = "0.2.0", optional = true }
-bevy_polyline = { version = "0.6.0", optional = true }
+bevy_console = { version = "0.8.0", optional = true }
+bevy_egui = { version = "0.21", optional = true}
+bevy_eventlistener = "0.3.0"
+bevy_mod_picking = { git = "https://github.com/aevyrie/bevy_mod_picking", rev="e07f8e1", default-features = false, optional = true, features = [
+    "selection",
+    "backend_raycast",
+    "backend_egui",
+] }
+bevy_obj = { version = "0.11", optional = true }
+bevy_panorbit_camera = { version = "0.7.0", features = ["bevy_egui"], optional = true }
+
 clap = "4.1.10"
 futures = "0.3.28"
 geoutils = "0.5.1"
-geo = "0.24.1"
+geo = { version = "0.26.0", features = ["use-serde"] }
 num-traits = "0.2"
 petgraph = "0.6.3"
 pyo3 = { version = "0.18.3", features = ["serde"], optional = true }

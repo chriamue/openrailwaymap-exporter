@@ -1,12 +1,11 @@
 use bevy::prelude::*;
-use bevy_polyline::prelude::PolylineMaterial;
 
 use crate::{
     railway_algorithms::{PathFinding, RailwayGraphAlgos},
     types::EdgeId,
 };
 
-use super::{nodes::SelectedNode, AppResource};
+use super::{nodes::SelectedNode, AppResource, Projection};
 
 /// Represents an edge in the railway graph.
 #[derive(Component)]
@@ -14,13 +13,14 @@ pub struct Edge {
     pub id: EdgeId,
 }
 
-pub fn show_edges_on_path(
+pub fn show_edges(
     app_resource: Res<AppResource>,
-    mut edge_query: Query<(&Edge, &mut Handle<PolylineMaterial>)>,
     selected_node: Res<SelectedNode>,
-    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
+    projection: Res<Projection>,
+    mut gizmos: Gizmos,
 ) {
     if let Some(graph) = &app_resource.graph {
+        let mut highlighted_edges = Vec::new();
         if let (Some(start_node_id), Some(end_node_id)) =
             (selected_node.start_node_id, selected_node.end_node_id)
         {
@@ -31,20 +31,21 @@ pub fn show_edges_on_path(
             };
             // Use graph.shortest_path_edges to get the Vec of edge IDs
             if let Some(path_edge_ids) = path_edge_ids {
-                // Iterate through the edges and set their color
-                for (edge, mut material_handle) in edge_query.iter_mut() {
-                    let edge_data = edge;
-                    let is_path_edge = path_edge_ids
-                        .iter()
-                        .any(|railway_edge| *railway_edge == edge_data.id);
-                    if let Some(material) = polyline_materials.get_mut(&material_handle) {
-                        material.color = if is_path_edge {
-                            Color::RED
-                        } else {
-                            Color::BLUE
-                        };
-                    }
-                }
+                highlighted_edges = path_edge_ids;
+            }
+        }
+        for edge in graph.physical_graph.graph.edge_references() {
+            let edge_data = edge.weight();
+            let path = &edge_data.path.0;
+
+            let points = path
+                .iter()
+                .map(|coords| projection.project(*coords).unwrap())
+                .collect::<Vec<_>>();
+            if highlighted_edges.contains(&edge_data.id) {
+                gizmos.linestrip(points, Color::RED);
+            } else {
+                gizmos.linestrip(points, Color::BLUE);
             }
         }
     }

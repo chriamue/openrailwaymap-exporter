@@ -1,6 +1,10 @@
 use bevy::prelude::*;
-use bevy_mod_picking::PickableBundle;
-use bevy_polyline::prelude::*;
+use bevy_eventlistener::callbacks::ListenerInput;
+use bevy_mod_picking::prelude::{On, Pointer};
+use bevy_mod_picking::{
+    prelude::{Click, RaycastPickTarget},
+    PickableBundle,
+};
 use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
@@ -53,6 +57,34 @@ impl TrainAgent {
     }
 }
 
+#[derive(Debug, Component, Event)]
+pub struct TrainSelectedEvent(Entity);
+
+impl From<ListenerInput<Pointer<Click>>> for TrainSelectedEvent {
+    fn from(click_event: ListenerInput<Pointer<Click>>) -> Self {
+        Self(click_event.target)
+    }
+}
+
+pub fn select_train_system(
+    mut events: EventReader<TrainSelectedEvent>,
+    q_train: Query<(Entity, &TrainAgent, &Children)>,
+    mut selected_train: ResMut<SelectedTrain>,
+) {
+    let mut selection = None;
+    for event in events.iter() {
+        for (_entity, train, children) in q_train.iter() {
+            if children.iter().any(|child| child == &event.0) {
+                selection = Some(train.id);
+            }
+        }
+    }
+
+    if let Some(id) = selection {
+        selected_train.train_agent_id = Some(id);
+    }
+}
+
 pub fn create_train(
     id: RailwayObjectId,
     position: Option<NodeId>,
@@ -102,7 +134,12 @@ pub fn create_train_agent_bundle(
     };
 
     move |builder: &mut ChildBuilder| {
-        builder.spawn((main_body, PickableBundle::default()));
+        builder.spawn((
+            main_body,
+            PickableBundle::default(),
+            RaycastPickTarget::default(),
+            On::<Pointer<Click>>::send_event::<TrainSelectedEvent>(),
+        ));
     }
 }
 
@@ -167,17 +204,11 @@ fn update_look_at(
 #[allow(clippy::too_many_arguments)]
 pub fn update_train_agent_line_system(
     app_resource: Res<AppResource>,
-    mut commands: Commands,
     train_agent_query: Query<(&TrainAgent, &Transform)>,
     node_query: Query<(&Node, &Transform), Without<TrainAgent>>,
-    mut polyline_materials: ResMut<Assets<PolylineMaterial>>,
-    mut polylines: ResMut<Assets<Polyline>>,
-    q_line: Query<Entity, With<TrainAgentLine>>,
+    mut gizmos: Gizmos,
     debug_resource: Res<DebugResource>,
 ) {
-    for entity in q_line.iter() {
-        commands.entity(entity).despawn();
-    }
     if debug_resource.show_train_target {
         for (train_agent, train_agent_transform) in train_agent_query.iter() {
             if let Some(train) = clone_train_from_app(train_agent, &app_resource) {
@@ -197,24 +228,11 @@ pub fn update_train_agent_line_system(
                     if let (Some(_current_node_transform), Some(target_node_transform)) =
                         (current_node_transform, target_node_transform)
                     {
-                        commands
-                            .spawn(PolylineBundle {
-                                polyline: polylines.add(Polyline {
-                                    vertices: vec![
-                                        train_agent_transform.translation,
-                                        //current_node_transform.translation,
-                                        target_node_transform.translation,
-                                    ],
-                                }),
-                                material: polyline_materials.add(PolylineMaterial {
-                                    width: 2.0,
-                                    color: Color::RED,
-                                    perspective: false,
-                                    ..default()
-                                }),
-                                ..default()
-                            })
-                            .insert(TrainAgentLine);
+                        gizmos.line(
+                            train_agent_transform.translation,
+                            target_node_transform.translation,
+                            Color::RED,
+                        );
                     }
                 }
             }
