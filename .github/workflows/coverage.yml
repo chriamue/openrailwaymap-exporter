@@ -10,7 +10,10 @@ jobs:
       options: --security-opt seccomp=unconfined
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7
+
+      - name: Install Wayland development libraries
+        run: apt-get update && apt-get install -y --no-install-recommends pkg-config libwayland-dev
 
       - name: Generate code coverage
         run: |
