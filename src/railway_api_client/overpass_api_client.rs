@@ -65,7 +65,7 @@ impl RailwayApiClient for OverpassApiClient {
 
     async fn fetch_by_area_name(&self, area_name: &str) -> Result<Value> {
         let query = format!(
-            r#"[out:json];area[name~"^{}$",i]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#,
+            r#"[out:json];area[name="{}"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#,
             area_name
         );
 
@@ -106,7 +106,7 @@ mod tests {
     #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_fetch_by_area_name() {
         let test_json = test_json_vilbel();
-        let query = r#"[out:json];area[name~"^Bad Vilbel$",i]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#;
+        let query = r#"[out:json];area[name="Bad Vilbel"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#;
         let mock = mock("POST", "/api/interpreter")
             .with_status(200)
             .with_header("content-type", "application/json")
