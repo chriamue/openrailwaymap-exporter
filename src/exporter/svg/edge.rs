@@ -18,6 +18,7 @@ pub struct Props {
     pub view_height: f64,
     /// The minimum coordinates of the graph's bounding box.
     pub min_coord: (f64, f64),
+    #[prop_or_default]
     pub stroke_color: Option<String>,
 }
 

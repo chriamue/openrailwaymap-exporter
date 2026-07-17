@@ -60,11 +60,11 @@ rurel = { version = "0.4.0", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 structopt = "0.3"
-svg = "0.13.1"
+svg = "0.18.0"
 uom = "0.34.0"
-reqwest = { version = "0.11", features = ["blocking", "json"] }
+reqwest = { version = "0.13.4", features = ["blocking", "json", "form"] }
 transit-grid = { git = "https://github.com/rusty-rails/transit-grid" }
-yew = { version = "0.20.0", features = ["csr", "ssr"] }
+yew = { version = "0.23.0", features = ["csr", "ssr"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { version = "1.0", features = ["full"] }
@@ -76,7 +76,7 @@ js-sys = "0.3.61"
 kiss3d = "0.32"
 wasm-bindgen-futures = "0.4"
 web-sys = { version = "0.3.59" }
-yew = { version = "0.20.0", features = ["csr"] }
+yew = { version = "0.23.0", features = ["csr"] }
 wasm-bindgen = "0.2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -92,7 +92,7 @@ tokio = { version = "1.13", features = ["rt", "macros"] }
 approx = "0.5.1"
 mockito = "1.7.2"
 wasm-bindgen-test = "0.3.33"
-yew = { version = "0.20.0", features = ["csr", "ssr"] }
+yew = { version = "0.23.0", features = ["csr", "ssr"] }
 
 [[bench]]
 name = "railway_graph"
