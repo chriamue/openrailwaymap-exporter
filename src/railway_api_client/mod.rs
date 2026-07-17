@@ -8,6 +8,10 @@ use anyhow::Result;
 use async_trait::async_trait;
 use serde_json::Value;
 
+/// shared http client construction
+pub mod http_client;
+pub use http_client::http_client;
+
 /// overpass api client
 pub mod overpass_api_client;
 pub use overpass_api_client::OverpassApiClient;

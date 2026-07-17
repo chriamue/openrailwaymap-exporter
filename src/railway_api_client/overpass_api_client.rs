@@ -1,7 +1,7 @@
+use super::http_client;
 use super::RailwayApiClient;
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use async_trait::async_trait;
-use reqwest::Client;
 use serde_json::Value;
 
 /// A basic client for the OpenRailwayMap API.
@@ -20,10 +20,10 @@ impl OverpassApiClient {
     }
 
     async fn fetch_by_query(&self, query: &str) -> Result<Value> {
-        let client = Client::new();
+        let client = http_client();
         let form_data = [("data", query)];
 
-        let response: Value = client
+        let response = client
             .post(
                 self.url
                     .as_deref()
@@ -31,11 +31,18 @@ impl OverpassApiClient {
             )
             .form(&form_data)
             .send()
-            .await?
-            .json()
             .await?;
 
-        Ok(response)
+        let status = response.status();
+        let text = response.text().await?;
+
+        serde_json::from_str(&text).map_err(|_| {
+            anyhow!(
+                "Overpass API returned non-JSON response (status {}): {}",
+                status,
+                text.chars().take(200).collect::<String>()
+            )
+        })
     }
 }
 
@@ -51,7 +58,7 @@ impl RailwayApiClient for OverpassApiClient {
     async fn connect(&mut self, url: &str) -> Result<()> {
         self.url = Some(url.to_string());
 
-        let client = Client::new();
+        let client = http_client();
         client.get(url).send().await?;
         Ok(())
     }
