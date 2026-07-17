@@ -21,7 +21,14 @@ use std::time::Duration;
 pub mod agents;
 
 pub mod environment;
+#[cfg(feature = "bevy")]
 use bevy::prelude::warn;
+#[cfg(not(feature = "bevy"))]
+macro_rules! warn {
+    ($($arg:tt)*) => {
+        eprintln!($($arg)*)
+    };
+}
 pub use environment::SimulationEnvironment;
 use rand::prelude::IndexedRandom;
 use uom::si::{
