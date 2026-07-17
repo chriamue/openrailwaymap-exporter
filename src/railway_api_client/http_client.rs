@@ -6,21 +6,14 @@ use reqwest::Client;
 /// Overpass rejects requests without a User-Agent with 406 Not Acceptable.
 /// Browsers set their own User-Agent, so it is only set on native targets.
 pub fn http_client() -> Client {
-    #[cfg(not(target_arch = "wasm32"))]
-    {
-        Client::builder()
-            .user_agent(concat!(
-                env!("CARGO_PKG_NAME"),
-                "/",
-                env!("CARGO_PKG_VERSION")
-            ))
-            .build()
-            .unwrap_or_default()
-    }
-    #[cfg(target_arch = "wasm32")]
-    {
-        Client::new()
-    }
+    Client::builder()
+        .user_agent(concat!(
+            env!("CARGO_PKG_NAME"),
+            "/",
+            env!("CARGO_PKG_VERSION")
+        ))
+        .build()
+        .unwrap_or_default()
 }
 
 #[cfg(test)]
