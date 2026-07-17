@@ -98,12 +98,12 @@ impl PyRailwayGraph {
     /// # Returns
     ///
     /// * An optional `RailwayNode` instance if the node with the specified ID is found.
-    fn get_node_by_id(&self, node_id: NodeId) -> Option<PyObject> {
-        Some(Python::with_gil(|py| {
+    fn get_node_by_id(&self, node_id: NodeId) -> PyResult<Option<Py<PyAny>>> {
+        Ok(Some(Python::attach(|py| {
             pythonize(py, &self.inner.get_node_by_id(node_id).unwrap())
                 .unwrap()
-                .to_object(py)
-        }))
+                .unbind()
+        })))
     }
 
     /// Get an edge by its ID from the railway graph.
@@ -115,12 +115,12 @@ impl PyRailwayGraph {
     /// # Returns
     ///
     /// * An optional `RailwayEdge` instance if the edge with the specified ID is found.
-    fn get_edge_by_id(&self, edge_id: EdgeId) -> Option<PyObject> {
-        Some(Python::with_gil(|py| {
+    fn get_edge_by_id(&self, edge_id: EdgeId) -> PyResult<Option<Py<PyAny>>> {
+        Ok(Some(Python::attach(|py| {
             pythonize(py, &self.inner.get_edge_by_id(edge_id))
                 .unwrap()
-                .to_object(py)
-        }))
+                .unbind()
+        })))
     }
 }
 
@@ -135,10 +135,10 @@ impl PyRailwayGraph {
 ///
 /// * A PyResult indicating the success or failure of the module initialization.
 #[pymodule]
-fn openrailwaymap_exporter(py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn openrailwaymap_exporter(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyOverpassImporter>()?;
     m.add_class::<PyRailwayGraph>()?;
     m.add_function(wrap_pyfunction!(export_svg, m)?)?;
-    overpass_api_client::init_overpass_api_client(py, m)?;
+    overpass_api_client::init_overpass_api_client(m)?;
     Ok(())
 }
