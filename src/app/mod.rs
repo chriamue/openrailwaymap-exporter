@@ -51,6 +51,7 @@ pub struct App {
     selected_node_id: Option<NodeId>,
     start_node_id: Option<NodeId>,
     end_node_id: Option<NodeId>,
+    error: Option<String>,
 }
 
 /// Represents the messages that can be sent to the `App` component.
@@ -69,6 +70,8 @@ pub enum Msg {
     StartNodeSelected(NodeId),
     /// End node selected.
     EndNodeSelected(NodeId),
+    /// A general error occurred, e.g. while fetching or parsing the railway graph.
+    Error(String),
 }
 
 impl Component for App {
@@ -88,6 +91,7 @@ impl Component for App {
             selected_node_id: None,
             start_node_id: None,
             end_node_id: None,
+            error: None,
         }
     }
 
@@ -98,33 +102,47 @@ impl Component for App {
             }
             Msg::GetGraph => {
                 self.loading = true;
+                self.error = None;
                 let area_name = self.input_area.clone();
-                let callback = self.link.callback(Msg::GraphLoaded);
+                let link = self.link.clone();
                 wasm_bindgen_futures::spawn_local(async move {
                     let client = OverpassApiClient::new();
 
-                    let api_json_value = {
-                        if area_name.contains(",") {
-                            client
-                                .fetch_by_bbox(&area_name)
-                                .await
-                                .unwrap_or(client.fetch_by_area_name(&area_name).await.unwrap())
-                        } else {
-                            client.fetch_by_area_name(&area_name).await.unwrap()
+                    let api_json_value = if area_name.contains(',') {
+                        match client.fetch_by_bbox(&area_name).await {
+                            Ok(value) => Ok(value),
+                            Err(_) => client.fetch_by_area_name(&area_name).await,
+                        }
+                    } else {
+                        client.fetch_by_area_name(&area_name).await
+                    };
+
+                    let api_json_value = match api_json_value {
+                        Ok(value) => value,
+                        Err(err) => {
+                            link.send_message(Msg::Error(err.to_string()));
+                            return;
                         }
                     };
 
-                    let railway_elements = RailwayElement::from_json(&api_json_value).unwrap();
+                    let railway_elements = match RailwayElement::from_json(&api_json_value) {
+                        Ok(elements) => elements,
+                        Err(err) => {
+                            link.send_message(Msg::Error(err.to_string()));
+                            return;
+                        }
+                    };
+
                     let graph = from_railway_elements(&railway_elements);
-                    callback.emit((railway_elements, graph));
+                    link.send_message(Msg::GraphLoaded((railway_elements, graph)));
                 });
             }
             Msg::GraphLoaded((railway_elements, graph)) => {
                 self.switch_count = count_node_elements(&railway_elements) as u32;
                 self.track_count = count_way_elements(&railway_elements) as u32;
                 self.total_length = graph.total_length();
-                self.loading = false;
                 self.graph = Some(graph);
+                self.loading = false;
             }
             Msg::ToggleView => {
                 self.show_svg = !self.show_svg;
@@ -135,6 +153,10 @@ impl Component for App {
             }
             Msg::EndNodeSelected(end_node_id) => {
                 self.end_node_id = Some(end_node_id);
+            }
+            Msg::Error(err) => {
+                self.error = Some(err);
+                self.loading = false;
             }
         }
         true
@@ -179,6 +201,12 @@ impl Component for App {
             html! {}
         };
 
+        let error_message = if let Some(err) = &self.error {
+            html! { <p class="error">{ format!("Failed to load graph: {}", err) }</p> }
+        } else {
+            html! {}
+        };
+
         html! {
             <>
                 <div class="controls">
@@ -196,6 +224,7 @@ impl Component for App {
                 <NodeContextMenu graph={self.graph.clone()} node_id={self.selected_node_id}
                     on_from_here={on_select_start_node} on_to_here={on_select_end_node} />
                 { loading_message }
+                { error_message }
                 { view_content }
                 <PathDisplay graph={self.graph.clone()} start_node_id={self.start_node_id} end_node_id={self.end_node_id} />
             </>
