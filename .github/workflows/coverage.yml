@@ -20,7 +20,7 @@ jobs:
           cargo +nightly tarpaulin --verbose --workspace --ignored --timeout 500 --out Xml
 
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v5
         with:
           # token:                ${{secrets.CODECOV_TOKEN}} # not required for public repos
           fail_ci_if_error: true

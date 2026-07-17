@@ -13,12 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v7
 
+    - name: Install Wayland development libraries
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libwayland-dev
+
     - name: Install Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
         components: rustfmt, clippy
-        override: true
 
     - name: Cache cargo dependencies
       uses: actions/cache@v4
@@ -44,12 +45,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Install Wayland development libraries
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libwayland-dev
+
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
           components: rustfmt, clippy
-          override: true
 
       - name: Cache cargo dependencies
         uses: actions/cache@v4
@@ -61,7 +63,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 

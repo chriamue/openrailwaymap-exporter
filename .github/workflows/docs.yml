@@ -14,9 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+
+      - name: Install Wayland development libraries
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends pkg-config libwayland-dev
+
+      - uses: dtolnay/rust-toolchain@stable
       - run: cargo doc --all-features --no-deps
 
       - name: Deploy Documentation
@@ -25,6 +27,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: ./target/doc
+          destination_dir: rustdoc
+          keep_files: true
 
   mdbook:
     needs: rust_docs
