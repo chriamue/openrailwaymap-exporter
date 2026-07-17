@@ -69,12 +69,18 @@ async fn when_import_railway_graph(w: &mut BddWorld) {
 
 #[then(expr = "the graph should have {int} nodes")]
 async fn then_graph_should_have_nodes(w: &mut BddWorld, expected_nodes: usize) {
-    assert_eq!(w.railway_graph.physical_graph.graph.node_count(), expected_nodes);
+    assert_eq!(
+        w.railway_graph.physical_graph.graph.node_count(),
+        expected_nodes
+    );
 }
 
 #[then(expr = "the graph should have {int} edges")]
 async fn then_graph_should_have_edges(w: &mut BddWorld, expected_edges: usize) {
-    assert_eq!(w.railway_graph.physical_graph.graph.edge_count(), expected_edges);
+    assert_eq!(
+        w.railway_graph.physical_graph.graph.edge_count(),
+        expected_edges
+    );
 }
 
 #[tokio::main]

@@ -33,8 +33,8 @@ impl Component for BevyComponent {
         }
     }
 
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
-        if first_render {
+    fn rendered(&mut self, ctx: &Context<Self>, _: bool) {
+        if self.window_loop.is_none() {
             if let Some(graph) = ctx.props().graph.clone() {
                 let future = async move {
                     show_graph(graph);

@@ -15,37 +15,24 @@ crate-type = ["cdylib", "rlib"]
 [features]
 default = ["app3d", "ai"]
 ai = ["rurel"]
-app3d = ["ai", "bevy", "bevy_console", "bevy_egui", "bevy_mod_picking", "bevy_obj", "bevy_panorbit_camera"]
+app3d = ["ai", "bevy", "bevy_console", "bevy_egui", "bevy_obj", "bevy_panorbit_camera"]
 cucumber = []
 python = ["pyo3", "pyo3-async-runtimes", "pythonize"]
 
 [dependencies]
 anyhow = "1.0"
 async-trait = "0.1.68"
-bevy = { version = "0.11.0", default-features = false, optional = true, features = [
-    "bevy_asset",
-    "bevy_core_pipeline",
-    "bevy_sprite",
-    "bevy_pbr",
-    "bevy_winit",
-    "jpeg",
-    "ktx2",
-    "png",
-    "tonemapping_luts",
-    "webgl2",
-    "x11",
-    "zstd",
+bevy = { version = "0.19.0", default-features = false, optional = true, features = ["3d"] }
+bevy_console = { git = "https://github.com/Tastyfish/bevy-console", branch = "bevy-19", optional = true }
+bevy_egui = { version = "0.41.0", optional = true, default-features = false, features = [
+    "open_url",
+    "default_fonts",
+    "render",
+    "bevy_ui",
+    "picking",
 ] }
-bevy_console = { version = "0.8.0", optional = true }
-bevy_egui = { version = "0.21", optional = true}
-bevy_eventlistener = "0.3.0"
-bevy_mod_picking = { git = "https://github.com/aevyrie/bevy_mod_picking", rev="e07f8e1", default-features = false, optional = true, features = [
-    "selection",
-    "backend_raycast",
-    "backend_egui",
-] }
-bevy_obj = { version = "0.11", optional = true }
-bevy_panorbit_camera = { version = "0.7.0", features = ["bevy_egui"], optional = true }
+bevy_obj = { version = "0.19.0", optional = true }
+bevy_panorbit_camera = { version = "0.35.0", features = ["bevy_egui"], optional = true }
 
 clap = "4.1.10"
 futures = "0.3.28"
@@ -76,7 +63,7 @@ instant = "0.1.12"
 js-sys = "0.3.61"
 kiss3d = "0.32"
 wasm-bindgen-futures = "0.4"
-web-sys = { version = "0.3.59" }
+web-sys = { version = "0.3" }
 yew = { version = "0.23.0", features = ["csr"] }
 wasm-bindgen = "0.2"
 serde = { version = "1", features = ["derive"] }

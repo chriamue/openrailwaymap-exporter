@@ -25,28 +25,24 @@ pub fn add_console_to_app(app: &mut App) {
 #[command(name = "debug")]
 struct DebugCommand {}
 
-impl Resource for PauseCommand {}
 impl NamedCommand for PauseCommand {
     fn name() -> &'static str {
         "pause"
     }
 }
 
-impl Resource for SetSpeedupCommand {}
 impl NamedCommand for SetSpeedupCommand {
     fn name() -> &'static str {
         "speedup"
     }
 }
 
-impl Resource for ObjectCommand {}
 impl NamedCommand for ObjectCommand {
     fn name() -> &'static str {
         "object"
     }
 }
 
-impl Resource for MetricsCommand {}
 impl NamedCommand for MetricsCommand {
     fn name() -> &'static str {
         "metrics"

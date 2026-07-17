@@ -5,9 +5,7 @@ use crate::{
     prelude::RailwayGraphExt,
     types::NodeId,
 };
-use bevy_eventlistener::callbacks::ListenerInput;
-use bevy_mod_picking::prelude::Pointer;
-use bevy_mod_picking::{prelude::Click, PickableBundle};
+use bevy::picking::prelude::Pickable;
 
 use super::{AppResource, InteractionMode, InteractionModeResource};
 
@@ -24,18 +22,12 @@ pub struct SelectedNode {
     pub end_node_id: Option<NodeId>,
 }
 
-#[derive(Debug, Component, Event)]
-pub struct NodeSelectedEvent(Entity);
-
-impl From<ListenerInput<Pointer<Click>>> for NodeSelectedEvent {
-    fn from(click_event: ListenerInput<Pointer<Click>>) -> Self {
-        Self(click_event.target)
-    }
-}
+#[derive(Debug, Message)]
+pub struct NodeSelectedEvent(pub Entity);
 
 #[allow(clippy::too_many_arguments)]
 pub fn select_node_system(
-    mut events: EventReader<NodeSelectedEvent>,
+    mut events: MessageReader<NodeSelectedEvent>,
     app_resource: Res<AppResource>,
     mut selected_node: ResMut<SelectedNode>,
     q_node: Query<(Entity, &Node, &Transform), Without<Camera>>,
@@ -45,7 +37,7 @@ pub fn select_node_system(
     asset_server: Res<AssetServer>,
 ) {
     let mut selection = None;
-    for select_event in events.iter() {
+    for select_event in events.read() {
         if let Ok((entity, node, transform)) = q_node.get(select_event.0) {
             selection = Some((entity, node.id, *transform));
         }
@@ -86,11 +78,11 @@ pub fn select_node_system(
                                 transform.translation.z + 1.0,
                             ),
                             GlobalTransform::default(),
-                            ComputedVisibility::default(),
+                            InheritedVisibility::default(),
                             Visibility::Inherited,
                             train_agent,
                         ))
-                        .insert(PickableBundle::default())
+                        .insert(Pickable::default())
                         .with_children(train_agent::create_train_agent_bundle(
                             materials,
                             asset_server,

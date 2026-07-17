@@ -9,14 +9,11 @@ use std::sync::{Arc, RwLock};
 
 use crate::prelude::{RailwayGraph, RailwayGraphExt};
 use crate::simulation::Simulation;
-use bevy::input::Input;
+use bevy::ecs::observer::On;
+use bevy::input::ButtonInput;
+use bevy::picking::prelude::{Click, MeshPickingPlugin, Pickable, Pointer};
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
-use bevy_mod_picking::prelude::{On, Pointer};
-use bevy_mod_picking::{
-    prelude::{Click, RaycastPickTarget},
-    DefaultPickingPlugins, PickableBundle,
-};
 use bevy_obj::ObjPlugin;
 use petgraph::visit::IntoNodeReferences;
 use petgraph::visit::NodeRef;
@@ -83,9 +80,10 @@ pub struct InteractionModeResource {
 ///
 pub fn setup_app(app: &mut App, app_resource: AppResource) {
     app.add_plugins(camera::CameraPlugins)
-        .add_plugins(EguiPlugin)
-        .add_plugins(DefaultPickingPlugins)
+        .add_plugins(EguiPlugin::default())
+        .add_plugins(MeshPickingPlugin)
         .add_plugins(ObjPlugin)
+        .insert_resource(ClearColor(Color::srgb_u8(86, 86, 86)))
         .insert_resource(app_resource)
         .insert_resource(nodes::SelectedNode::default())
         .insert_resource(SelectedTrain::default())
@@ -104,8 +102,8 @@ pub fn setup_app(app: &mut App, app_resource: AppResource) {
                 update_simulation_system,
             ),
         )
-        .add_event::<train_agent::TrainSelectedEvent>()
-        .add_event::<nodes::NodeSelectedEvent>();
+        .add_message::<train_agent::TrainSelectedEvent>()
+        .add_message::<nodes::NodeSelectedEvent>();
     ui::add_ui_systems_to_app(app);
     console::add_console_to_app(app);
 }
@@ -135,7 +133,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: Some(Window {
             title: "Railwaymap".into(),
-            resolution: (1000., 1000.).into(),
+            resolution: (1000, 1000).into(),
             fit_canvas_to_parent: true,
             prevent_default_event_handling: true,
             canvas: Some("#bevy".to_string()),
@@ -146,7 +144,7 @@ pub fn init_with_graph(graph: RailwayGraph) {
     setup_app(&mut app, app_resource);
     app.insert_resource(projection)
         .add_systems(Startup, (display_graph,))
-        .run()
+        .run();
 }
 
 /// Initializes the Bevy application with a default `RailwayGraph`.
@@ -168,7 +166,7 @@ pub fn init() {
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: Some(Window {
             title: "Railwaymap".into(),
-            resolution: (1000., 1000.).into(),
+            resolution: (1000, 1000).into(),
             fit_canvas_to_parent: true,
             prevent_default_event_handling: false,
             ..default()
@@ -176,23 +174,30 @@ pub fn init() {
         ..default()
     }));
     setup_app(&mut app, app_resource);
-    app.insert_resource(projection).run()
+    app.insert_resource(projection).run();
 }
 
 fn setup(mut commands: Commands) {
-    commands.insert_resource(AmbientLight {
+    commands.insert_resource(GlobalAmbientLight {
         color: Color::WHITE,
-        brightness: 0.7,
+        brightness: 100.0,
+        ..default()
     });
-    commands.spawn(PointLightBundle {
-        transform: Transform::from_xyz(0.0, 500.0, 100.0),
-        point_light: PointLight {
+    commands.spawn((
+        DirectionalLight {
+            shadow_maps_enabled: false,
+            ..default()
+        },
+        Transform::from_xyz(0.0, 5_000.0, 5_000.0).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
+    commands.spawn((
+        PointLight {
             intensity: 1000.0,
             range: 1000.0,
             ..Default::default()
         },
-        ..Default::default()
-    });
+        Transform::from_xyz(0.0, 500.0, 100.0),
+    ));
 }
 
 fn update_simulation_system(app_resource: Res<AppResource>, time: Res<Time>) {
@@ -202,12 +207,12 @@ fn update_simulation_system(app_resource: Res<AppResource>, time: Res<Time>) {
 }
 
 fn update_look_at_position_system(
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut camera_query: Query<&mut Transform, With<Camera>>,
     mut app_resource: ResMut<AppResource>,
     projection: Res<Projection>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::N) {
+    if keyboard_input.just_pressed(KeyCode::KeyN) {
         if let Some(graph) = &app_resource.graph {
             let mut nodes = graph.physical_graph.graph.node_references();
             let current_position = app_resource.look_at_position.unwrap_or(Vec3::ZERO);
@@ -258,26 +263,21 @@ fn display_graph(
             if let Some(position) = position {
                 commands
                     .spawn((
-                        PbrBundle {
-                            mesh: meshes.add(
-                                Mesh::try_from(shape::Icosphere {
-                                    radius: 1.0,
-                                    subdivisions: 2,
-                                })
-                                .unwrap(),
-                            ),
-                            material: materials.add(StandardMaterial {
-                                base_color: Color::RED,
+                        Mesh3d(meshes.add(Sphere::new(1.0).mesh().ico(2).unwrap())),
+                        MeshMaterial3d(materials.add(StandardMaterial {
+                                base_color: bevy::color::palettes::css::RED.into(),
                                 ..Default::default()
-                            }),
-                            transform: Transform::from_translation(position),
-                            ..Default::default()
-                        },
-                        PickableBundle::default(),
-                        RaycastPickTarget::default(),
-                        On::<Pointer<Click>>::send_event::<nodes::NodeSelectedEvent>(),
+                            })),
+                        Transform::from_translation(position),
+                        Pickable::default(),
                     ))
-                    .insert(nodes::Node { id: node_data.id });
+                    .insert(nodes::Node { id: node_data.id })
+                    .observe(
+                        |click: On<Pointer<Click>>,
+                         mut events: MessageWriter<nodes::NodeSelectedEvent>| {
+                            events.write(nodes::NodeSelectedEvent(click.entity));
+                        },
+                    );
             }
         }
     }

@@ -25,7 +25,7 @@ use crate::statistics::path_length;
 use crate::types::NodeId;
 use bevy::prelude::Commands;
 use bevy::prelude::*;
-use bevy_egui::{egui, EguiContexts};
+use bevy_egui::{egui, EguiContexts, EguiPrimaryContextPass};
 use uom::si::length::meter;
 use uom::si::velocity::kilometer_per_hour;
 
@@ -37,8 +37,8 @@ pub struct UiUpdateTimer {
 
 pub fn add_ui_systems_to_app(app: &mut App) {
     #[cfg(not(target_arch = "wasm32"))]
-    app.add_systems(Update, (select_graph_ui_system,));
-    app.add_systems(Update, (selection_ui_system,));
+    app.add_systems(EguiPrimaryContextPass, select_graph_ui_system);
+    app.add_systems(EguiPrimaryContextPass, selection_ui_system);
     app.insert_resource(UiUpdateTimer::default());
 }
 
@@ -56,9 +56,12 @@ pub fn selection_ui_system(
     if ui_update_timer.time >= 1.0 {
         ui_update_timer.time = 0.0;
     } else {
-        ui_update_timer.time += time.delta_seconds_f64();
+        ui_update_timer.time += time.delta_secs_f64();
     }
-    egui::Window::new("").show(contexts.ctx_mut(), |ui| {
+    let Ok(context) = contexts.ctx_mut() else {
+        return;
+    };
+    egui::Window::new("").show(context, |ui| {
         if let Some(node_id) = selected_node.start_node_id {
             if let Some(graph) = &app_resource.graph {
                 display_selected_node_info(ui, graph, node_id);
@@ -121,7 +124,10 @@ pub fn select_graph_ui_system(
 
     use crate::{prelude::RailwayGraphExt, simulation::Simulation};
 
-    egui::Window::new("Railway Area").show(contexts.ctx_mut(), |ui| {
+    let Ok(context) = contexts.ctx_mut() else {
+        return;
+    };
+    egui::Window::new("Railway Area").show(context, |ui| {
         ui.label("Enter an Area:");
         ui.text_edit_singleline(&mut app_resource.area_name);
         ui.add_space(15.0);
@@ -151,7 +157,6 @@ pub fn select_graph_ui_system(
                 projection.set_bounding_box(min_coord, max_coord);
                 app_resource.graph = Some(graph.clone());
                 app_resource.simulation = Some(Arc::new(RwLock::new(Simulation::new(graph))));
-                ui.set_enabled(false);
                 display_graph(
                     commands,
                     app_resource.into(),
@@ -229,7 +234,7 @@ pub fn display_selected_train_agent_info(
             let mut selected_agent_option = selected_agent_option.unwrap_or_default();
 
             let mut agent_changed = false;
-            egui::ComboBox::from_id_source("decision_agent_selector")
+            egui::ComboBox::from_id_salt("decision_agent_selector")
                 .selected_text(format!("{:?}", selected_agent_option))
                 .show_ui(ui, |ui| {
                     agent_changed |= ui

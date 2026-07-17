@@ -43,9 +43,9 @@ pub fn show_edges(
                 .map(|coords| projection.project(*coords).unwrap())
                 .collect::<Vec<_>>();
             if highlighted_edges.contains(&edge_data.id) {
-                gizmos.linestrip(points, Color::RED);
+                gizmos.linestrip(points, bevy::color::palettes::css::RED);
             } else {
-                gizmos.linestrip(points, Color::BLUE);
+                gizmos.linestrip(points, bevy::color::palettes::css::BLUE);
             }
         }
     }

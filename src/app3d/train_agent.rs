@@ -1,10 +1,6 @@
+use bevy::ecs::observer::On;
+use bevy::picking::prelude::{Click, Pickable, Pointer};
 use bevy::prelude::*;
-use bevy_eventlistener::callbacks::ListenerInput;
-use bevy_mod_picking::prelude::{On, Pointer};
-use bevy_mod_picking::{
-    prelude::{Click, RaycastPickTarget},
-    PickableBundle,
-};
 use uom::si::velocity::{kilometer_per_hour, meter_per_second, Velocity};
 
 use super::{AppResource, Node};
@@ -57,24 +53,18 @@ impl TrainAgent {
     }
 }
 
-#[derive(Debug, Component, Event)]
-pub struct TrainSelectedEvent(Entity);
-
-impl From<ListenerInput<Pointer<Click>>> for TrainSelectedEvent {
-    fn from(click_event: ListenerInput<Pointer<Click>>) -> Self {
-        Self(click_event.target)
-    }
-}
+#[derive(Debug, Message)]
+pub struct TrainSelectedEvent(pub Entity);
 
 pub fn select_train_system(
-    mut events: EventReader<TrainSelectedEvent>,
+    mut events: MessageReader<TrainSelectedEvent>,
     q_train: Query<(Entity, &TrainAgent, &Children)>,
     mut selected_train: ResMut<SelectedTrain>,
 ) {
     let mut selection = None;
-    for event in events.iter() {
+    for event in events.read() {
         for (_entity, train, children) in q_train.iter() {
-            if children.iter().any(|child| child == &event.0) {
+            if children.iter().any(|child| child == event.0) {
                 selection = Some(train.id);
             }
         }
@@ -119,27 +109,30 @@ pub fn create_train(
 pub fn create_train_agent_bundle(
     mut materials: ResMut<Assets<StandardMaterial>>,
     asset_server: Res<AssetServer>,
-) -> impl FnOnce(&mut ChildBuilder) {
+) -> impl FnOnce(&mut ChildSpawnerCommands) {
     let rotation_quat = Quat::from_rotation_y(-std::f32::consts::FRAC_PI_2);
 
-    let main_body = PbrBundle {
-        mesh: asset_server.load("train.obj"),
-        material: materials.add(Color::rgb(0.0, 0.6, 0.0).into()),
-        transform: Transform {
-            rotation: rotation_quat,
-            scale: Vec3::ONE * 0.001,
-            ..Default::default()
-        },
+    let mesh = asset_server.load("train.obj");
+    let material = materials.add(Color::srgb(0.0, 0.6, 0.0));
+    let transform = Transform {
+        rotation: rotation_quat,
+        scale: Vec3::ONE * 0.001,
         ..Default::default()
     };
 
-    move |builder: &mut ChildBuilder| {
-        builder.spawn((
-            main_body,
-            PickableBundle::default(),
-            RaycastPickTarget::default(),
-            On::<Pointer<Click>>::send_event::<TrainSelectedEvent>(),
-        ));
+    move |builder: &mut ChildSpawnerCommands| {
+        builder
+            .spawn((
+                Mesh3d(mesh),
+                MeshMaterial3d(material),
+                transform,
+                Pickable::default(),
+            ))
+            .observe(
+                |click: On<Pointer<Click>>, mut events: MessageWriter<TrainSelectedEvent>| {
+                    events.write(TrainSelectedEvent(click.entity));
+                },
+            );
     }
 }
 
@@ -231,7 +224,7 @@ pub fn update_train_agent_line_system(
                         gizmos.line(
                             train_agent_transform.translation,
                             target_node_transform.translation,
-                            Color::RED,
+                            bevy::color::palettes::css::RED,
                         );
                     }
                 }
