@@ -6,17 +6,18 @@ use uom::si::length::meter;
 
 use crate::BddWorld;
 use approx::assert_relative_eq;
+use openrailwaymap_exporter::railway_algorithms::RailwayEdgeAlgos;
 
 #[given(regex = "a RailwayEdge with the following properties:")]
 async fn given_railway_edge_with_properties(world: &mut BddWorld, step: &Step) {
     let table = step.table.as_ref().unwrap();
     let row = &table.rows[1];
 
-    let id = row[0].parse::<i64>().unwrap();
+    let id = row[0].parse::<u64>().unwrap();
     let length = row[1].parse::<f64>().unwrap();
     let path_coordinates_str = &row[2];
-    let source = row[3].parse::<i64>().unwrap();
-    let target = row[4].parse::<i64>().unwrap();
+    let source = row[3].parse::<u64>().unwrap();
+    let target = row[4].parse::<u64>().unwrap();
 
     let re = Regex::new(r"\(([\d.]+),\s*([\d.]+)\)").unwrap();
     let path_coordinates: Vec<Coord<f64>> = re
