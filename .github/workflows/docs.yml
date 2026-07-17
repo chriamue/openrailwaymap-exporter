@@ -39,9 +39,9 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v1
+        uses: peaceiris/actions-mdbook@v2
         with:
-          mdbook-version: 'latest'
+          mdbook-version: '0.5.4'
 
       - run: cd docs/ && mdbook build
 
