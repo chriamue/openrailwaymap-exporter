@@ -1,4 +1,5 @@
 use crate::simulation::agents::RailMovableAction;
+use rand::RngExt;
 use rurel::mdp::State;
 
 /// Represents the state of a train agent in the simulation.
@@ -47,7 +48,7 @@ impl State for TrainAgentState {
 
     fn random_action(&self) -> Self::A {
         let actions = self.actions();
-        let a_t = rand::random::<usize>() % actions.len();
+        let a_t = rand::rng().random_range(0..actions.len());
         actions[a_t].clone()
     }
 }

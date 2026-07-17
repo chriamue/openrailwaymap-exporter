@@ -23,7 +23,7 @@ pub mod agents;
 pub mod environment;
 use bevy::prelude::warn;
 pub use environment::SimulationEnvironment;
-use rand::seq::SliceRandom;
+use rand::prelude::IndexedRandom;
 use uom::si::{
     acceleration::{meter_per_second_squared, Acceleration},
     f64::{Length, Time},
@@ -378,7 +378,7 @@ impl Simulation {
                         .reachable_nodes(train.position().unwrap());
                     if !reachable_nodes.is_empty() {
                         event = Some(TargetReachedEvent {});
-                        let mut rng = rand::thread_rng();
+                        let mut rng = rand::rng();
                         train.set_next_target(Some(*reachable_nodes.choose(&mut rng).unwrap()));
                     }
                 }

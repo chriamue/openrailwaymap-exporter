@@ -19,7 +19,7 @@ pub fn http_client() -> Client {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use mockito::{mock, server_url};
+    use mockito::Server;
 
     #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
     #[cfg_attr(target_arch = "wasm32", ignore)]
@@ -27,15 +27,18 @@ mod tests {
         let expected_user_agent =
             format!("{}/{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
-        let mock = mock("GET", "/")
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("GET", "/")
             .match_header("user-agent", expected_user_agent.as_str())
             .with_status(200)
-            .create();
+            .create_async()
+            .await;
 
         let client = http_client();
-        let result = client.get(server_url()).send().await;
+        let result = client.get(server.url()).send().await;
 
-        mock.assert();
+        mock.assert_async().await;
         assert!(result.is_ok());
     }
 }

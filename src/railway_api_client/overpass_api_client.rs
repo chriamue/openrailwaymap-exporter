@@ -88,17 +88,22 @@ impl RailwayApiClient for OverpassApiClient {
 mod tests {
     use super::*;
     use crate::tests::test_json_vilbel;
-    use mockito::{mock, server_url};
+    use mockito::Server;
 
     #[cfg_attr(not(target_arch = "wasm32"), tokio::test)]
     #[cfg_attr(target_arch = "wasm32", ignore)]
     async fn test_connect() {
-        let mock = mock("GET", "/").with_status(200).create();
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("GET", "/")
+            .with_status(200)
+            .create_async()
+            .await;
 
         let mut client = OverpassApiClient::new();
-        let result = client.connect(&server_url()).await;
+        let result = client.connect(&server.url()).await;
 
-        mock.assert();
+        mock.assert_async().await;
         assert!(result.is_ok());
     }
 
@@ -107,7 +112,9 @@ mod tests {
     async fn test_fetch_by_area_name() {
         let test_json = test_json_vilbel();
         let query = r#"[out:json];area[name="Bad Vilbel"]->.searchArea;(way(area.searchArea)["railway"="rail"];node(area.searchArea)["railway"="switch"];node(area.searchArea)["railway"="buffer_stop"];node(area.searchArea)["railway"="railway_crossing"];);out geom;"#;
-        let mock = mock("POST", "/api/interpreter")
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("POST", "/api/interpreter")
             .with_status(200)
             .with_header("content-type", "application/json")
             .with_body(&serde_json::to_string(&test_json).unwrap())
@@ -116,16 +123,17 @@ mod tests {
                 "data".to_string(),
                 query.to_string(),
             ))
-            .create();
+            .create_async()
+            .await;
 
         let mut client = OverpassApiClient::new();
         client
-            .connect(&format!("{}/api/interpreter", server_url()))
+            .connect(&format!("{}/api/interpreter", server.url()))
             .await
             .unwrap();
         let result = client.fetch_by_area_name("Bad Vilbel").await;
 
-        mock.assert();
+        mock.assert_async().await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), test_json);
     }
@@ -139,7 +147,9 @@ mod tests {
             r#"[out:json];(way({})["railway"="rail"];node({})["railway"="switch"];node({})["railway"="buffer_stop"];node({})["railway"="railway_crossing"];);out geom;"#,
             bbox, bbox, bbox, bbox
         );
-        let mock = mock("POST", "/api/interpreter")
+        let mut server = Server::new_async().await;
+        let mock = server
+            .mock("POST", "/api/interpreter")
             .with_status(200)
             .with_header("content-type", "application/json")
             .with_body(&serde_json::to_string(&test_json).unwrap())
@@ -148,16 +158,17 @@ mod tests {
                 "data".to_string(),
                 query.to_string(),
             ))
-            .create();
+            .create_async()
+            .await;
 
         let mut client = OverpassApiClient::new();
         client
-            .connect(&format!("{}/api/interpreter", server_url()))
+            .connect(&format!("{}/api/interpreter", server.url()))
             .await
             .unwrap();
         let result = client.fetch_by_bbox(bbox).await;
 
-        mock.assert();
+        mock.assert_async().await;
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), test_json);
     }
