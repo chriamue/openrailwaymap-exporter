@@ -38,12 +38,10 @@ impl SimulationExecutor {
     ///
     /// * `simulation` - A mutable reference to the `Simulation` instance to be executed.
     pub fn execute(&mut self, simulation: &mut Simulation) {
-        let start_time = Instant::now();
         let frame_duration = Duration::from_secs_f64(1.0 / self.fps as f64);
 
         while self.elapsed_time < self.run_time {
             self.update_simulation_frame(simulation, frame_duration);
-            self.elapsed_time = start_time.elapsed();
         }
     }
 
@@ -56,16 +54,14 @@ impl SimulationExecutor {
     fn update_simulation_frame(&mut self, simulation: &mut Simulation, frame_duration: Duration) {
         let frame_start_time = Instant::now();
 
-        if self.sleep_enabled {
-            simulation.update(frame_duration);
+        simulation.update(frame_duration);
+        self.elapsed_time += frame_duration;
 
+        if self.sleep_enabled {
             let frame_elapsed = frame_start_time.elapsed();
             if frame_duration > frame_elapsed {
                 std::thread::sleep(frame_duration - frame_elapsed);
             }
-        } else {
-            simulation.update(frame_duration);
-            self.elapsed_time += frame_duration;
         }
     }
 
