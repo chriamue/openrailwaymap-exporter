@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MetricsCommand","ObjectCommand"],"struct":["PauseCommand","SetSpeedupCommand"],"trait":["SimulationCommand"]};
