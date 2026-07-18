@@ -75,7 +75,7 @@
 <a href=#75 id=75 data-nosnippet>75</a>    <span class="kw">let </span>target_direction_point = Point::new(target_direction.x, target_direction.y);
 <a href=#76 id=76 data-nosnippet>76</a>
 <a href=#77 id=77 data-nosnippet>77</a>    <span class="kw">let </span>first_point = linestring.into_iter().next().unwrap();
-<a href=#78 id=78 data-nosnippet>78</a>    <span class="kw">let </span>last_point = linestring.into_iter().last().unwrap();
+<a href=#78 id=78 data-nosnippet>78</a>    <span class="kw">let </span>last_point = linestring.into_iter().next_back().unwrap();
 <a href=#79 id=79 data-nosnippet>79</a>
 <a href=#80 id=80 data-nosnippet>80</a>    <span class="kw">let </span>distance_to_first_point = current_location.distance(first_point);
 <a href=#81 id=81 data-nosnippet>81</a>    <span class="kw">let </span>distance_to_last_point = target_direction.distance(last_point);

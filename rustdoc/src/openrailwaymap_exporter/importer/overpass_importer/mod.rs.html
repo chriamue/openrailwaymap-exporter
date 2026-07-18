@@ -192,7 +192,7 @@
 <a href=#192 id=192 data-nosnippet>192</a>    <span class="kw">let </span>start_pos = start.and_then(|start_id| node_ids.iter().position(|<span class="kw-2">&amp;</span>id| id == start_id));
 <a href=#193 id=193 data-nosnippet>193</a>
 <a href=#194 id=194 data-nosnippet>194</a>    <span class="kw">for </span>(pos, <span class="kw-2">&amp;</span>id) <span class="kw">in </span>node_ids.iter().enumerate() {
-<a href=#195 id=195 data-nosnippet>195</a>        <span class="kw">if </span>start_pos.map_or(<span class="bool-val">true</span>, |start_pos| pos &gt; start_pos) {
+<a href=#195 id=195 data-nosnippet>195</a>        <span class="kw">if </span>start_pos.is_none_or(|start_pos| pos &gt; start_pos) {
 <a href=#196 id=196 data-nosnippet>196</a>            <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = node_indices.get(<span class="kw-2">&amp;</span>id) {
 <a href=#197 id=197 data-nosnippet>197</a>                <span class="kw">return </span>(<span class="prelude-val">Some</span>(id), <span class="prelude-val">Some</span>(<span class="kw-2">*</span>index));
 <a href=#198 id=198 data-nosnippet>198</a>            }
@@ -323,7 +323,7 @@
 <a href=#323 id=323 data-nosnippet>323</a>                <span class="kw">for </span>node_id <span class="kw">in </span>element_nodes {
 <a href=#324 id=324 data-nosnippet>324</a>                    node_id_to_element_ids
 <a href=#325 id=325 data-nosnippet>325</a>                        .entry(NodeId::try_from(<span class="kw-2">*</span>node_id).unwrap())
-<a href=#326 id=326 data-nosnippet>326</a>                        .or_insert_with(Vec::new)
+<a href=#326 id=326 data-nosnippet>326</a>                        .or_default()
 <a href=#327 id=327 data-nosnippet>327</a>                        .push(element.id);
 <a href=#328 id=328 data-nosnippet>328</a>                }
 <a href=#329 id=329 data-nosnippet>329</a>            }
