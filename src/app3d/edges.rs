@@ -50,3 +50,17 @@ pub fn show_edges(
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_edge_component_spawn_and_query() {
+        let mut world = World::new();
+        let entity = world.spawn(Edge { id: 42 }).id();
+
+        let edge = world.get::<Edge>(entity).expect("Edge component missing");
+        assert_eq!(edge.id, 42);
+    }
+}

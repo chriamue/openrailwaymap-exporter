@@ -28,7 +28,7 @@ mod tests {
             location: coord! { x: 8.6090232, y: 50.1191127 },
         };
 
-        let cloned_node = node.clone();
+        let cloned_node = node;
         assert_eq!(node, cloned_node);
     }
 }

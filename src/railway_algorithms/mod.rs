@@ -109,6 +109,7 @@ impl RailwayGraphAlgos for RailwayGraph {
     }
 }
 
+/// Tests and shared fixtures for the railway algorithms module.
 #[cfg(test)]
 pub mod tests {
     use super::*;
@@ -209,6 +210,7 @@ pub mod tests {
         assert_relative_eq!(new_position5.y, 50.1121, epsilon = 0.0001);
     }
 
+    /// Builds a small, fixed set of `RailwayElement`s usable as fixtures in tests.
     pub fn test_elements() -> Vec<RailwayElement> {
         vec![
             RailwayElement {

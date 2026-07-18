@@ -43,6 +43,7 @@ pub mod python;
 #[cfg(feature = "python")]
 pub use self::python::*;
 
+/// Shared test fixtures and helpers used across the crate's test suites.
 #[cfg(test)]
 pub mod tests;
 

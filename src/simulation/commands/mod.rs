@@ -2,7 +2,7 @@
 //! Each command implements the `SimulationCommand` trait, which provides the `execute` method to
 //! apply the command on a given simulation instance.
 //!
-use clap::{arg, Parser};
+use clap::Parser;
 mod metrics_command;
 mod object_command;
 
@@ -67,16 +67,16 @@ mod tests {
         let pause_command = PauseCommand {};
 
         // Initially, the simulation should be unpaused.
-        assert_eq!(simulation.is_paused, false);
+        assert!(!simulation.is_paused);
 
         // Test pausing the simulation.
         let result = pause_command.execute(&mut simulation);
-        assert_eq!(simulation.is_paused, true);
+        assert!(simulation.is_paused);
         assert_eq!(result, Some("Simulation paused".to_string()));
 
         // Test unpausing the simulation.
         let result = pause_command.execute(&mut simulation);
-        assert_eq!(simulation.is_paused, false);
+        assert!(!simulation.is_paused);
         assert_eq!(result, Some("Simulation resumed".to_string()));
     }
 

@@ -1,4 +1,4 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
 use geo::{coord, line_string};
 use openrailwaymap_exporter::{
@@ -8,6 +8,7 @@ use openrailwaymap_exporter::{
 };
 use petgraph::stable_graph::NodeIndex;
 use std::collections::HashMap;
+use std::hint::black_box;
 use uom::si::{f64::Length, length::meter};
 
 fn railway_elements() -> Vec<RailwayElement> {

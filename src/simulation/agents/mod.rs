@@ -82,11 +82,9 @@ mod tests {
 
     #[test]
     fn test_rail_moveable_actions() {
-        let actions = vec![
-            RailMovableAction::Stop,
+        let actions = [RailMovableAction::Stop,
             RailMovableAction::AccelerateForward { acceleration: 50 },
-            RailMovableAction::AccelerateBackward { acceleration: 20 },
-        ];
+            RailMovableAction::AccelerateBackward { acceleration: 20 }];
 
         if let RailMovableAction::Stop = actions[0] {
             assert!(true);

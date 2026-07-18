@@ -34,7 +34,7 @@ pub trait RailwayObject: std::fmt::Debug + Any {
     /// # Arguments
     ///
     /// * `position` - An `Option<NodeId>` representing the new position of the railway
-    /// object in the internal model. Pass `None` to remove the object's position.
+    ///   object in the internal model. Pass `None` to remove the object's position.
     ///
     fn set_position(&mut self, position: Option<NodeId>);
 

@@ -117,7 +117,7 @@ mod tests {
             .mock("POST", "/api/interpreter")
             .with_status(200)
             .with_header("content-type", "application/json")
-            .with_body(&serde_json::to_string(&test_json).unwrap())
+            .with_body(serde_json::to_string(&test_json).unwrap())
             .match_header("content-type", "application/x-www-form-urlencoded")
             .match_body(mockito::Matcher::UrlEncoded(
                 "data".to_string(),
@@ -152,7 +152,7 @@ mod tests {
             .mock("POST", "/api/interpreter")
             .with_status(200)
             .with_header("content-type", "application/json")
-            .with_body(&serde_json::to_string(&test_json).unwrap())
+            .with_body(serde_json::to_string(&test_json).unwrap())
             .match_header("content-type", "application/x-www-form-urlencoded")
             .match_body(mockito::Matcher::UrlEncoded(
                 "data".to_string(),

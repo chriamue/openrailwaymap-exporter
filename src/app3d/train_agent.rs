@@ -248,3 +248,39 @@ pub fn clone_train_from_app(train_agent: &TrainAgent, app_resource: &AppResource
     }
     None
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use geo::line_string;
+
+    #[test]
+    fn test_train_agent_tracks_edge_progress() {
+        let mut world = World::new();
+
+        let edge = RailwayEdge {
+            id: 1,
+            length: 100.0,
+            path: line_string![
+                (x: 0.0, y: 0.0),
+                (x: 100.0, y: 0.0),
+            ],
+            source: 1,
+            target: 2,
+        };
+
+        let mut train_agent = TrainAgent::new(create_new_train_id());
+        train_agent.current_edge = Some(edge.clone());
+        train_agent.edge_progress = 25.0;
+        train_agent.remaining_distance = 75.0;
+
+        let entity = world.spawn((train_agent, TrainAgentLine)).id();
+
+        let spawned_agent = world.get::<TrainAgent>(entity).unwrap();
+        assert_eq!(spawned_agent.current_edge.as_ref().unwrap().id, edge.id);
+        assert_eq!(spawned_agent.edge_progress, 25.0);
+        assert_eq!(spawned_agent.remaining_distance, 75.0);
+
+        assert!(world.get::<TrainAgentLine>(entity).is_some());
+    }
+}

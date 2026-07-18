@@ -75,7 +75,7 @@ pub fn points_in_front(
     let target_direction_point = Point::new(target_direction.x, target_direction.y);
 
     let first_point = linestring.into_iter().next().unwrap();
-    let last_point = linestring.into_iter().last().unwrap();
+    let last_point = linestring.into_iter().next_back().unwrap();
 
     let distance_to_first_point = current_location.distance(first_point);
     let distance_to_last_point = target_direction.distance(last_point);

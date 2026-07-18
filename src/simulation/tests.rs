@@ -162,7 +162,7 @@ fn test_metrics_count_stop_actions() {
         simulation.update(Duration::from_secs(1));
     }
 
-    let stop_count = simulation.metrics_handlers.get(0).unwrap().get_value();
+    let stop_count = simulation.metrics_handlers.first().unwrap().get_value();
 
     let expected_stop_count = 10.0;
     assert_eq!(stop_count, expected_stop_count);

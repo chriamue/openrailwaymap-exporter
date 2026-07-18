@@ -192,7 +192,7 @@ pub fn find_next_existing_node(
     let start_pos = start.and_then(|start_id| node_ids.iter().position(|&id| id == start_id));
 
     for (pos, &id) in node_ids.iter().enumerate() {
-        if start_pos.map_or(true, |start_pos| pos > start_pos) {
+        if start_pos.is_none_or(|start_pos| pos > start_pos) {
             if let Some(index) = node_indices.get(&id) {
                 return (Some(id), Some(*index));
             }
@@ -323,7 +323,7 @@ fn create_node_id_to_element_ids_map(elements: &[RailwayElement]) -> HashMap<Nod
                 for node_id in element_nodes {
                     node_id_to_element_ids
                         .entry(NodeId::try_from(*node_id).unwrap())
-                        .or_insert_with(Vec::new)
+                        .or_default()
                         .push(element.id);
                 }
             }

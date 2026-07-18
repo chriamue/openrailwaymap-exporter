@@ -1,4 +1,4 @@
-use geo::{Coord, HaversineDistance, Point};
+use geo::{Coord, Distance as GeoDistance, Haversine, Point};
 use uom::si::{f64::Length, length::meter};
 
 use crate::{
@@ -89,7 +89,7 @@ impl RailwayEdgeAlgos for RailwayEdge {
             let next_point_geo = Point::new(next_point.x, next_point.y);
 
             // Use haversine_distance instead of euclidean_distance
-            let segment_distance = current_point_geo.haversine_distance(&next_point_geo);
+            let segment_distance = Haversine.distance(current_point_geo, next_point_geo);
 
             let ratio = remaining_distance / segment_distance;
             new_position.x = current_point.x + ratio * (next_point.x - current_point.x);

@@ -17,20 +17,24 @@ use crate::{
     railway_algorithms::RailwayEdgeAlgos,
 };
 
+/// Loads the small `test1.json` Overpass fixture as raw JSON.
 pub fn test_json_1() -> Value {
     serde_json::from_slice(include_bytes!("res/test1.json"))
         .expect("Failed to deserialize the JSON data")
 }
 
+/// Loads the `vilbel.json` Overpass fixture (a larger, real-world extract) as raw JSON.
 pub fn test_json_vilbel() -> Value {
     serde_json::from_slice(include_bytes!("res/vilbel.json"))
         .expect("Failed to deserialize the JSON data")
 }
 
+/// Builds a `RailwayGraph` from the `test1.json` fixture.
 pub fn test_graph_1() -> RailwayGraph {
     OverpassImporter::import(&test_json_1()).unwrap()
 }
 
+/// Builds a `RailwayGraph` from the `vilbel.json` fixture.
 pub fn test_graph_vilbel() -> RailwayGraph {
     OverpassImporter::import(&test_json_vilbel()).unwrap()
 }
@@ -59,7 +63,7 @@ fn test_vilbel_json() {
     let mut graph = Graph::<RailwayNode, RailwayEdge, Undirected>::new_undirected();
     let mut node_indices = HashMap::new();
     for node in &nodes {
-        let node_index = graph.add_node(node.clone());
+        let node_index = graph.add_node(*node);
         node_indices.insert(node.id, node_index);
     }
 

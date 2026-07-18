@@ -126,22 +126,22 @@ impl RailwayGraphExt for RailwayGraph {
     fn get_edges_of_node(&self, node_id: NodeId) -> Vec<&RailwayEdge> {
         let node_index = self.physical_graph.id_to_index(node_id);
         if let Some(&node_index) = node_index {
-            return self
+            self
                 .physical_graph
                 .graph
                 .edges(node_index)
                 .map(|e| e.weight())
-                .collect();
+                .collect()
         } else {
             Vec::new()
         }
     }
 
     fn bounding_box(&self) -> (Coord, Coord) {
-        let mut min_lat = std::f64::MAX;
-        let mut min_lon = std::f64::MAX;
-        let mut max_lat = std::f64::MIN;
-        let mut max_lon = std::f64::MIN;
+        let mut min_lat = f64::MAX;
+        let mut min_lon = f64::MAX;
+        let mut max_lat = f64::MIN;
+        let mut max_lon = f64::MIN;
 
         for node in self.physical_graph.graph.node_references() {
             let lat = node.1.location.y;
@@ -191,7 +191,7 @@ impl RailwayGraphExt for RailwayGraph {
         let end_node = &self.physical_graph.graph[end_node_index];
 
         // Clamp position_on_edge to the range [0.0, 1.0].
-        let position_on_edge = position_on_edge.max(0.0).min(1.0);
+        let position_on_edge = position_on_edge.clamp(0.0, 1.0);
 
         // Calculate the coordinates of the point on the edge.
         let start_coord = start_node.location;
